@@ -99,7 +99,7 @@ def explain_file(
     3. Triggers the AI summarization via OpenRouter.
     4. Saves the summary to file_summaries and returns it.
     """
-    model_name = "gemini-2.0-flash"
+    model_name = "llama-3.3-70b-versatile"
 
     # If Supabase is offline/unconfigured, return a mock summary for local-only developers
     if supabase is None:

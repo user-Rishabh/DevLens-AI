@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { 
   FileText, 
   Cpu, 
@@ -12,20 +12,37 @@ interface FileExplainerProps {
   repoId: string;
   filePath: string;
   onClose?: () => void;
+  onLoadingStateChange?: (loading: boolean) => void;
 }
 
-export default function FileExplainer({ repoId, filePath, onClose }: FileExplainerProps) {
+export default function FileExplainer({ repoId, filePath, onClose, onLoadingStateChange }: FileExplainerProps) {
   const [loading, setLoading] = useState(false);
   const [summary, setSummary] = useState('');
   const [modelUsed, setModelUsed] = useState('');
   const [cached, setCached] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  
+  // Use a ref for the in-flight request guard because ref.current updates synchronously.
+  // This successfully prevents double-fetching caused by React.StrictMode in dev builds.
+  const loadingRef = useRef('');
 
   useEffect(() => {
     if (!repoId || !filePath) return;
+    
+    // Guard: ignore if a request for this exact file is already running
+    if (loadingRef.current === filePath) {
+      return;
+    }
 
     const fetchExplanation = async () => {
+      // Synchronously mark the ref to block concurrent calls
+      loadingRef.current = filePath;
+      
+      // Log fetch call to browser console as requested for devtools verification
+      console.log(`[DevLens AI] Firing API fetch request for: "${filePath}"`);
+
       setLoading(true);
+      if (onLoadingStateChange) onLoadingStateChange(true);
       setError(null);
       setSummary('');
       
@@ -48,6 +65,9 @@ export default function FileExplainer({ repoId, filePath, onClose }: FileExplain
         setError(err.message || 'An error occurred while fetching the file summary.');
       } finally {
         setLoading(false);
+        // Clear in-flight path tracking upon completion
+        loadingRef.current = '';
+        if (onLoadingStateChange) onLoadingStateChange(false);
       }
     };
 
@@ -91,7 +111,7 @@ export default function FileExplainer({ repoId, filePath, onClose }: FileExplain
           <div className="flex-1 flex flex-col items-center justify-center text-center p-8">
             <Loader2 className="w-8 h-8 text-indigo-500 animate-spin mb-4" />
             <p className="text-zinc-200 text-sm font-semibold">Generating AI Summary...</p>
-            <p className="text-zinc-500 text-xs mt-1 font-mono">Invoking OpenRouter LLM completions</p>
+            <p className="text-zinc-500 text-xs mt-1 font-mono">Invoking Gemini 2.0 Flash</p>
           </div>
         )}
 
