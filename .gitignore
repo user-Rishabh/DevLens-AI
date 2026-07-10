@@ -1,0 +1,32 @@
+# Node / Frontend
+node_modules/
+dist/
+dist-ssr/
+*.local
+.eslintcache
+
+# Python / Backend
+__pycache__/
+*.py[cod]
+*$py.class
+.venv/
+venv/
+ENV/
+env/
+.pytest_cache/
+.coverage
+htmlcov/
+.mypy_cache/
+
+# Environment Variables
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# IDEs and OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db

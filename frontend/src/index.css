@@ -1,0 +1,50 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Inter", system-ui, -apple-system, sans-serif;
+  
+  --color-brand-purple: #8b5cf6;
+  --color-brand-indigo: #6366f1;
+  --color-brand-blue: #3b82f6;
+  
+  --animate-pulse-slow: pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  --animate-glow-slow: glow 6s ease-in-out infinite;
+}
+
+@keyframes glow {
+  0%, 100% {
+    opacity: 0.35;
+    filter: blur(80px);
+  }
+  50% {
+    opacity: 0.6;
+    filter: blur(100px);
+  }
+}
+
+/* Glassmorphism custom components */
+.glass-panel {
+  background: rgba(20, 20, 25, 0.65);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.glass-input {
+  background: rgba(10, 10, 12, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.glass-input:focus {
+  border-color: rgba(99, 102, 241, 0.5);
+  box-shadow: 0 0 15px rgba(99, 102, 241, 0.15);
+  outline: none;
+}
+
+/* Base custom styles */
+body {
+  background-color: #09090b; /* Zinc-950 equivalent */
+  color: #fafafa; /* Zinc-50 equivalent */
+  overflow-x: hidden;
+}
