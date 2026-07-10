@@ -17,6 +17,7 @@ import {
   Files
 } from 'lucide-react';
 import FileTree, { FileTreeNodeType } from '../components/FileTree';
+import HotspotList, { HotspotType } from '../components/HotspotList';
 
 export default function Home() {
   const [repoUrl, setRepoUrl] = useState('');
@@ -28,6 +29,11 @@ export default function Home() {
   const [isAnalyzed, setIsAnalyzed] = useState(false);
   const [repoName, setRepoName] = useState('');
   const [fileTree, setFileTree] = useState<FileTreeNodeType | null>(null);
+  const [dependencies, setDependencies] = useState<any[]>([]);
+  const [hotspots, setHotspots] = useState<HotspotType[]>([]);
+  
+  // Sidebar tab switcher
+  const [sidebarTab, setSidebarTab] = useState<'files' | 'hotspots'>('files');
 
   // Helper to count files and folders in the tree
   const countTreeNodes = (node: FileTreeNodeType | null): { files: number; folders: number } => {
@@ -53,7 +59,7 @@ export default function Home() {
 
   const handleAnalyze = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!repoUrl.strip?.() && !repoUrl) return;
+    if (!repoUrl && !repoUrl.trim()) return;
     
     setIsLoading(true);
     setError(null);
@@ -63,7 +69,7 @@ export default function Home() {
     
     try {
       // Small artificial delays to show phases smoothly to the user
-      setTimeout(() => setLoadingPhase('Connecting to GitHub API & Cloning Repository...'), 800);
+      setTimeout(() => setLoadingPhase('Cloning Repository (depth 100 with Git history)...'), 600);
       
       const response = await fetch(`${apiUrl}/api/repos/ingest`, {
         method: 'POST',
@@ -73,7 +79,7 @@ export default function Home() {
         body: JSON.stringify({ github_url: repoUrl.trim() }),
       });
       
-      setLoadingPhase('Analyzing repository & building file tree...');
+      setLoadingPhase('Analyzing dependency graph & Git file hotspots...');
       
       const data = await response.json();
       
@@ -84,7 +90,19 @@ export default function Home() {
       // Update states on success
       setRepoName(data.repo_name);
       setFileTree(data.file_tree);
+      setDependencies(data.dependencies);
+      setHotspots(data.hotspots);
       setIsAnalyzed(true);
+      
+      // Select the files tab by default
+      setSidebarTab('files');
+      
+      // Explicitly log the received dependency graph to the developer console
+      console.log('=========== DevLens AI Ingestion Report ===========');
+      console.log('Project Name:', data.repo_name);
+      console.log('Dependency Edges (Internal Imports):', data.dependencies);
+      console.log('Git Hotspots (Commit Frequency):', data.hotspots);
+      console.log('==================================================');
     } catch (err: any) {
       console.error(err);
       setError(err.message || 'An unexpected error occurred while communicating with the backend.');
@@ -98,6 +116,8 @@ export default function Home() {
     setIsAnalyzed(false);
     setRepoName('');
     setFileTree(null);
+    setDependencies([]);
+    setHotspots([]);
     setRepoUrl('');
     setError(null);
   };
@@ -123,7 +143,7 @@ export default function Home() {
               <span className="font-bold text-lg tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-zinc-50 via-zinc-200 to-indigo-300">
                 DevLens <span className="text-indigo-400">AI</span>
               </span>
-              <span className="block text-[9px] text-zinc-500 font-mono leading-none mt-0.5">Ingestion Engine active</span>
+              <span className="block text-[9px] text-zinc-500 font-mono leading-none mt-0.5">Ingestion & Analytics active</span>
             </div>
           </div>
           
@@ -131,7 +151,7 @@ export default function Home() {
             {isAnalyzed && (
               <button
                 onClick={handleReset}
-                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-zinc-800 hover:border-zinc-700 bg-zinc-900/30 hover:bg-zinc-900/70 text-zinc-400 hover:text-zinc-200 text-xs transition-all duration-200"
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-zinc-800 hover:border-zinc-700 bg-zinc-900/30 hover:bg-zinc-900/70 text-zinc-400 hover:text-zinc-200 text-xs transition-all duration-200 cursor-pointer"
               >
                 <ArrowLeft className="w-3.5 h-3.5" />
                 Analyze Another
@@ -155,10 +175,10 @@ export default function Home() {
               <div className="h-16 w-16 border-4 border-indigo-500/25 border-t-indigo-500 rounded-full animate-spin" />
               <FolderTree className="w-6 h-6 text-indigo-400 absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 animate-pulse" />
             </div>
-            <h3 className="text-white font-semibold text-lg mb-2">Ingesting Codebase</h3>
+            <h3 className="text-white font-semibold text-lg mb-2">Analyzing Repository</h3>
             <p className="text-indigo-400 text-sm font-mono animate-pulse mb-1">{loadingPhase}</p>
             <p className="text-zinc-500 text-xs">
-              This includes shallow cloning, indexing structures, and filtering out binary/metadata noise.
+              Calculating imports dependency linkages and processing git commit history for hotspot detection.
             </p>
           </div>
         )}
@@ -171,7 +191,7 @@ export default function Home() {
             <div className="text-center mb-12">
               <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-indigo-500/5 border border-indigo-500/10 text-xs text-indigo-400 font-medium mb-6 backdrop-blur-sm">
                 <span className="flex h-2 w-2 rounded-full bg-indigo-400 animate-pulse" />
-                Phase 1: Ingestion & File Tree Active
+                Phase 2: Dependency Mapping & Hotspots Active
               </div>
               
               <h1 className="text-4xl sm:text-5xl font-extrabold tracking-tight text-white mb-6 leading-tight">
@@ -182,7 +202,7 @@ export default function Home() {
               </h1>
               
               <p className="text-base text-zinc-400 mb-8 max-w-xl mx-auto leading-relaxed">
-                Provide any public GitHub repository. We will clone, sanitize, and index the entire folder tree representation.
+                Provide any public GitHub repository. We will parse imports to map inter-file links and evaluate edit frequency to map git hotspot churns.
               </p>
 
               {/* Error Alert Box */}
@@ -233,10 +253,10 @@ export default function Home() {
                 <span>•</span>
                 <button 
                   type="button"
-                  onClick={() => setRepoUrl('https://github.com/fastapi/fastapi')}
+                  onClick={() => setRepoUrl('https://github.com/user-Rishabh/DevLens-AI')}
                   className="text-zinc-400 hover:text-indigo-400 transition-colors duration-150 underline decoration-zinc-700 hover:decoration-indigo-500 underline-offset-4"
                 >
-                  fastapi/fastapi
+                  user-Rishabh/DevLens-AI
                 </button>
               </div>
             </div>
@@ -245,20 +265,20 @@ export default function Home() {
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mt-16">
               <div className="glass-panel p-5 rounded-xl border border-indigo-500/10">
                 <div className="p-2.5 bg-indigo-500/5 border border-indigo-500/25 rounded-lg w-fit mb-4">
-                  <FolderTree className="w-4 h-4 text-indigo-400" />
+                  <Flame className="w-4 h-4 text-indigo-400" />
                 </div>
-                <h3 className="text-zinc-200 font-semibold text-sm mb-2">Recursive File Explorer</h3>
+                <h3 className="text-zinc-200 font-semibold text-sm mb-2">Git Hotspot Leaderboard</h3>
                 <p className="text-zinc-400 text-xs leading-relaxed">
-                  Interactive collapsible file structure. Auto-filters node_modules, binary builds, image assets, and large files.
+                  Identifies codebase hotspots by computing edit frequency across the Git commit history of the repository.
                 </p>
               </div>
-              <div className="glass-panel p-5 rounded-xl border border-zinc-900 opacity-60">
-                <div className="p-2.5 bg-zinc-900 border border-zinc-800 rounded-lg w-fit mb-4">
-                  <Network className="w-4 h-4 text-zinc-500" />
+              <div className="glass-panel p-5 rounded-xl border border-indigo-500/10">
+                <div className="p-2.5 bg-indigo-500/5 border border-indigo-500/25 rounded-lg w-fit mb-4">
+                  <Network className="w-4 h-4 text-indigo-400" />
                 </div>
-                <h3 className="text-zinc-400 font-semibold text-sm mb-2">Architectural Mapping</h3>
-                <p className="text-zinc-500 text-xs leading-relaxed">
-                  Dependency graph calculations and imports parsing are coming soon in next phases.
+                <h3 className="text-zinc-200 font-semibold text-sm mb-2">Import Linkage Tracker</h3>
+                <p className="text-zinc-400 text-xs leading-relaxed">
+                  Analyzes internal JS/TS and Python module import references. Logs the dependency graph directly to the dev console.
                 </p>
               </div>
             </div>
@@ -269,17 +289,47 @@ export default function Home() {
         {!isLoading && isAnalyzed && fileTree && (
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 my-4">
             
-            {/* Sidebar Folder Explorer (Col-4) */}
+            {/* Sidebar Folder Explorer / Hotspots Tab (Col-4) */}
             <div className="lg:col-span-4 flex flex-col gap-4">
               <div className="glass-panel p-5 rounded-2xl flex flex-col h-full min-h-[50vh] max-h-[75vh]">
-                <div className="flex items-center gap-2 mb-4 pb-3 border-b border-zinc-900">
-                  <FolderTree className="w-4.5 h-4.5 text-indigo-400" />
-                  <h3 className="text-white font-semibold text-sm">Workspace Files</h3>
+                
+                {/* Tab selector */}
+                <div className="flex gap-4 mb-4 pb-2 border-b border-zinc-900 select-none">
+                  <button 
+                    onClick={() => setSidebarTab('files')}
+                    className={`pb-1.5 text-xs font-bold border-b-2 transition-all cursor-pointer ${
+                      sidebarTab === 'files' 
+                        ? 'border-indigo-500 text-indigo-400' 
+                        : 'border-transparent text-zinc-500 hover:text-zinc-300'
+                    }`}
+                  >
+                    <span className="flex items-center gap-1.5">
+                      <FolderTree className="w-3.5 h-3.5" />
+                      Workspace Files
+                    </span>
+                  </button>
+                  <button 
+                    onClick={() => setSidebarTab('hotspots')}
+                    className={`pb-1.5 text-xs font-bold border-b-2 transition-all cursor-pointer ${
+                      sidebarTab === 'hotspots' 
+                        ? 'border-indigo-500 text-indigo-400' 
+                        : 'border-transparent text-zinc-500 hover:text-zinc-300'
+                    }`}
+                  >
+                    <span className="flex items-center gap-1.5">
+                      <Flame className="w-3.5 h-3.5" />
+                      Git Hotspots
+                    </span>
+                  </button>
                 </div>
                 
-                {/* Scrollable tree list */}
+                {/* Scrollable list content */}
                 <div className="flex-1 overflow-hidden">
-                  <FileTree tree={fileTree} />
+                  {sidebarTab === 'files' ? (
+                    <FileTree tree={fileTree} />
+                  ) : (
+                    <HotspotList hotspots={hotspots} />
+                  )}
                 </div>
 
                 {/* File Count Footer */}
@@ -302,15 +352,18 @@ export default function Home() {
                   <Github className="w-32 h-32" />
                 </div>
                 
-                <span className="text-xs text-indigo-400 font-mono font-medium uppercase tracking-wider">Repository Ingested</span>
+                <span className="text-xs text-indigo-400 font-mono font-medium uppercase tracking-wider">Repository Ingested & Analyzed</span>
                 <h2 className="text-2xl font-bold text-white mt-1 mb-2">{repoName}</h2>
                 <p className="text-xs text-zinc-400 leading-relaxed max-w-xl">
-                  Sanitization complete. Binary files and directories (like `node_modules` and `.git`) were successfully skipped. Choose files on the left tree to begin exploring.
+                  Sanitization, dependency parsing, and git-history calculations complete. We mapped {dependencies.length} internal reference links and evaluated {hotspots.length} hotspots.
                 </p>
                 
                 <div className="flex gap-4 mt-4">
                   <div className="px-3 py-1 bg-zinc-900 border border-zinc-800 rounded-lg text-zinc-400 text-xs font-mono">
-                    Local Path: <span className="text-zinc-500">Temp Cache Cleared</span>
+                    Dependency Edges: <span className="text-indigo-400 font-bold">{dependencies.length}</span>
+                  </div>
+                  <div className="px-3 py-1 bg-zinc-900 border border-zinc-800 rounded-lg text-zinc-400 text-xs font-mono">
+                    Open Console (F12) to inspect graph
                   </div>
                 </div>
               </div>
@@ -318,35 +371,21 @@ export default function Home() {
               {/* Locked/Coming Soon Feature Cards */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 
-                {/* Locked Card 1 */}
+                {/* Visual Graph Panel (Locked status is now "Scaffolded / Logging Data") */}
                 <div className="glass-panel p-5 rounded-xl border border-zinc-900/50 relative overflow-hidden group">
-                  <div className="absolute top-3 right-3 px-2 py-0.5 bg-indigo-500/10 border border-indigo-500/20 text-[9px] text-indigo-400 font-mono rounded">
-                    LOCKED
+                  <div className="absolute top-3 right-3 px-2 py-0.5 bg-emerald-500/10 border border-emerald-500/20 text-[9px] text-emerald-400 font-mono rounded">
+                    DATA LOGGED
                   </div>
                   <div className="p-2.5 bg-zinc-900/60 border border-zinc-800 rounded-lg w-fit mb-4">
-                    <Network className="w-4 h-4 text-zinc-500" />
+                    <Network className="w-4 h-4 text-indigo-400" />
                   </div>
-                  <h4 className="text-zinc-400 font-semibold text-xs mb-1">Dependency Linker</h4>
-                  <p className="text-zinc-500 text-[11px] leading-normal">
-                    Calculates topological import linkages across code files. Visual Graph view coming next.
+                  <h4 className="text-zinc-200 font-semibold text-xs mb-1">Dependency Visualizer</h4>
+                  <p className="text-zinc-400 text-[11px] leading-normal">
+                    Import mappings are extracted! The interactive 2D node link visualizer layout will be rendered here in Phase 3.
                   </p>
                 </div>
 
                 {/* Locked Card 2 */}
-                <div className="glass-panel p-5 rounded-xl border border-zinc-900/50 relative overflow-hidden group">
-                  <div className="absolute top-3 right-3 px-2 py-0.5 bg-indigo-500/10 border border-indigo-500/20 text-[9px] text-indigo-400 font-mono rounded">
-                    LOCKED
-                  </div>
-                  <div className="p-2.5 bg-zinc-900/60 border border-zinc-800 rounded-lg w-fit mb-4">
-                    <Flame className="w-4 h-4 text-zinc-500" />
-                  </div>
-                  <h4 className="text-zinc-400 font-semibold text-xs mb-1">Git Churn Heatmap</h4>
-                  <p className="text-zinc-500 text-[11px] leading-normal">
-                    Processes commits history to identify complex and frequently modified "hotspot" files.
-                  </p>
-                </div>
-
-                {/* Locked Card 3 */}
                 <div className="glass-panel p-5 rounded-xl border border-zinc-900/50 relative overflow-hidden group">
                   <div className="absolute top-3 right-3 px-2 py-0.5 bg-indigo-500/10 border border-indigo-500/20 text-[9px] text-indigo-400 font-mono rounded">
                     LOCKED
@@ -360,7 +399,7 @@ export default function Home() {
                   </p>
                 </div>
 
-                {/* Locked Card 4 */}
+                {/* Locked Card 3 */}
                 <div className="glass-panel p-5 rounded-xl border border-zinc-900/50 relative overflow-hidden group">
                   <div className="absolute top-3 right-3 px-2 py-0.5 bg-indigo-500/10 border border-indigo-500/20 text-[9px] text-indigo-400 font-mono rounded">
                     LOCKED
@@ -379,12 +418,12 @@ export default function Home() {
               {/* Console Status Logger */}
               <div className="glass-panel p-4 rounded-xl border border-zinc-900 flex items-center gap-3">
                 <Terminal className="w-4 h-4 text-zinc-500" />
-                <div className="flex-1 text-[11px] font-mono text-zinc-400">
-                  <span className="text-indigo-400">devlens@system:~$</span> git clone --depth 1 {repoName} && rm -rf temp_clone
+                <div className="flex-1 text-[11px] font-mono text-zinc-400 truncate">
+                  <span className="text-indigo-400">devlens@system:~$</span> parsed {dependencies.length} import connections & tracked {hotspots.length} files
                 </div>
-                <div className="text-[10px] text-emerald-400 font-mono flex items-center gap-1">
-                  <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" />
-                  CLEANED UP
+                <div className="text-[10px] text-emerald-400 font-mono flex items-center gap-1 shrink-0">
+                  <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                  LOGGED TO CONSOLE
                 </div>
               </div>
 
@@ -395,7 +434,7 @@ export default function Home() {
 
         {/* Footer */}
         <footer className="mt-16 border-t border-zinc-900 pt-6 flex flex-col sm:flex-row items-center justify-between text-[11px] text-zinc-600 gap-4">
-          <p>© 2026 DevLens AI. Ingestion Engine online.</p>
+          <p>© 2026 DevLens AI. Analysis Engine online.</p>
           <div className="flex gap-6 items-center">
             <span className="flex items-center gap-1.5">
               <Database className="w-3.5 h-3.5 text-zinc-500" />

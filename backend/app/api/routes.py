@@ -5,6 +5,8 @@ from pydantic import BaseModel
 from app.ingestion.clone import clone_repo, validate_github_url
 from app.ingestion.filter import build_file_tree
 from app.ingestion.cleanup import cleanup_repo
+from app.analysis.dependency_graph import extract_dependencies
+from app.analysis.git_hotspots import get_hotspots
 
 router = APIRouter()
 
@@ -14,16 +16,19 @@ class IngestRequest(BaseModel):
 class IngestResponse(BaseModel):
     repo_name: str
     file_tree: dict
+    dependencies: list[dict]
+    hotspots: list[dict]
 
 @router.post("/repos/ingest", response_model=IngestResponse)
 def ingest_repository(request: IngestRequest):
     """
     Ingests a public GitHub repository:
     1. Validates the URL
-    2. Shallow clones to a temp folder (with timeout)
+    2. Clones to a temp folder (with timeout and history depth)
     3. Builds a filtered directory tree structure
-    4. Cleans up the temp folder (guaranteed in finally block)
-    5. Returns the repository name and nested file tree
+    4. Extracts file dependencies and Git hotspots
+    5. Cleans up the temp folder (guaranteed in finally block)
+    6. Returns the repository name, file tree, dependency edges, and hotspots list
     """
     github_url_str = request.github_url.strip()
     
@@ -48,9 +53,15 @@ def ingest_repository(request: IngestRequest):
                 detail="Failed to parse repository structure. The repository might be empty or restricted."
             )
             
+        # 4. Perform code analysis (dependencies & git commit churn hotspots)
+        dependencies = extract_dependencies(local_path, file_tree)
+        hotspots = get_hotspots(local_path)
+            
         return IngestResponse(
             repo_name=repo_name,
-            file_tree=file_tree
+            file_tree=file_tree,
+            dependencies=dependencies,
+            hotspots=hotspots
         )
         
     finally:
