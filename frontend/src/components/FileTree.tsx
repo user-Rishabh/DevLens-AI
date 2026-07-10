@@ -19,6 +19,8 @@ export interface FileTreeNodeType {
 
 interface FileTreeProps {
   tree: FileTreeNodeType;
+  onSelectFile?: (path: string) => void;
+  selectedFilePath?: string;
 }
 
 // Helper to determine the appropriate icon for a file extension
@@ -51,46 +53,60 @@ function getFileIcon(fileName: string) {
   }
 }
 
-function TreeNode({ node, depth = 0 }: { node: FileTreeNodeType; depth: number }) {
+interface TreeNodeProps {
+  node: FileTreeNodeType;
+  depth: number;
+  onSelectFile?: (path: string) => void;
+  selectedFilePath?: string;
+}
+
+function TreeNode({ node, depth = 0, onSelectFile, selectedFilePath }: TreeNodeProps) {
   const [isExpanded, setIsExpanded] = useState(depth === 0); // Expand root by default
   const isFolder = node.type === 'folder';
+  const isSelected = !isFolder && selectedFilePath === node.path;
 
-  const toggleExpand = (e: React.MouseEvent) => {
+  const handleClick = (e: React.MouseEvent) => {
     e.stopPropagation();
     if (isFolder) {
       setIsExpanded(!isExpanded);
+    } else {
+      if (onSelectFile) {
+        onSelectFile(node.path);
+      }
     }
   };
 
   return (
-    <div className="select-none font-mono text-sm">
+    <div className="select-none font-mono text-xs">
       {/* Node Header Row */}
       <div 
-        onClick={toggleExpand}
-        className={`flex items-center gap-2 py-1.5 px-2 rounded-lg cursor-pointer transition-colors duration-150 text-zinc-300 hover:text-zinc-100 hover:bg-zinc-900/50 ${
-          isFolder ? 'font-medium' : 'font-normal'
+        onClick={handleClick}
+        className={`flex items-center gap-2 py-1.5 px-2 rounded-lg cursor-pointer transition-all duration-150 ${
+          isSelected 
+            ? 'bg-indigo-600/10 border-l-2 border-indigo-500 text-indigo-300 font-semibold' 
+            : 'text-zinc-400 hover:text-zinc-200 hover:bg-zinc-900/40 border-l-2 border-transparent'
         }`}
-        style={{ paddingLeft: `${depth * 16 + 8}px` }}
+        style={{ paddingLeft: `${depth * 14 + 6}px` }}
       >
         {/* Toggle Arrow for folders */}
         {isFolder ? (
-          <span className="text-zinc-500 shrink-0">
+          <span className="text-zinc-600 shrink-0">
             {isExpanded ? (
-              <ChevronDown className="w-3.5 h-3.5" />
+              <ChevronDown className="w-3 h-3" />
             ) : (
-              <ChevronRight className="w-3.5 h-3.5" />
+              <ChevronRight className="w-3 h-3" />
             )}
           </span>
         ) : (
-          <span className="w-3.5 h-3.5" /> // Spacer for alignment
+          <span className="w-3" /> // Spacer for alignment
         )}
 
         {/* Node Icon */}
         {isFolder ? (
           isExpanded ? (
-            <FolderOpen className="w-4 h-4 text-indigo-400 shrink-0" />
+            <FolderOpen className="w-3.5 h-3.5 text-indigo-500/80 shrink-0" />
           ) : (
-            <Folder className="w-4 h-4 text-indigo-400 shrink-0" />
+            <Folder className="w-3.5 h-3.5 text-indigo-500/80 shrink-0" />
           )
         ) : (
           getFileIcon(node.name)
@@ -104,7 +120,13 @@ function TreeNode({ node, depth = 0 }: { node: FileTreeNodeType; depth: number }
       {isFolder && isExpanded && node.children && (
         <div className="mt-0.5">
           {node.children.map((child, idx) => (
-            <TreeNode key={`${child.path}-${idx}`} node={child} depth={depth + 1} />
+            <TreeNode 
+              key={`${child.path}-${idx}`} 
+              node={child} 
+              depth={depth + 1} 
+              onSelectFile={onSelectFile}
+              selectedFilePath={selectedFilePath}
+            />
           ))}
         </div>
       )}
@@ -112,7 +134,7 @@ function TreeNode({ node, depth = 0 }: { node: FileTreeNodeType; depth: number }
   );
 }
 
-export default function FileTree({ tree }: FileTreeProps) {
+export default function FileTree({ tree, onSelectFile, selectedFilePath }: FileTreeProps) {
   if (!tree || !tree.name) {
     return (
       <div className="text-zinc-500 text-xs italic p-4">
@@ -122,8 +144,13 @@ export default function FileTree({ tree }: FileTreeProps) {
   }
 
   return (
-    <div className="w-full h-full max-h-[70vh] overflow-y-auto pr-2 scrollbar-thin scrollbar-thumb-zinc-800 scrollbar-track-transparent">
-      <TreeNode node={tree} depth={0} />
+    <div className="w-full h-full max-h-[68vh] overflow-y-auto pr-1.5 scrollbar-thin scrollbar-thumb-zinc-800 scrollbar-track-transparent">
+      <TreeNode 
+        node={tree} 
+        depth={0} 
+        onSelectFile={onSelectFile}
+        selectedFilePath={selectedFilePath}
+      />
     </div>
   );
 }
