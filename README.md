@@ -68,10 +68,13 @@ The backend runs a FastAPI server at `http://localhost:8000`.
     ```
 
 4.  **Set up environment variables**:
-    Copy the sample environment file and configure variables as needed:
+    Copy the sample environment file:
     ```bash
     cp .env.example .env
     ```
+    Open `.env` and populate:
+    *   `SUPABASE_URL` and `SUPABASE_KEY` (from your Supabase project)
+    *   `GEMINI_API_KEY` (obtain a free key from [Google AI Studio](https://aistudio.google.com))
 
 5.  **Run the backend**:
     ```bash

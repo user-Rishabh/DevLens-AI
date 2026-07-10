@@ -18,6 +18,7 @@ import {
 } from 'lucide-react';
 import FileTree, { FileTreeNodeType } from '../components/FileTree';
 import HotspotList, { HotspotType } from '../components/HotspotList';
+import FileExplainer from '../components/FileExplainer';
 
 export default function Home() {
   const [repoUrl, setRepoUrl] = useState('');
@@ -28,12 +29,14 @@ export default function Home() {
   // Dashboard states
   const [isAnalyzed, setIsAnalyzed] = useState(false);
   const [repoName, setRepoName] = useState('');
+  const [repoId, setRepoId] = useState('');
   const [fileTree, setFileTree] = useState<FileTreeNodeType | null>(null);
   const [dependencies, setDependencies] = useState<any[]>([]);
   const [hotspots, setHotspots] = useState<HotspotType[]>([]);
   
-  // Sidebar tab switcher
+  // Sidebar tab switcher & Active file selection
   const [sidebarTab, setSidebarTab] = useState<'files' | 'hotspots'>('files');
+  const [selectedFilePath, setSelectedFilePath] = useState<string>('');
 
   // Helper to count files and folders in the tree
   const countTreeNodes = (node: FileTreeNodeType | null): { files: number; folders: number } => {
@@ -63,6 +66,7 @@ export default function Home() {
     
     setIsLoading(true);
     setError(null);
+    setSelectedFilePath('');
     setLoadingPhase('Validating GitHub URL...');
     
     const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:8000';
@@ -88,6 +92,7 @@ export default function Home() {
       }
       
       // Update states on success
+      setRepoId(data.repo_id);
       setRepoName(data.repo_name);
       setFileTree(data.file_tree);
       setDependencies(data.dependencies);
@@ -99,6 +104,7 @@ export default function Home() {
       
       // Explicitly log the received dependency graph to the developer console
       console.log('=========== DevLens AI Ingestion Report ===========');
+      console.log('Repo ID:', data.repo_id);
       console.log('Project Name:', data.repo_name);
       console.log('Dependency Edges (Internal Imports):', data.dependencies);
       console.log('Git Hotspots (Commit Frequency):', data.hotspots);
@@ -114,11 +120,13 @@ export default function Home() {
 
   const handleReset = () => {
     setIsAnalyzed(false);
+    setRepoId('');
     setRepoName('');
     setFileTree(null);
     setDependencies([]);
     setHotspots([]);
     setRepoUrl('');
+    setSelectedFilePath('');
     setError(null);
   };
 
@@ -191,7 +199,7 @@ export default function Home() {
             <div className="text-center mb-12">
               <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-indigo-500/5 border border-indigo-500/10 text-xs text-indigo-400 font-medium mb-6 backdrop-blur-sm">
                 <span className="flex h-2 w-2 rounded-full bg-indigo-400 animate-pulse" />
-                Phase 2: Dependency Mapping & Hotspots Active
+                Phase 1 Complete: AI File Explainer Active
               </div>
               
               <h1 className="text-4xl sm:text-5xl font-extrabold tracking-tight text-white mb-6 leading-tight">
@@ -202,7 +210,7 @@ export default function Home() {
               </h1>
               
               <p className="text-base text-zinc-400 mb-8 max-w-xl mx-auto leading-relaxed">
-                Provide any public GitHub repository. We will parse imports to map inter-file links and evaluate edit frequency to map git hotspot churns.
+                Provide any public GitHub repository. We will clone, parse imports, compute hotspots, and generate structured plain-English file explanations.
               </p>
 
               {/* Error Alert Box */}
@@ -262,23 +270,32 @@ export default function Home() {
             </div>
 
             {/* Feature Highlights Grid */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mt-16">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mt-16">
+              <div className="glass-panel p-5 rounded-xl border border-indigo-500/10">
+                <div className="p-2.5 bg-indigo-500/5 border border-indigo-500/25 rounded-lg w-fit mb-4">
+                  <BookOpen className="w-4 h-4 text-indigo-400" />
+                </div>
+                <h3 className="text-zinc-200 font-semibold text-xs mb-2">AI File Explainer</h3>
+                <p className="text-zinc-400 text-[11px] leading-relaxed">
+                  Click on any file to immediately review plain-English AI summaries describing its purpose, key classes/exports, and side effects.
+                </p>
+              </div>
               <div className="glass-panel p-5 rounded-xl border border-indigo-500/10">
                 <div className="p-2.5 bg-indigo-500/5 border border-indigo-500/25 rounded-lg w-fit mb-4">
                   <Flame className="w-4 h-4 text-indigo-400" />
                 </div>
-                <h3 className="text-zinc-200 font-semibold text-sm mb-2">Git Hotspot Leaderboard</h3>
-                <p className="text-zinc-400 text-xs leading-relaxed">
-                  Identifies codebase hotspots by computing edit frequency across the Git commit history of the repository.
+                <h3 className="text-zinc-200 font-semibold text-xs mb-2">Git Hotspots</h3>
+                <p className="text-zinc-400 text-[11px] leading-relaxed">
+                  Identifies key codebase files by calculating commit edit frequency logs across history.
                 </p>
               </div>
               <div className="glass-panel p-5 rounded-xl border border-indigo-500/10">
                 <div className="p-2.5 bg-indigo-500/5 border border-indigo-500/25 rounded-lg w-fit mb-4">
                   <Network className="w-4 h-4 text-indigo-400" />
                 </div>
-                <h3 className="text-zinc-200 font-semibold text-sm mb-2">Import Linkage Tracker</h3>
-                <p className="text-zinc-400 text-xs leading-relaxed">
-                  Analyzes internal JS/TS and Python module import references. Logs the dependency graph directly to the dev console.
+                <h3 className="text-zinc-200 font-semibold text-xs mb-2">Imports Mapping</h3>
+                <p className="text-zinc-400 text-[11px] leading-relaxed">
+                  Tracks internal references between JS, TS, and Python modules. Outputs the edges graph list to the console.
                 </p>
               </div>
             </div>
@@ -326,7 +343,11 @@ export default function Home() {
                 {/* Scrollable list content */}
                 <div className="flex-1 overflow-hidden">
                   {sidebarTab === 'files' ? (
-                    <FileTree tree={fileTree} />
+                    <FileTree 
+                      tree={fileTree} 
+                      onSelectFile={setSelectedFilePath}
+                      selectedFilePath={selectedFilePath}
+                    />
                   ) : (
                     <HotspotList hotspots={hotspots} />
                   )}
@@ -355,7 +376,7 @@ export default function Home() {
                 <span className="text-xs text-indigo-400 font-mono font-medium uppercase tracking-wider">Repository Ingested & Analyzed</span>
                 <h2 className="text-2xl font-bold text-white mt-1 mb-2">{repoName}</h2>
                 <p className="text-xs text-zinc-400 leading-relaxed max-w-xl">
-                  Sanitization, dependency parsing, and git-history calculations complete. We mapped {dependencies.length} internal reference links and evaluated {hotspots.length} hotspots.
+                  Sanitization, dependency parsing, and git-history calculations complete. We mapped {dependencies.length} internal reference links and evaluated {hotspots.length} hotspots. Click files in the explorer to read their AI summaries.
                 </p>
                 
                 <div className="flex gap-4 mt-4">
@@ -368,52 +389,60 @@ export default function Home() {
                 </div>
               </div>
 
-              {/* Locked/Coming Soon Feature Cards */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                
-                {/* Visual Graph Panel (Locked status is now "Scaffolded / Logging Data") */}
-                <div className="glass-panel p-5 rounded-xl border border-zinc-900/50 relative overflow-hidden group">
-                  <div className="absolute top-3 right-3 px-2 py-0.5 bg-emerald-500/10 border border-emerald-500/20 text-[9px] text-emerald-400 font-mono rounded">
-                    DATA LOGGED
+              {/* Toggle Content area: FileExplainer vs Overview features */}
+              {selectedFilePath ? (
+                <FileExplainer 
+                  repoId={repoId}
+                  filePath={selectedFilePath}
+                  onClose={() => setSelectedFilePath('')}
+                />
+              ) : (
+                <div className="flex flex-col gap-6">
+                  {/* Dashboard Help message */}
+                  <div className="p-5 rounded-xl border border-dashed border-zinc-800 flex items-center justify-center text-center py-12">
+                    <div className="max-w-md">
+                      <FolderTree className="w-8 h-8 text-zinc-600 mx-auto mb-3" />
+                      <h4 className="text-zinc-300 font-semibold text-sm">Select a file to inspect</h4>
+                      <p className="text-zinc-500 text-xs mt-1.5 leading-relaxed">
+                        Navigate through the **Workspace Files** directory structure on the left and select any source code file to view its plain-English AI description report.
+                      </p>
+                    </div>
                   </div>
-                  <div className="p-2.5 bg-zinc-900/60 border border-zinc-800 rounded-lg w-fit mb-4">
-                    <Network className="w-4 h-4 text-indigo-400" />
-                  </div>
-                  <h4 className="text-zinc-200 font-semibold text-xs mb-1">Dependency Visualizer</h4>
-                  <p className="text-zinc-400 text-[11px] leading-normal">
-                    Import mappings are extracted! The interactive 2D node link visualizer layout will be rendered here in Phase 3.
-                  </p>
-                </div>
 
-                {/* Locked Card 2 */}
-                <div className="glass-panel p-5 rounded-xl border border-zinc-900/50 relative overflow-hidden group">
-                  <div className="absolute top-3 right-3 px-2 py-0.5 bg-indigo-500/10 border border-indigo-500/20 text-[9px] text-indigo-400 font-mono rounded">
-                    LOCKED
-                  </div>
-                  <div className="p-2.5 bg-zinc-900/60 border border-zinc-800 rounded-lg w-fit mb-4">
-                    <BookOpen className="w-4 h-4 text-zinc-500" />
-                  </div>
-                  <h4 className="text-zinc-400 font-semibold text-xs mb-1">AI File Summaries</h4>
-                  <p className="text-zinc-500 text-[11px] leading-normal">
-                    Queries LLM to provide plain English explanations of each file and module role.
-                  </p>
-                </div>
+                  {/* Locked/Coming Soon Feature Cards */}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    
+                    {/* Visual Graph Panel (Locked status is now "Scaffolded / Logging Data") */}
+                    <div className="glass-panel p-5 rounded-xl border border-zinc-900/50 relative overflow-hidden group">
+                      <div className="absolute top-3 right-3 px-2 py-0.5 bg-emerald-500/10 border border-emerald-500/20 text-[9px] text-emerald-400 font-mono rounded">
+                        DATA LOGGED
+                      </div>
+                      <div className="p-2.5 bg-zinc-900/60 border border-zinc-800 rounded-lg w-fit mb-4">
+                        <Network className="w-4 h-4 text-indigo-400" />
+                      </div>
+                      <h4 className="text-zinc-200 font-semibold text-xs mb-1">Dependency Visualizer</h4>
+                      <p className="text-zinc-400 text-[11px] leading-normal">
+                        Import mappings are extracted! The interactive 2D node link visualizer layout will be rendered here in Phase 3.
+                      </p>
+                    </div>
 
-                {/* Locked Card 3 */}
-                <div className="glass-panel p-5 rounded-xl border border-zinc-900/50 relative overflow-hidden group">
-                  <div className="absolute top-3 right-3 px-2 py-0.5 bg-indigo-500/10 border border-indigo-500/20 text-[9px] text-indigo-400 font-mono rounded">
-                    LOCKED
-                  </div>
-                  <div className="p-2.5 bg-zinc-900/60 border border-zinc-800 rounded-lg w-fit mb-4">
-                    <Search className="w-4 h-4 text-zinc-500" />
-                  </div>
-                  <h4 className="text-zinc-400 font-semibold text-xs mb-1">Semantic Search</h4>
-                  <p className="text-zinc-500 text-[11px] leading-normal">
-                    Natural language codebase search using code-to-text vector embeddings.
-                  </p>
-                </div>
+                    {/* Locked Card 2 */}
+                    <div className="glass-panel p-5 rounded-xl border border-zinc-900/50 relative overflow-hidden group">
+                      <div className="absolute top-3 right-3 px-2 py-0.5 bg-indigo-500/10 border border-indigo-500/20 text-[9px] text-indigo-400 font-mono rounded">
+                        LOCKED
+                      </div>
+                      <div className="p-2.5 bg-zinc-900/60 border border-zinc-800 rounded-lg w-fit mb-4">
+                        <Search className="w-4 h-4 text-zinc-500" />
+                      </div>
+                      <h4 className="text-zinc-400 font-semibold text-xs mb-1">Semantic Search</h4>
+                      <p className="text-zinc-500 text-[11px] leading-normal">
+                        Natural language codebase search using code-to-text vector embeddings.
+                      </p>
+                    </div>
 
-              </div>
+                  </div>
+                </div>
+              )}
 
               {/* Console Status Logger */}
               <div className="glass-panel p-4 rounded-xl border border-zinc-900 flex items-center gap-3">
