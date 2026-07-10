@@ -35,8 +35,8 @@ def clone_repo(github_url: str) -> str:
     # Create a unique temporary directory
     temp_dir = tempfile.mkdtemp(prefix=f"devlens_{owner}_{repo_name}_")
 
-    # Construct the git command for shallow clone
-    cmd = ["git", "clone", "--depth", "1", github_url.strip(), temp_dir]
+    # Construct the git command for clone with history depth
+    cmd = ["git", "clone", "--depth", "100", github_url.strip(), temp_dir]
 
     try:
         # Run clone with a 30-second timeout
