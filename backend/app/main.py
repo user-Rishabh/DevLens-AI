@@ -1,7 +1,14 @@
 import os
+import sys
+
+# Add the parent directory of 'app' (i.e. 'backend') to sys.path to resolve package imports
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from dotenv import load_dotenv
+
+from app.api.routes import router as api_router
 
 # Load environment variables from .env if present
 load_dotenv()
@@ -11,6 +18,9 @@ app = FastAPI(
     description="Backend service for DevLens AI: codebase ingestion, dependency mapping, and analysis.",
     version="0.1.0"
 )
+
+# Register API Router
+app.include_router(api_router, prefix="/api")
 
 # CORS configuration
 origins = [
