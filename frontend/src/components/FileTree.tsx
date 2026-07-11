@@ -21,35 +21,37 @@ interface FileTreeProps {
   tree: FileTreeNodeType;
   onSelectFile?: (path: string) => void;
   selectedFilePath?: string;
+  disabled?: boolean;
 }
 
 // Helper to determine the appropriate icon for a file extension
-function getFileIcon(fileName: string) {
+function getFileIcon(fileName: string, isDisabled: boolean) {
   const ext = fileName.split('.').pop()?.toLowerCase();
+  const colorClass = isDisabled ? 'text-zinc-600 shrink-0' : 'shrink-0';
   
   switch (ext) {
     case 'py':
-      return <FileCode className="w-4 h-4 text-emerald-400 shrink-0" />;
+      return <FileCode className={`w-4 h-4 ${isDisabled ? colorClass : 'text-emerald-400 shrink-0'}`} />;
     case 'js':
     case 'jsx':
     case 'ts':
     case 'tsx':
-      return <FileCode className="w-4 h-4 text-indigo-400 shrink-0" />;
+      return <FileCode className={`w-4 h-4 ${isDisabled ? colorClass : 'text-indigo-400 shrink-0'}`} />;
     case 'json':
     case 'yaml':
     case 'yml':
     case 'toml':
-      return <FileJson className="w-4 h-4 text-amber-400 shrink-0" />;
+      return <FileJson className={`w-4 h-4 ${isDisabled ? colorClass : 'text-amber-400 shrink-0'}`} />;
     case 'md':
     case 'txt':
-      return <FileText className="w-4 h-4 text-sky-400 shrink-0" />;
+      return <FileText className={`w-4 h-4 ${isDisabled ? colorClass : 'text-sky-400 shrink-0'}`} />;
     case 'css':
     case 'scss':
-      return <FileCode className="w-4 h-4 text-pink-400 shrink-0" />;
+      return <FileCode className={`w-4 h-4 ${isDisabled ? colorClass : 'text-pink-400 shrink-0'}`} />;
     case 'html':
-      return <FileCode className="w-4 h-4 text-orange-400 shrink-0" />;
+      return <FileCode className={`w-4 h-4 ${isDisabled ? colorClass : 'text-orange-400 shrink-0'}`} />;
     default:
-      return <File className="w-4 h-4 text-zinc-400 shrink-0" />;
+      return <File className={`w-4 h-4 ${isDisabled ? colorClass : 'text-zinc-400 shrink-0'}`} />;
   }
 }
 
@@ -58,18 +60,25 @@ interface TreeNodeProps {
   depth: number;
   onSelectFile?: (path: string) => void;
   selectedFilePath?: string;
+  disabled?: boolean;
 }
 
-function TreeNode({ node, depth = 0, onSelectFile, selectedFilePath }: TreeNodeProps) {
+function TreeNode({ node, depth = 0, onSelectFile, selectedFilePath, disabled }: TreeNodeProps) {
   const [isExpanded, setIsExpanded] = useState(depth === 0); // Expand root by default
   const isFolder = node.type === 'folder';
   const isSelected = !isFolder && selectedFilePath === node.path;
+  
+  // Disable files from click events, but allow expanding/collapsing folder trees
+  const isItemDisabled = !isFolder && disabled;
 
   const handleClick = (e: React.MouseEvent) => {
     e.stopPropagation();
     if (isFolder) {
       setIsExpanded(!isExpanded);
     } else {
+      if (isItemDisabled) {
+        return; // Ignore clicks while loading
+      }
       if (onSelectFile) {
         onSelectFile(node.path);
       }
@@ -84,7 +93,9 @@ function TreeNode({ node, depth = 0, onSelectFile, selectedFilePath }: TreeNodeP
         className={`flex items-center gap-2 py-1.5 px-2 rounded-lg cursor-pointer transition-all duration-150 ${
           isSelected 
             ? 'bg-indigo-600/10 border-l-2 border-indigo-500 text-indigo-300 font-semibold' 
-            : 'text-zinc-400 hover:text-zinc-200 hover:bg-zinc-900/40 border-l-2 border-transparent'
+            : isItemDisabled
+              ? 'text-zinc-600 cursor-not-allowed border-l-2 border-transparent'
+              : 'text-zinc-400 hover:text-zinc-200 hover:bg-zinc-900/40 border-l-2 border-transparent'
         }`}
         style={{ paddingLeft: `${depth * 14 + 6}px` }}
       >
@@ -109,7 +120,7 @@ function TreeNode({ node, depth = 0, onSelectFile, selectedFilePath }: TreeNodeP
             <Folder className="w-3.5 h-3.5 text-indigo-500/80 shrink-0" />
           )
         ) : (
-          getFileIcon(node.name)
+          getFileIcon(node.name, !!isItemDisabled)
         )}
 
         {/* Node Name */}
@@ -126,6 +137,7 @@ function TreeNode({ node, depth = 0, onSelectFile, selectedFilePath }: TreeNodeP
               depth={depth + 1} 
               onSelectFile={onSelectFile}
               selectedFilePath={selectedFilePath}
+              disabled={disabled}
             />
           ))}
         </div>
@@ -134,7 +146,7 @@ function TreeNode({ node, depth = 0, onSelectFile, selectedFilePath }: TreeNodeP
   );
 }
 
-export default function FileTree({ tree, onSelectFile, selectedFilePath }: FileTreeProps) {
+export default function FileTree({ tree, onSelectFile, selectedFilePath, disabled }: FileTreeProps) {
   if (!tree || !tree.name) {
     return (
       <div className="text-zinc-500 text-xs italic p-4">
@@ -150,6 +162,7 @@ export default function FileTree({ tree, onSelectFile, selectedFilePath }: FileT
         depth={0} 
         onSelectFile={onSelectFile}
         selectedFilePath={selectedFilePath}
+        disabled={disabled}
       />
     </div>
   );

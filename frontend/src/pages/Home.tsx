@@ -14,7 +14,8 @@ import {
   AlertTriangle,
   FolderTree,
   Terminal,
-  Files
+  Files,
+  Loader2
 } from 'lucide-react';
 import FileTree, { FileTreeNodeType } from '../components/FileTree';
 import HotspotList, { HotspotType } from '../components/HotspotList';
@@ -37,6 +38,9 @@ export default function Home() {
   // Sidebar tab switcher & Active file selection
   const [sidebarTab, setSidebarTab] = useState<'files' | 'hotspots'>('files');
   const [selectedFilePath, setSelectedFilePath] = useState<string>('');
+  
+  // Guard cooldown indicator state
+  const [isExplainerLoading, setIsExplainerLoading] = useState(false);
 
   // Helper to count files and folders in the tree
   const countTreeNodes = (node: FileTreeNodeType | null): { files: number; folders: number } => {
@@ -67,6 +71,7 @@ export default function Home() {
     setIsLoading(true);
     setError(null);
     setSelectedFilePath('');
+    setIsExplainerLoading(false);
     setLoadingPhase('Validating GitHub URL...');
     
     const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:8000';
@@ -127,6 +132,7 @@ export default function Home() {
     setHotspots([]);
     setRepoUrl('');
     setSelectedFilePath('');
+    setIsExplainerLoading(false);
     setError(null);
   };
 
@@ -159,7 +165,8 @@ export default function Home() {
             {isAnalyzed && (
               <button
                 onClick={handleReset}
-                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-zinc-800 hover:border-zinc-700 bg-zinc-900/30 hover:bg-zinc-900/70 text-zinc-400 hover:text-zinc-200 text-xs transition-all duration-200 cursor-pointer"
+                disabled={isExplainerLoading}
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-zinc-800 hover:border-zinc-700 bg-zinc-900/30 hover:bg-zinc-900/70 text-zinc-400 hover:text-zinc-200 text-xs transition-all duration-200 cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
               >
                 <ArrowLeft className="w-3.5 h-3.5" />
                 Analyze Another
@@ -313,8 +320,9 @@ export default function Home() {
                 {/* Tab selector */}
                 <div className="flex gap-4 mb-4 pb-2 border-b border-zinc-900 select-none">
                   <button 
-                    onClick={() => setSidebarTab('files')}
-                    className={`pb-1.5 text-xs font-bold border-b-2 transition-all cursor-pointer ${
+                    onClick={() => !isExplainerLoading && setSidebarTab('files')}
+                    disabled={isExplainerLoading}
+                    className={`pb-1.5 text-xs font-bold border-b-2 transition-all cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed ${
                       sidebarTab === 'files' 
                         ? 'border-indigo-500 text-indigo-400' 
                         : 'border-transparent text-zinc-500 hover:text-zinc-300'
@@ -326,8 +334,9 @@ export default function Home() {
                     </span>
                   </button>
                   <button 
-                    onClick={() => setSidebarTab('hotspots')}
-                    className={`pb-1.5 text-xs font-bold border-b-2 transition-all cursor-pointer ${
+                    onClick={() => !isExplainerLoading && setSidebarTab('hotspots')}
+                    disabled={isExplainerLoading}
+                    className={`pb-1.5 text-xs font-bold border-b-2 transition-all cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed ${
                       sidebarTab === 'hotspots' 
                         ? 'border-indigo-500 text-indigo-400' 
                         : 'border-transparent text-zinc-500 hover:text-zinc-300'
@@ -341,15 +350,24 @@ export default function Home() {
                 </div>
                 
                 {/* Scrollable list content */}
-                <div className="flex-1 overflow-hidden">
+                <div className="flex-1 overflow-hidden relative">
                   {sidebarTab === 'files' ? (
                     <FileTree 
                       tree={fileTree} 
                       onSelectFile={setSelectedFilePath}
                       selectedFilePath={selectedFilePath}
+                      disabled={isExplainerLoading}
                     />
                   ) : (
                     <HotspotList hotspots={hotspots} />
+                  )}
+                  
+                  {/* Cooldown overlay message inside the sidebar */}
+                  {isExplainerLoading && sidebarTab === 'files' && (
+                    <div className="absolute bottom-2 left-2 right-2 bg-indigo-950/80 border border-indigo-500/35 text-[10px] text-indigo-300 font-mono py-1 px-2.5 rounded-lg flex items-center justify-center gap-1.5 shadow-lg select-none backdrop-blur-sm">
+                      <Loader2 className="w-3 h-3 animate-spin shrink-0" />
+                      Please wait, loading explanation...
+                    </div>
                   )}
                 </div>
 
@@ -394,7 +412,8 @@ export default function Home() {
                 <FileExplainer 
                   repoId={repoId}
                   filePath={selectedFilePath}
-                  onClose={() => setSelectedFilePath('')}
+                  onClose={() => !isExplainerLoading && setSelectedFilePath('')}
+                  onLoadingStateChange={setIsExplainerLoading}
                 />
               ) : (
                 <div className="flex flex-col gap-6">

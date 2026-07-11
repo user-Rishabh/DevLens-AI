@@ -74,7 +74,7 @@ The backend runs a FastAPI server at `http://localhost:8000`.
     ```
     Open `.env` and populate:
     *   `SUPABASE_URL` and `SUPABASE_KEY` (from your Supabase project)
-    *   `GEMINI_API_KEY` (obtain a free key from [Google AI Studio](https://aistudio.google.com))
+    *   `GROQ_API_KEY` (obtain a free key from the [Groq Console](https://console.groq.com))
 
 5.  **Run the backend**:
     ```bash
