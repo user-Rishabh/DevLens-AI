@@ -10,6 +10,8 @@ from app.analysis.dependency_graph import extract_dependencies, get_all_project_
 from app.analysis.git_hotspots import get_hotspots
 from app.db import supabase, save_file_contents
 from app.llm.summarizer import summarize_file
+from app.search.chunker import process_repo_chunks, index_repo
+from app.search.embeddings import embed_chunk
 
 router = APIRouter()
 
@@ -174,3 +176,70 @@ def explain_file(
         model_used=model_name,
         cached=False
     )
+
+@router.get("/repos/{repo_id}/chunks-preview")
+def get_chunks_preview(repo_id: str):
+    """
+    Runs AST code chunking on all ingested files for the given repository and returns a preview.
+    """
+    chunks = process_repo_chunks(repo_id)
+    if not chunks:
+        raise HTTPException(
+            status_code=404,
+            detail=f"No chunks found for repository: {repo_id}. Ensure it has been ingested first."
+        )
+    return chunks
+
+@router.post("/repos/{repo_id}/index")
+def trigger_repository_index(repo_id: str, force_reindex: bool = Query(False, description="Forces re-extraction and re-embedding of codebase chunks")):
+    """
+    Triggers code chunking, vector embedding calculations, and database indexing.
+    NOTE: In production environments with large repos, this should be executed as an asynchronous background task.
+    """
+    try:
+        summary = index_repo(repo_id, force_reindex=force_reindex)
+        return summary
+    except Exception as e:
+        raise HTTPException(
+            status_code=500,
+            detail=f"Repository indexing failed: {str(e)}"
+        )
+
+@router.get("/repos/{repo_id}/similar-chunks")
+def get_similar_chunks(repo_id: str, query: str = Query(..., description="Semantic query text"), limit: int = Query(5, description="Number of results to retrieve")):
+    """
+    Runs semantic similarity query lookup using cosine similarity via pgvector RPC.
+    """
+    if supabase is None:
+        raise HTTPException(
+            status_code=500,
+            detail="Supabase database integration is not configured."
+        )
+        
+    # 1. Compute query vector representation
+    try:
+        query_vector = embed_chunk(query)
+    except Exception as e:
+        raise HTTPException(
+            status_code=500,
+            detail=f"Failed to generate query embedding: {str(e)}"
+        )
+        
+    # 2. Invoke match_code_chunks PostgreSQL similarity function via RPC
+    try:
+        response = supabase.rpc(
+            "match_code_chunks",
+            {
+                "query_embedding": query_vector,
+                "match_threshold": 0.0, # Return all closest matches, capped by limit
+                "match_count": limit,
+                "filter_repo_id": repo_id
+            }
+        ).execute()
+        
+        return response.data if response.data else []
+    except Exception as e:
+        raise HTTPException(
+            status_code=500,
+            detail=f"Semantic similarity vector lookup failed: {str(e)}"
+        )
