@@ -4,6 +4,7 @@ import sys
 # Add the parent directory of 'app' (i.e. 'backend') to sys.path to resolve package imports
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from dotenv import load_dotenv
