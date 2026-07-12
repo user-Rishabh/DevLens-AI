@@ -12,11 +12,16 @@ from app.db import supabase, save_file_contents
 from app.llm.summarizer import summarize_file
 from app.search.chunker import process_repo_chunks, index_repo
 from app.search.embeddings import embed_chunk
+from app.search.hybrid_search import hybrid_search
 
 router = APIRouter()
 
 class IngestRequest(BaseModel):
     github_url: str
+
+class SearchRequest(BaseModel):
+    query: str
+    top_k: int = 10
 
 class IngestResponse(BaseModel):
     repo_id: str
@@ -242,4 +247,18 @@ def get_similar_chunks(repo_id: str, query: str = Query(..., description="Semant
         raise HTTPException(
             status_code=500,
             detail=f"Semantic similarity vector lookup failed: {str(e)}"
+        )
+
+@router.post("/repos/{repo_id}/search")
+def run_hybrid_search(repo_id: str, request: SearchRequest):
+    """
+    Executes a hybrid semantic and keyword search on code chunks using Reciprocal Rank Fusion (RRF).
+    """
+    try:
+        results = hybrid_search(repo_id, request.query, top_k=request.top_k)
+        return results
+    except Exception as e:
+        raise HTTPException(
+            status_code=500,
+            detail=f"Hybrid search execution failed: {str(e)}"
         )
