@@ -10,6 +10,7 @@ from app.analysis.dependency_graph import extract_dependencies, get_all_project_
 from app.analysis.git_hotspots import get_hotspots
 from app.db import supabase, save_file_contents
 from app.llm.summarizer import summarize_file
+from app.llm.rag_answer import generate_rag_answer
 from app.search.chunker import process_repo_chunks, index_repo
 from app.search.embeddings import embed_chunk
 from app.search.hybrid_search import hybrid_search
@@ -213,7 +214,7 @@ def trigger_repository_index(repo_id: str, force_reindex: bool = Query(False, de
 @router.get("/repos/{repo_id}/similar-chunks")
 def get_similar_chunks(repo_id: str, query: str = Query(..., description="Semantic query text"), limit: int = Query(5, description="Number of results to retrieve")):
     """
-    Runs semantic similarity query lookup using cosine similarity via pgvector RPC.
+    Runs semantic similarity query lookup using cosine similarity in Python.
     """
     if supabase is None:
         raise HTTPException(
@@ -221,44 +222,37 @@ def get_similar_chunks(repo_id: str, query: str = Query(..., description="Semant
             detail="Supabase database integration is not configured."
         )
         
-    # 1. Compute query vector representation
     try:
-        query_vector = embed_chunk(query)
-    except Exception as e:
-        raise HTTPException(
-            status_code=500,
-            detail=f"Failed to generate query embedding: {str(e)}"
-        )
-        
-    # 2. Invoke match_code_chunks PostgreSQL similarity function via RPC
-    try:
-        response = supabase.rpc(
-            "match_code_chunks",
-            {
-                "query_embedding": query_vector,
-                "match_threshold": 0.0, # Return all closest matches, capped by limit
-                "match_count": limit,
-                "filter_repo_id": repo_id
-            }
-        ).execute()
-        
-        return response.data if response.data else []
+        from app.search.vector_search import vector_search
+        results = vector_search(repo_id, query, top_k=limit)
+        return results
     except Exception as e:
         raise HTTPException(
             status_code=500,
             detail=f"Semantic similarity vector lookup failed: {str(e)}"
         )
 
+
 @router.post("/repos/{repo_id}/search")
 def run_hybrid_search(repo_id: str, request: SearchRequest):
     """
-    Executes a hybrid semantic and keyword search on code chunks using Reciprocal Rank Fusion (RRF).
+    Executes a hybrid semantic and keyword search on code chunks using Reciprocal Rank Fusion (RRF),
+    then uses Groq llama-3.3-70b-versatile to generate a cited natural-language answer.
     """
     try:
-        results = hybrid_search(repo_id, request.query, top_k=request.top_k)
-        return results
+        # 1. Fetch ranked hybrid results
+        all_results = hybrid_search(repo_id, request.query, top_k=request.top_k)
+        
+        # 2. Generate natural-language synthesized response with citations
+        rag_response = generate_rag_answer(request.query, all_results)
+        
+        return {
+            "answer": rag_response["answer"],
+            "cited_chunks": rag_response["cited_chunks"],
+            "all_results": all_results
+        }
     except Exception as e:
         raise HTTPException(
             status_code=500,
-            detail=f"Hybrid search execution failed: {str(e)}"
+            detail=f"Hybrid search or RAG execution failed: {str(e)}"
         )

@@ -15,11 +15,14 @@ import {
   FolderTree,
   Terminal,
   Files,
-  Loader2
+  Loader2,
+  RefreshCw,
+  Check
 } from 'lucide-react';
 import FileTree, { FileTreeNodeType } from '../components/FileTree';
 import HotspotList, { HotspotType } from '../components/HotspotList';
 import FileExplainer from '../components/FileExplainer';
+import SemanticSearch from '../components/SemanticSearch';
 
 export default function Home() {
   const [repoUrl, setRepoUrl] = useState('');
@@ -41,6 +44,35 @@ export default function Home() {
   
   // Guard cooldown indicator state
   const [isExplainerLoading, setIsExplainerLoading] = useState(false);
+
+  // Background Indexing states
+  const [indexingStatus, setIndexingStatus] = useState<'idle' | 'indexing' | 'success' | 'error'>('idle');
+  const [chunksIndexed, setChunksIndexed] = useState<number | null>(null);
+  const [indexingError, setIndexingError] = useState<string | null>(null);
+
+  // Background indexing fetcher
+  const handleIndex = async (id: string, force: boolean = false) => {
+    setIndexingStatus('indexing');
+    setIndexingError(null);
+    const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:8000';
+    try {
+      console.log(`[DevLens AI] Starting background indexing for: ${id} (force_reindex=${force})`);
+      const response = await fetch(`${apiUrl}/api/repos/${id}/index${force ? '?force_reindex=true' : ''}`, {
+        method: 'POST',
+      });
+      const data = await response.json();
+      if (!response.ok) {
+        throw new Error(data.detail || 'Failed to index repository');
+      }
+      setChunksIndexed(data.chunks_indexed);
+      setIndexingStatus('success');
+      console.log(`[DevLens AI] Background indexing complete for: ${id}. Chunks indexed: ${data.chunks_indexed}`);
+    } catch (err: any) {
+      console.error(`[DevLens AI] Indexing failed for repo: ${id}`, err);
+      setIndexingError(err.message || 'Repository indexing failed.');
+      setIndexingStatus('error');
+    }
+  };
 
   // Helper to count files and folders in the tree
   const countTreeNodes = (node: FileTreeNodeType | null): { files: number; folders: number } => {
@@ -106,6 +138,9 @@ export default function Home() {
       
       // Select the files tab by default
       setSidebarTab('files');
+
+      // Trigger background indexing asynchronously (no await)
+      handleIndex(data.repo_id);
       
       // Explicitly log the received dependency graph to the developer console
       console.log('=========== DevLens AI Ingestion Report ===========');
@@ -134,6 +169,9 @@ export default function Home() {
     setSelectedFilePath('');
     setIsExplainerLoading(false);
     setError(null);
+    setIndexingStatus('idle');
+    setChunksIndexed(null);
+    setIndexingError(null);
   };
 
   const { files: fileCount, folders: folderCount } = countTreeNodes(fileTree);
@@ -392,7 +430,40 @@ export default function Home() {
                 </div>
                 
                 <span className="text-xs text-indigo-400 font-mono font-medium uppercase tracking-wider">Repository Ingested & Analyzed</span>
-                <h2 className="text-2xl font-bold text-white mt-1 mb-2">{repoName}</h2>
+                <div className="flex items-center gap-3 mt-1 mb-2 flex-wrap">
+                  <h2 className="text-2xl font-bold text-white">{repoName}</h2>
+                  
+                  {/* Background Indexing Status Badge */}
+                  {indexingStatus === 'indexing' && (
+                    <div className="flex items-center gap-1.5 px-2.5 py-1 bg-amber-500/10 border border-amber-500/20 text-amber-400 text-[10px] font-mono rounded-lg animate-pulse">
+                      <Loader2 className="w-3 h-3 animate-spin shrink-0" />
+                      Indexing...
+                    </div>
+                  )}
+                  {indexingStatus === 'success' && (
+                    <div className="flex items-center gap-1.5 px-2.5 py-1 bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-[10px] font-mono rounded-lg">
+                      <Check className="w-3 h-3 text-emerald-400 shrink-0" />
+                      {chunksIndexed !== null ? `${chunksIndexed} chunks indexed` : 'Indexed'}
+                    </div>
+                  )}
+                  {indexingStatus === 'error' && (
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <div className="flex items-center gap-1.5 px-2.5 py-1 bg-red-500/10 border border-red-500/25 rounded-lg text-red-400 text-[10px] font-mono rounded-lg">
+                        <AlertTriangle className="w-3 h-3 text-red-400 shrink-0" />
+                        Indexing failed
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => handleIndex(repoId, true)}
+                        className="flex items-center gap-1 px-2.5 py-1 bg-zinc-900 hover:bg-zinc-850 border border-zinc-800 hover:border-zinc-700 text-zinc-300 hover:text-white text-[10px] font-mono rounded-lg transition-all cursor-pointer shadow-sm active:scale-[0.97]"
+                        title={indexingError || 'Retry indexing'}
+                      >
+                        <RefreshCw className="w-2.5 h-2.5 shrink-0" />
+                        Retry
+                      </button>
+                    </div>
+                  )}
+                </div>
                 <p className="text-xs text-zinc-400 leading-relaxed max-w-xl">
                   Sanitization, dependency parsing, and git-history calculations complete. We mapped {dependencies.length} internal reference links and evaluated {hotspots.length} hotspots. Click files in the explorer to read their AI summaries.
                 </p>
@@ -445,19 +516,13 @@ export default function Home() {
                       </p>
                     </div>
 
-                    {/* Locked Card 2 */}
-                    <div className="glass-panel p-5 rounded-xl border border-zinc-900/50 relative overflow-hidden group">
-                      <div className="absolute top-3 right-3 px-2 py-0.5 bg-indigo-500/10 border border-indigo-500/20 text-[9px] text-indigo-400 font-mono rounded">
-                        LOCKED
-                      </div>
-                      <div className="p-2.5 bg-zinc-900/60 border border-zinc-800 rounded-lg w-fit mb-4">
-                        <Search className="w-4 h-4 text-zinc-500" />
-                      </div>
-                      <h4 className="text-zinc-400 font-semibold text-xs mb-1">Semantic Search</h4>
-                      <p className="text-zinc-500 text-[11px] leading-normal">
-                        Natural language codebase search using code-to-text vector embeddings.
-                      </p>
-                    </div>
+                    {/* Semantic Search UI */}
+                    <SemanticSearch
+                      repoId={repoId}
+                      indexingStatus={indexingStatus}
+                      chunksIndexed={chunksIndexed}
+                      onSelectFile={setSelectedFilePath}
+                    />
 
                   </div>
                 </div>

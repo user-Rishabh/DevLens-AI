@@ -43,7 +43,28 @@ async def health_check():
     """
     Basic health check endpoint to verify backend status.
     """
+    try:
+        from app.db import supabase
+        from app.search.logger import log_debug
+        log_debug("--- HEALTH CHECK DB DIAGNOSTICS ---")
+        if supabase is None:
+            log_debug("Supabase client is None")
+        else:
+            # Check code_chunks content_tsv and count
+            res = supabase.table("code_chunks").select("id, repo_id, file_path, content_tsv").limit(5).execute()
+            log_debug(f"First 5 code_chunks with content_tsv: {res.data}")
+            
+            res_count = supabase.table("code_chunks").select("id", count="exact").limit(1).execute()
+            log_debug(f"Total code_chunks: {res_count.count}")
+    except Exception as e:
+        from app.search.logger import log_debug
+        log_debug(f"Error in health check diagnostics: {str(e)}")
+        import traceback
+        log_debug(traceback.format_exc())
+        
     return {"status": "ok"}
+
+
 
 if __name__ == "__main__":
     import uvicorn
