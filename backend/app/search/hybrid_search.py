@@ -1,5 +1,6 @@
 from app.search.keyword_search import keyword_search
 from app.search.vector_search import vector_search
+from app.search.logger import log_debug
 
 def hybrid_search(repo_id: str, query: str, top_k: int = 10) -> list[dict]:
     """
@@ -12,6 +13,11 @@ def hybrid_search(repo_id: str, query: str, top_k: int = 10) -> list[dict]:
     # 1. Fetch search results from both streams
     vector_results = vector_search(repo_id, query, top_k=candidate_limit)
     keyword_results = keyword_search(repo_id, query, top_k=candidate_limit)
+    
+    log_debug(f"[HYBRID SEARCH] repo_id: {repr(repo_id)}, query: {repr(query)}")
+    log_debug(f"  Vector results raw count: {len(vector_results)}")
+    log_debug(f"  Keyword results raw count: {len(keyword_results)}")
+
     
     # 2. Merge and compute RRF scores
     # Score = sum( 1 / (k + rank) ) where k=60 is a standard default constant
