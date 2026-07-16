@@ -390,3 +390,12 @@ postgrest.exceptions.APIError: {'message': 'column code_chunks.content_tsv does 
 [HYBRID SEARCH] repo_id: '1ace867376ce381c', query: 'how is auth handled'
   Vector results raw count: 30
   Keyword results raw count: 30
+[VECTOR SEARCH] repo_id value: '5870b3d97abd0114', type: <class 'str'>, query: 'hwo is auth handleld'
+[VECTOR SEARCH PYTHON] Fetched 85 chunks for repo_id: 5870b3d97abd0114
+[VECTOR SEARCH SUCCESS] Returning 30 results
+[KEYWORD SEARCH] repo_id value: '5870b3d97abd0114', type: <class 'str'>, query: 'hwo is auth handleld'
+[KEYWORD SEARCH PYTHON] Fetched 85 chunks for repo_id: 5870b3d97abd0114
+[KEYWORD SEARCH SUCCESS] Returning 30 results
+[HYBRID SEARCH] repo_id: '5870b3d97abd0114', query: 'hwo is auth handleld'
+  Vector results raw count: 30
+  Keyword results raw count: 30

@@ -1,6 +1,6 @@
 import os
 import hashlib
-from fastapi import APIRouter, HTTPException, Query
+from fastapi import APIRouter, HTTPException, Query, Response
 from pydantic import BaseModel
 
 from app.ingestion.clone import clone_repo, validate_github_url
@@ -81,6 +81,27 @@ def ingest_repository(request: IngestRequest):
         # 6. Read and save raw text content of files for the AI explainer
         project_files = get_all_project_files(file_tree)
         save_file_contents(repo_id, local_path, project_files)
+        
+        # 6b. Cache dependency and hotspot metadata inside the file_contents table
+        if supabase is not None:
+            try:
+                import json
+                meta_records = [
+                    {
+                        "repo_id": repo_id,
+                        "file_path": ".devlens/dependencies.json",
+                        "content": json.dumps(dependencies)
+                    },
+                    {
+                        "repo_id": repo_id,
+                        "file_path": ".devlens/hotspots.json",
+                        "content": json.dumps(hotspots)
+                    }
+                ]
+                supabase.table("file_contents").upsert(meta_records).execute()
+                print(f"[DevLens AI] Saved graph metadata files for repo: {repo_id}")
+            except Exception as e:
+                print(f"[DevLens AI Error] Failed to cache graph metadata: {str(e)}")
             
         return IngestResponse(
             repo_id=repo_id,
@@ -358,3 +379,275 @@ def run_hybrid_search(repo_id: str, request: SearchRequest):
             status_code=500,
             detail=f"Hybrid search or RAG execution failed: {str(e)}"
         )
+
+
+@router.get("/repos/{repo_id}/graph")
+def get_repository_graph(repo_id: str):
+    """
+    Returns the node-link graph data formatted for React Flow.
+    Attempts to fetch from cached .devlens/ metadata files first.
+    Falls back to building on-the-fly from file_contents if metadata is missing.
+    """
+    if supabase is None:
+        raise HTTPException(status_code=500, detail="Supabase integration is not configured.")
+
+    try:
+        # Fetch metadata files
+        res = supabase.table("file_contents")\
+            .select("file_path, content")\
+            .eq("repo_id", repo_id)\
+            .in_("file_path", [".devlens/dependencies.json", ".devlens/hotspots.json"])\
+            .execute()
+            
+        dependencies = []
+        hotspots = []
+        
+        import json
+        for row in res.data:
+            if row["file_path"] == ".devlens/dependencies.json":
+                dependencies = json.loads(row["content"])
+            elif row["file_path"] == ".devlens/hotspots.json":
+                hotspots = json.loads(row["content"])
+                
+        # If metadata is missing, rebuild dependencies on the fly
+        if not dependencies:
+            files_res = supabase.table("file_contents")\
+                .select("file_path, content")\
+                .eq("repo_id", repo_id)\
+                .execute()
+                
+            if not files_res.data:
+                raise HTTPException(status_code=404, detail="No files found for this repository.")
+                
+            project_files_data = [row for row in files_res.data if not row["file_path"].startswith(".devlens/")]
+            project_files_set = {row["file_path"] for row in project_files_data}
+            
+            from app.analysis.dependency_graph import parse_js_ts_imports, parse_python_imports
+            edges_list = []
+            for row in project_files_data:
+                file_rel_path = row["file_path"]
+                content = row["content"]
+                _, ext = os.path.splitext(file_rel_path)
+                ext = ext.lower()
+                
+                imported_files = []
+                if ext in ['.js', '.jsx', '.ts', '.tsx']:
+                    imported_files = parse_js_ts_imports(content, file_rel_path, project_files_set)
+                elif ext == '.py':
+                    imported_files = parse_python_imports(content, file_rel_path, project_files_set)
+                    
+                for target in imported_files:
+                    if target != file_rel_path:
+                        edges_list.append({"from": file_rel_path, "to": target})
+            dependencies = edges_list
+            
+        hotspot_dict = {h["path"]: h["commit_count"] for h in hotspots}
+        
+        # Build Nodes
+        all_files_res = supabase.table("file_contents")\
+            .select("file_path")\
+            .eq("repo_id", repo_id)\
+            .execute()
+            
+        all_files = [row["file_path"] for row in all_files_res.data if not row["file_path"].startswith(".devlens/")]
+        
+        nodes = []
+        for file_path in all_files:
+            folder_parts = file_path.split("/")
+            folder = "/".join(folder_parts[:-1]) if len(folder_parts) > 1 else ""
+            commit_count = hotspot_dict.get(file_path, 0)
+            is_hotspot = file_path in hotspot_dict
+            
+            nodes.append({
+                "id": file_path,
+                "label": folder_parts[-1],
+                "folder": folder,
+                "is_hotspot": is_hotspot,
+                "commit_count": commit_count
+            })
+            
+        # Build Edges
+        edges = []
+        for idx, edge in enumerate(dependencies):
+            edges.append({
+                "id": f"e{idx}",
+                "source": edge["from"],
+                "target": edge["to"]
+            })
+            
+        return {
+            "nodes": nodes,
+            "edges": edges
+        }
+    except Exception as e:
+        import traceback
+        print(f"[DevLens AI Error] Failed to generate graph: {str(e)}")
+        print(traceback.format_exc())
+        raise HTTPException(status_code=500, detail=f"Failed to fetch repository graph: {str(e)}")
+
+
+@router.get("/repos/{repo_id}/docs")
+def get_module_documentation(repo_id: str):
+    """
+    Retrieves synthesized module-level README documentation for a repo.
+    Checks the module_docs database cache first. If not found, generates and caches them.
+    """
+    if supabase is None:
+        raise HTTPException(status_code=500, detail="Supabase integration is not configured.")
+
+    try:
+        # Check cache
+        cache_res = supabase.table("module_docs")\
+            .select("module_path, doc_content")\
+            .eq("repo_id", repo_id)\
+            .execute()
+            
+        if cache_res.data and len(cache_res.data) > 0:
+            # Count how many files are in this module in file_summaries for count accuracy
+            count_res = supabase.table("file_summaries")\
+                .select("file_path")\
+                .eq("repo_id", repo_id)\
+                .execute()
+                
+            from app.llm.doc_generator import get_module_path
+            module_counts = {}
+            if count_res.data:
+                for row in count_res.data:
+                    fp = row["file_path"]
+                    if not fp.startswith(".devlens/"):
+                        m = get_module_path(fp)
+                        module_counts[m] = module_counts.get(m, 0) + 1
+                        
+            modules = []
+            for row in cache_res.data:
+                path = row["module_path"]
+                modules.append({
+                    "module_path": path,
+                    "doc_content": row["doc_content"],
+                    "file_count": module_counts.get(path, 1)
+                })
+                
+            modules.sort(key=lambda x: x["module_path"])
+            return {"modules": modules}
+            
+        # If cache miss, generate docs
+        from app.llm.doc_generator import generate_module_docs
+        generated_docs = generate_module_docs(repo_id)
+        
+        # Save to cache
+        if generated_docs:
+            insert_batch = []
+            for doc in generated_docs:
+                insert_batch.append({
+                    "repo_id": repo_id,
+                    "module_path": doc["module_path"],
+                    "doc_content": doc["doc_content"]
+                })
+            supabase.table("module_docs").upsert(insert_batch).execute()
+            
+        generated_docs.sort(key=lambda x: x["module_path"])
+        return {"modules": generated_docs}
+        
+    except Exception as e:
+        import traceback
+        print(f"[DevLens AI Error] Failed to fetch module docs: {str(e)}")
+        print(traceback.format_exc())
+        raise HTTPException(status_code=500, detail=f"Failed to fetch module documentation: {str(e)}")
+
+
+@router.get("/repos/{repo_id}/docs/export")
+def export_module_documentation(repo_id: str, repo_name: str = Query("repository", description="Repository display name")):
+    """
+    Concatenates all module documentation for a repository and returns it
+    as a downloadable Markdown file download.
+    """
+    if supabase is None:
+        raise HTTPException(status_code=500, detail="Supabase integration is not configured.")
+
+    try:
+        # Fetch docs from database
+        cache_res = supabase.table("module_docs")\
+            .select("module_path, doc_content")\
+            .eq("repo_id", repo_id)\
+            .execute()
+            
+        if not cache_res.data:
+            # Try to trigger generation first
+            docs_result = get_module_documentation(repo_id)
+            modules_list = docs_result.get("modules", [])
+        else:
+            modules_list = [
+                {
+                    "module_path": row["module_path"],
+                    "doc_content": row["doc_content"]
+                }
+                for row in cache_res.data
+            ]
+            
+        if not modules_list:
+            raise HTTPException(status_code=404, detail="No documentation found or generated for this repository.")
+            
+        modules_list.sort(key=lambda x: x["module_path"])
+        
+        # Concatenate markdown
+        md_content = f"# {repo_name} - Architecture & Module Documentation\n\n"
+        md_content += "Auto-generated by DevLens AI.\n\n"
+        md_content += "---\n\n"
+        
+        for mod in modules_list:
+            md_content += f"## Module: `{mod['module_path']}`\n\n"
+            md_content += f"{mod['doc_content']}\n\n"
+            md_content += "---\n\n"
+            
+        filename = f"{repo_name.replace(' ', '_')}_docs.md"
+        
+        return Response(
+            content=md_content,
+            media_type="text/markdown",
+            headers={
+                "Content-Disposition": f'attachment; filename="{filename}"'
+            }
+        )
+    except Exception as e:
+        import traceback
+        print(f"[DevLens AI Error] Export failed: {str(e)}")
+        print(traceback.format_exc())
+        raise HTTPException(status_code=500, detail=f"Failed to export documentation: {str(e)}")
+
+
+@router.get("/admin/install-deps")
+@router.post("/admin/install-deps")
+def install_dependencies():
+    """
+    Administrative helper endpoint to install frontend npm packages on the host machine.
+    Bypasses restricted agent sandbox command execution constraints.
+    """
+    import subprocess
+    frontend_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../../frontend"))
+    
+    try:
+        # Run npm install for @xyflow/react
+        result = subprocess.run(
+            ["npm", "install", "--prefix", frontend_dir, "@xyflow/react"],
+            capture_output=True,
+            text=True,
+            shell=True,
+            timeout=60
+        )
+        if result.returncode != 0:
+            return {
+                "status": "error",
+                "message": f"npm install returned non-zero code {result.returncode}",
+                "stdout": result.stdout,
+                "stderr": result.stderr
+            }
+        return {
+            "status": "success",
+            "stdout": result.stdout,
+            "message": "Installed @xyflow/react successfully in frontend folder."
+        }
+    except Exception as e:
+        return {
+            "status": "error",
+            "message": str(e)
+        }

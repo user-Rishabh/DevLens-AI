@@ -23,6 +23,8 @@ import FileTree, { FileTreeNodeType } from '../components/FileTree';
 import HotspotList, { HotspotType } from '../components/HotspotList';
 import FileExplainer from '../components/FileExplainer';
 import SemanticSearch from '../components/SemanticSearch';
+import ArchitectureMap from '../components/ArchitectureMap';
+import AutoDocs from '../components/AutoDocs';
 
 export default function Home() {
   const [repoUrl, setRepoUrl] = useState('');
@@ -37,6 +39,9 @@ export default function Home() {
   const [fileTree, setFileTree] = useState<FileTreeNodeType | null>(null);
   const [dependencies, setDependencies] = useState<any[]>([]);
   const [hotspots, setHotspots] = useState<HotspotType[]>([]);
+  
+  // Tab Selector state
+  const [activeTab, setActiveTab] = useState<'overview' | 'map' | 'docs'>('overview');
   
   // Sidebar tab switcher & Active file selection
   const [sidebarTab, setSidebarTab] = useState<'files' | 'hotspots'>('files');
@@ -172,6 +177,7 @@ export default function Home() {
     setIndexingStatus('idle');
     setChunksIndexed(null);
     setIndexingError(null);
+    setActiveTab('overview');
   };
 
   const { files: fileCount, folders: folderCount } = countTreeNodes(fileTree);
@@ -478,54 +484,114 @@ export default function Home() {
                 </div>
               </div>
 
-              {/* Toggle Content area: FileExplainer vs Overview features */}
-              {selectedFilePath ? (
-                <FileExplainer 
+              {/* Tab Navigation */}
+              <div className="flex border-b border-zinc-900 gap-1.5 select-none">
+                <button
+                  type="button"
+                  onClick={() => setActiveTab('overview')}
+                  className={`px-4 py-2.5 text-xs font-bold border-b-2 transition-all duration-150 cursor-pointer ${
+                    activeTab === 'overview'
+                      ? 'border-indigo-500 text-white'
+                      : 'border-transparent text-zinc-500 hover:text-zinc-300'
+                  }`}
+                >
+                  Overview
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setActiveTab('map')}
+                  className={`px-4 py-2.5 text-xs font-bold border-b-2 transition-all duration-150 cursor-pointer ${
+                    activeTab === 'map'
+                      ? 'border-indigo-500 text-white'
+                      : 'border-transparent text-zinc-500 hover:text-zinc-300'
+                  }`}
+                >
+                  Architecture Map
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setActiveTab('docs')}
+                  className={`px-4 py-2.5 text-xs font-bold border-b-2 transition-all duration-150 cursor-pointer ${
+                    activeTab === 'docs'
+                      ? 'border-indigo-500 text-white'
+                      : 'border-transparent text-zinc-500 hover:text-zinc-300'
+                  }`}
+                >
+                  Module Documentation
+                </button>
+              </div>
+
+              {/* Tab Contents */}
+              {activeTab === 'overview' && (
+                selectedFilePath ? (
+                  <FileExplainer 
+                    repoId={repoId}
+                    filePath={selectedFilePath}
+                    onClose={() => !isExplainerLoading && setSelectedFilePath('')}
+                    onLoadingStateChange={setIsExplainerLoading}
+                  />
+                ) : (
+                  <div className="flex flex-col gap-6">
+                    {/* Dashboard Help message */}
+                    <div className="p-5 rounded-xl border border-dashed border-zinc-800 flex items-center justify-center text-center py-12">
+                      <div className="max-w-md">
+                        <FolderTree className="w-8 h-8 text-zinc-600 mx-auto mb-3" />
+                        <h4 className="text-zinc-300 font-semibold text-sm">Select a file to inspect</h4>
+                        <p className="text-zinc-500 text-xs mt-1.5 leading-relaxed">
+                          Navigate through the **Workspace Files** directory structure on the left and select any source code file to view its plain-English AI description report.
+                        </p>
+                      </div>
+                    </div>
+
+                    {/* Dashboard Feature Cards */}
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      
+                      {/* Interactive Architecture Map Card */}
+                      <div className="glass-panel p-5 rounded-xl border border-zinc-900/50 relative overflow-hidden group flex flex-col justify-between">
+                        <div>
+                          <div className="p-2.5 bg-zinc-900/60 border border-zinc-800 rounded-lg w-fit mb-4">
+                            <Network className="w-4 h-4 text-indigo-400" />
+                          </div>
+                          <h4 className="text-zinc-200 font-semibold text-xs mb-1">Dependency Visualizer</h4>
+                          <p className="text-zinc-400 text-[11px] leading-normal mb-4">
+                            Import mappings are fully analyzed! Render the interactive 2D architecture map of code relationships.
+                          </p>
+                        </div>
+                        <button
+                          type="button"
+                          onClick={() => setActiveTab('map')}
+                          className="w-full flex items-center justify-center gap-1.5 py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg text-xs font-bold transition-all active:scale-[0.98] cursor-pointer"
+                        >
+                          Open Architecture Map <ArrowRight className="w-3.5 h-3.5" />
+                        </button>
+                      </div>
+
+                      {/* Semantic Search UI */}
+                      <SemanticSearch
+                        repoId={repoId}
+                        indexingStatus={indexingStatus}
+                        chunksIndexed={chunksIndexed}
+                        onSelectFile={setSelectedFilePath}
+                      />
+
+                    </div>
+                  </div>
+                )
+              )}
+
+              {activeTab === 'map' && (
+                <ArchitectureMap
                   repoId={repoId}
-                  filePath={selectedFilePath}
-                  onClose={() => !isExplainerLoading && setSelectedFilePath('')}
-                  onLoadingStateChange={setIsExplainerLoading}
+                  repoName={repoName}
+                  onSelectFile={setSelectedFilePath}
                 />
-              ) : (
-                <div className="flex flex-col gap-6">
-                  {/* Dashboard Help message */}
-                  <div className="p-5 rounded-xl border border-dashed border-zinc-800 flex items-center justify-center text-center py-12">
-                    <div className="max-w-md">
-                      <FolderTree className="w-8 h-8 text-zinc-600 mx-auto mb-3" />
-                      <h4 className="text-zinc-300 font-semibold text-sm">Select a file to inspect</h4>
-                      <p className="text-zinc-500 text-xs mt-1.5 leading-relaxed">
-                        Navigate through the **Workspace Files** directory structure on the left and select any source code file to view its plain-English AI description report.
-                      </p>
-                    </div>
-                  </div>
+              )}
 
-                  {/* Locked/Coming Soon Feature Cards */}
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    
-                    {/* Visual Graph Panel (Locked status is now "Scaffolded / Logging Data") */}
-                    <div className="glass-panel p-5 rounded-xl border border-zinc-900/50 relative overflow-hidden group">
-                      <div className="absolute top-3 right-3 px-2 py-0.5 bg-emerald-500/10 border border-emerald-500/20 text-[9px] text-emerald-400 font-mono rounded">
-                        DATA LOGGED
-                      </div>
-                      <div className="p-2.5 bg-zinc-900/60 border border-zinc-800 rounded-lg w-fit mb-4">
-                        <Network className="w-4 h-4 text-indigo-400" />
-                      </div>
-                      <h4 className="text-zinc-200 font-semibold text-xs mb-1">Dependency Visualizer</h4>
-                      <p className="text-zinc-400 text-[11px] leading-normal">
-                        Import mappings are extracted! The interactive 2D node link visualizer layout will be rendered here in Phase 3.
-                      </p>
-                    </div>
-
-                    {/* Semantic Search UI */}
-                    <SemanticSearch
-                      repoId={repoId}
-                      indexingStatus={indexingStatus}
-                      chunksIndexed={chunksIndexed}
-                      onSelectFile={setSelectedFilePath}
-                    />
-
-                  </div>
-                </div>
+              {activeTab === 'docs' && (
+                <AutoDocs
+                  repoId={repoId}
+                  repoName={repoName}
+                />
               )}
 
               {/* Console Status Logger */}
