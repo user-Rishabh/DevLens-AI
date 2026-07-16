@@ -11,7 +11,7 @@ from app.analysis.git_hotspots import get_hotspots
 from app.db import supabase, save_file_contents
 from app.llm.summarizer import summarize_file
 from app.llm.rag_answer import generate_rag_answer
-from app.search.chunker import process_repo_chunks, index_repo
+from app.search.chunker import process_repo_chunks, index_repo, is_excluded_file
 from app.search.embeddings import embed_chunk
 from app.search.hybrid_search import hybrid_search
 
@@ -102,12 +102,21 @@ def explain_file(
 ):
     """
     Retrieves or generates an AI explanation/summary for a given file:
-    1. Checks the cache (file_summaries table). If present, returns immediately.
-    2. If missing, retrieves the raw file content from file_contents table.
-    3. Triggers the AI summarization via OpenRouter.
-    4. Saves the summary to file_summaries and returns it.
+    1. Checks if the file is excluded (lockfiles, minified files, or files > 200KB).
+    2. Checks the cache (file_summaries table). If present, returns immediately.
+    3. If missing, retrieves the raw file content from file_contents table.
+    4. Triggers the AI summarization via OpenRouter.
+    5. Saves the summary to file_summaries and returns it.
     """
     model_name = "llama-3.3-70b-versatile"
+
+    # Fast-path check: exclude by file name/pattern before DB or LLM call
+    if is_excluded_file(file_path, None):
+        return ExplainResponse(
+            summary="AI explanation is skipped for lockfiles, minified files, or files larger than 200KB.",
+            model_used="skipped",
+            cached=False
+        )
 
     # If Supabase is offline/unconfigured, return a mock summary for local-only developers
     if supabase is None:
@@ -161,6 +170,14 @@ def explain_file(
 
     raw_content = content_query.data[0]["content"]
 
+    # Slow-path check: exclude by content size (> 200KB)
+    if is_excluded_file(file_path, raw_content):
+        return ExplainResponse(
+            summary="AI explanation is skipped for lockfiles, minified files, or files larger than 200KB.",
+            model_used="skipped",
+            cached=False
+        )
+
     # 3. Generate explanation using OpenRouter LLM
     summary_text = summarize_file(file_path, raw_content)
 
@@ -210,6 +227,91 @@ def trigger_repository_index(repo_id: str, force_reindex: bool = Query(False, de
             status_code=500,
             detail=f"Repository indexing failed: {str(e)}"
         )
+
+@router.delete("/repos/{repo_id}/chunks/cleanup-noise")
+def cleanup_noise_chunks(repo_id: str):
+    """
+    Deletes existing rows from code_chunks where file_path matches any of the
+    excluded patterns (lockfiles, minified files, or files >200KB), for the given repo_id.
+    Returns a count of how many rows were deleted.
+    """
+    if supabase is None:
+        raise HTTPException(
+            status_code=500,
+            detail="Supabase database integration is not configured."
+        )
+
+    try:
+        # 1. Fetch all unique file paths currently indexed in code_chunks for this repo
+        chunks_res = supabase.table("code_chunks")\
+            .select("file_path")\
+            .eq("repo_id", repo_id)\
+            .execute()
+    except Exception as e:
+        raise HTTPException(
+            status_code=500,
+            detail=f"Failed to query code_chunks from database: {str(e)}"
+        )
+
+    if not chunks_res.data:
+        return {"repo_id": repo_id, "deleted_count": 0}
+
+    unique_paths = {row["file_path"] for row in chunks_res.data}
+
+    # 2. Query all file contents for this repo to get their size
+    try:
+        contents_res = supabase.table("file_contents")\
+            .select("file_path, content")\
+            .eq("repo_id", repo_id)\
+            .execute()
+    except Exception as e:
+        raise HTTPException(
+            status_code=500,
+            detail=f"Failed to query file contents from database: {str(e)}"
+        )
+
+    path_to_size = {}
+    if contents_res.data:
+        for row in contents_res.data:
+            path_to_size[row["file_path"]] = len(row["content"].encode("utf-8")) if row["content"] else 0
+
+    # 3. Filter paths that match any of the exclusion criteria
+    excluded_paths = set()
+    for path in unique_paths:
+        if is_excluded_file(path, None):
+            excluded_paths.add(path)
+            continue
+            
+        # Get content size if available
+        size = path_to_size.get(path, 0)
+        # Check if size > 200KB
+        if size > 200 * 1024:
+            excluded_paths.add(path)
+
+    deleted_count = 0
+    if excluded_paths:
+        excluded_paths_list = list(excluded_paths)
+        # Delete matching chunks
+        try:
+            for file_path in excluded_paths_list:
+                del_res = supabase.table("code_chunks")\
+                    .delete()\
+                    .eq("repo_id", repo_id)\
+                    .eq("file_path", file_path)\
+                    .execute()
+                if del_res.data:
+                    deleted_count += len(del_res.data)
+        except Exception as e:
+            raise HTTPException(
+                status_code=500,
+                detail=f"Failed to delete code chunks for file paths: {str(e)}"
+            )
+
+    return {
+        "repo_id": repo_id,
+        "deleted_count": deleted_count,
+        "excluded_files_purged": list(excluded_paths)
+    }
 
 @router.get("/repos/{repo_id}/similar-chunks")
 def get_similar_chunks(repo_id: str, query: str = Query(..., description="Semantic query text"), limit: int = Query(5, description="Number of results to retrieve")):
