@@ -354,3 +354,48 @@ postgrest.exceptions.APIError: {'message': 'Could not find the function public.m
 [HYBRID SEARCH] repo_id: '1ace867376ce381c', query: 'how is auth handeled'
   Vector results raw count: 30
   Keyword results raw count: 30
+[VECTOR SEARCH] repo_id value: 'a1f665658cae760c', type: <class 'str'>, query: 'where are the skills written'
+[VECTOR SEARCH PYTHON] Fetched 217 chunks for repo_id: a1f665658cae760c
+[VECTOR SEARCH SUCCESS] Returning 30 results
+[KEYWORD SEARCH] repo_id value: 'a1f665658cae760c', type: <class 'str'>, query: 'where are the skills written'
+[KEYWORD SEARCH PYTHON] Fetched 217 chunks for repo_id: a1f665658cae760c
+[KEYWORD SEARCH SUCCESS] Returning 30 results
+[HYBRID SEARCH] repo_id: 'a1f665658cae760c', query: 'where are the skills written'
+  Vector results raw count: 30
+  Keyword results raw count: 30
+[VECTOR SEARCH] repo_id value: 'a1f665658cae760c', type: <class 'str'>, query: 'how is auth handeled'
+[VECTOR SEARCH PYTHON] Fetched 217 chunks for repo_id: a1f665658cae760c
+[VECTOR SEARCH SUCCESS] Returning 30 results
+[KEYWORD SEARCH] repo_id value: 'a1f665658cae760c', type: <class 'str'>, query: 'how is auth handeled'
+[KEYWORD SEARCH PYTHON] Fetched 217 chunks for repo_id: a1f665658cae760c
+[KEYWORD SEARCH SUCCESS] Returning 30 results
+[HYBRID SEARCH] repo_id: 'a1f665658cae760c', query: 'how is auth handeled'
+  Vector results raw count: 30
+  Keyword results raw count: 30
+[VECTOR SEARCH] repo_id value: '5870b3d97abd0114', type: <class 'str'>, query: 'how is auth handeled'
+[VECTOR SEARCH PYTHON] Fetched 85 chunks for repo_id: 5870b3d97abd0114
+[VECTOR SEARCH SUCCESS] Returning 30 results
+[KEYWORD SEARCH] repo_id value: '5870b3d97abd0114', type: <class 'str'>, query: 'how is auth handeled'
+[KEYWORD SEARCH PYTHON] Fetched 85 chunks for repo_id: 5870b3d97abd0114
+[KEYWORD SEARCH SUCCESS] Returning 30 results
+[HYBRID SEARCH] repo_id: '5870b3d97abd0114', query: 'how is auth handeled'
+  Vector results raw count: 30
+  Keyword results raw count: 30
+[VECTOR SEARCH] repo_id value: '5870b3d97abd0114', type: <class 'str'>, query: 'what is motto'
+[VECTOR SEARCH PYTHON] Fetched 85 chunks for repo_id: 5870b3d97abd0114
+[VECTOR SEARCH SUCCESS] Returning 30 results
+[KEYWORD SEARCH] repo_id value: '5870b3d97abd0114', type: <class 'str'>, query: 'what is motto'
+[KEYWORD SEARCH PYTHON] Fetched 85 chunks for repo_id: 5870b3d97abd0114
+[KEYWORD SEARCH SUCCESS] Returning 30 results
+[HYBRID SEARCH] repo_id: '5870b3d97abd0114', query: 'what is motto'
+  Vector results raw count: 30
+  Keyword results raw count: 30
+[VECTOR SEARCH] repo_id value: '5870b3d97abd0114', type: <class 'str'>, query: 'about hotspot'
+[VECTOR SEARCH PYTHON] Fetched 85 chunks for repo_id: 5870b3d97abd0114
+[VECTOR SEARCH SUCCESS] Returning 30 results
+[KEYWORD SEARCH] repo_id value: '5870b3d97abd0114', type: <class 'str'>, query: 'about hotspot'
+[KEYWORD SEARCH PYTHON] Fetched 85 chunks for repo_id: 5870b3d97abd0114
+[KEYWORD SEARCH SUCCESS] Returning 14 results
+[HYBRID SEARCH] repo_id: '5870b3d97abd0114', query: 'about hotspot'
+  Vector results raw count: 30
+  Keyword results raw count: 14
