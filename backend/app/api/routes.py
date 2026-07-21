@@ -8,7 +8,7 @@ from app.ingestion.filter import build_file_tree
 from app.ingestion.cleanup import cleanup_repo
 from app.analysis.dependency_graph import extract_dependencies, get_all_project_files
 from app.analysis.git_hotspots import get_hotspots
-from app.db import supabase, save_file_contents
+from app.db import supabase, save_file_contents, save_repo_analysis
 from app.llm.summarizer import summarize_file
 from app.llm.rag_answer import generate_rag_answer
 from app.search.chunker import process_repo_chunks, index_repo, is_excluded_file
@@ -78,9 +78,9 @@ def ingest_repository(request: IngestRequest):
         dependencies = extract_dependencies(local_path, file_tree)
         hotspots = get_hotspots(local_path)
         
-        # 6. Read and save raw text content of files for the AI explainer
         project_files = get_all_project_files(file_tree)
         save_file_contents(repo_id, local_path, project_files)
+        save_repo_analysis(repo_id, file_tree, dependencies, hotspots)
             
         return IngestResponse(
             repo_id=repo_id,
@@ -358,3 +358,40 @@ def run_hybrid_search(repo_id: str, request: SearchRequest):
             status_code=500,
             detail=f"Hybrid search or RAG execution failed: {str(e)}"
         )
+
+@router.get("/repos/{repo_id}/onboarding-guide")
+def get_onboarding_guide(repo_id: str):
+    """
+    Retrieves or generates the codebase onboarding guide (reading order and summary) for a repo.
+    Checks Supabase table onboarding_guides first. If missing, runs the generator and caches it.
+    """
+    if supabase is not None:
+        try:
+            cache_check = supabase.table("onboarding_guides")\
+                .select("guide_data")\
+                .eq("repo_id", repo_id)\
+                .execute()
+                
+            if cache_check.data and len(cache_check.data) > 0:
+                print(f"[DevLens AI Cache] Onboarding guide hit for repo: {repo_id}")
+                return cache_check.data[0]["guide_data"]
+        except Exception as e:
+            print(f"[DevLens AI Database Error] Failed to query onboarding_guides cache: {str(e)}")
+
+    # On miss, generate
+    guide = generate_onboarding_guide(repo_id)
+
+    # Save to cache if possible
+    if supabase is not None and guide.get("summary") != "This is a mock onboarding guide for development. Set up SUPABASE_URL, SUPABASE_KEY, and GROQ_API_KEY to generate live AI codebase analyses.":
+        try:
+            record = {
+                "repo_id": repo_id,
+                "guide_data": guide
+            }
+            supabase.table("onboarding_guides").upsert(record).execute()
+            print(f"[DevLens AI Cache] Saved onboarding guide to database for repo: {repo_id}")
+        except Exception as e:
+            print(f"[DevLens AI Database Error] Failed to cache onboarding guide: {str(e)}")
+
+    return guide
+

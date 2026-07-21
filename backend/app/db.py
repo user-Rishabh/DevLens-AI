@@ -53,3 +53,25 @@ def save_file_contents(repo_id: str, local_path: str, project_files: set[str]) -
             except Exception as e:
                 print(f"[DevLens AI Error] Failed to cache batch of file contents: {str(e)}")
         print(f"[DevLens AI] Ingestion cache complete. Cached {len(records)} files for repo ID: {repo_id}")
+
+def save_repo_analysis(repo_id: str, file_tree: dict, dependencies: list, hotspots: list) -> None:
+    """
+    Saves the analyzed repository metadata (file tree, dependency graph, and hotspots list)
+    in Supabase table `repo_analyses` for later semantic search, visualization, and onboarding guides.
+    """
+    if supabase is None:
+        print("[DevLens AI Warning] Metadata caching aborted: Supabase client is not initialized.")
+        return
+        
+    try:
+        record = {
+            "repo_id": repo_id,
+            "file_tree": file_tree,
+            "dependencies": dependencies,
+            "hotspots": hotspots
+        }
+        supabase.table("repo_analyses").upsert(record).execute()
+        print(f"[DevLens AI] Saved analysis metadata for repo ID: {repo_id}")
+    except Exception as e:
+        print(f"[DevLens AI Error] Failed to save repo analysis metadata: {str(e)}")
+
