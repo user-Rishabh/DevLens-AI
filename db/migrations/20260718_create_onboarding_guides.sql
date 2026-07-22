@@ -5,10 +5,14 @@
 CREATE TABLE IF NOT EXISTS repo_analyses (
     repo_id TEXT PRIMARY KEY,
     file_tree JSONB NOT NULL,
-    dependencies JSONB NOT NULL,
-    hotspots JSONB NOT NULL,
+    dependencies JSONB DEFAULT '[]'::jsonb,
+    hotspots JSONB DEFAULT '[]'::jsonb,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
 );
+
+-- Ensure dependencies and hotspots columns exist if repo_analyses table was created previously without them
+ALTER TABLE repo_analyses ADD COLUMN IF NOT EXISTS dependencies JSONB DEFAULT '[]'::jsonb;
+ALTER TABLE repo_analyses ADD COLUMN IF NOT EXISTS hotspots JSONB DEFAULT '[]'::jsonb;
 
 -- 2. Create onboarding_guides table to cache generated onboarding guides
 CREATE TABLE IF NOT EXISTS onboarding_guides (

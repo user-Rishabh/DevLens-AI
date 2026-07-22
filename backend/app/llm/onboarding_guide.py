@@ -48,7 +48,7 @@ def generate_onboarding_guide(repo_id: str) -> dict:
     # 2. Fetch repo analysis metadata from database
     try:
         analysis_query = supabase.table("repo_analyses")\
-            .select("file_tree, dependencies, hotspots")\
+            .select("*")\
             .eq("repo_id", repo_id)\
             .execute()
     except Exception as e:
@@ -64,9 +64,9 @@ def generate_onboarding_guide(repo_id: str) -> dict:
         )
 
     analysis_data = analysis_query.data[0]
-    file_tree = analysis_data["file_tree"]
-    dependencies = analysis_data["dependencies"]
-    hotspots = analysis_data["hotspots"]
+    file_tree = analysis_data.get("file_tree") or {}
+    dependencies = analysis_data.get("dependencies") or []
+    hotspots = analysis_data.get("hotspots") or []
 
     # 3. Identify candidate files
     project_files = get_all_project_files(file_tree)

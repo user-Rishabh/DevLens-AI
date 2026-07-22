@@ -73,5 +73,14 @@ def save_repo_analysis(repo_id: str, file_tree: dict, dependencies: list, hotspo
         supabase.table("repo_analyses").upsert(record).execute()
         print(f"[DevLens AI] Saved analysis metadata for repo ID: {repo_id}")
     except Exception as e:
-        print(f"[DevLens AI Error] Failed to save repo analysis metadata: {str(e)}")
+        print(f"[DevLens AI Error] Failed to save full repo analysis metadata: {str(e)}")
+        try:
+            record_fallback = {
+                "repo_id": repo_id,
+                "file_tree": file_tree
+            }
+            supabase.table("repo_analyses").upsert(record_fallback).execute()
+            print(f"[DevLens AI] Saved basic analysis metadata for repo ID: {repo_id}")
+        except Exception as fallback_err:
+            print(f"[DevLens AI Error] Failed fallback save for repo analysis metadata: {str(fallback_err)}")
 
