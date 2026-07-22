@@ -14,6 +14,7 @@ from app.llm.rag_answer import generate_rag_answer
 from app.search.chunker import process_repo_chunks, index_repo, is_excluded_file
 from app.search.embeddings import embed_chunk
 from app.search.hybrid_search import hybrid_search
+from app.analysis.quality_score import compute_repo_quality_scores
 
 router = APIRouter()
 
@@ -394,4 +395,34 @@ def get_onboarding_guide(repo_id: str):
             print(f"[DevLens AI Database Error] Failed to cache onboarding guide: {str(e)}")
 
     return guide
+
+
+@router.post("/repos/{repo_id}/quality-scores/compute")
+def trigger_quality_score_compute(repo_id: str, force_recompute: bool = Query(False, description="Whether to force recompute quality scores")):
+    """
+    Triggers code quality score calculation for a repository and caches the results.
+    """
+    try:
+        res = compute_repo_quality_scores(repo_id, force_recompute=force_recompute)
+        return res
+    except Exception as e:
+        raise HTTPException(
+            status_code=500,
+            detail=f"Quality score computation failed: {str(e)}"
+        )
+
+
+@router.get("/repos/{repo_id}/quality-scores")
+def get_repo_quality_scores(repo_id: str):
+    """
+    Returns cached code quality scores for all files in the repository and aggregate summary.
+    """
+    try:
+        res = compute_repo_quality_scores(repo_id, force_recompute=False)
+        return res
+    except Exception as e:
+        raise HTTPException(
+            status_code=500,
+            detail=f"Failed to fetch quality scores: {str(e)}"
+        )
 

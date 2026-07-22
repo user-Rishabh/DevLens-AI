@@ -22,6 +22,7 @@ interface FileTreeProps {
   onSelectFile?: (path: string) => void;
   selectedFilePath?: string;
   disabled?: boolean;
+  qualityScores?: Record<string, number>;
 }
 
 // Helper to determine the appropriate icon for a file extension
@@ -61,15 +62,18 @@ interface TreeNodeProps {
   onSelectFile?: (path: string) => void;
   selectedFilePath?: string;
   disabled?: boolean;
+  qualityScores?: Record<string, number>;
 }
 
-function TreeNode({ node, depth = 0, onSelectFile, selectedFilePath, disabled }: TreeNodeProps) {
+function TreeNode({ node, depth = 0, onSelectFile, selectedFilePath, disabled, qualityScores }: TreeNodeProps) {
   const [isExpanded, setIsExpanded] = useState(depth === 0); // Expand root by default
   const isFolder = node.type === 'folder';
   const isSelected = !isFolder && selectedFilePath === node.path;
   
   // Disable files from click events, but allow expanding/collapsing folder trees
   const isItemDisabled = !isFolder && disabled;
+
+  const score = !isFolder && qualityScores ? qualityScores[node.path] : undefined;
 
   const handleClick = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -125,6 +129,22 @@ function TreeNode({ node, depth = 0, onSelectFile, selectedFilePath, disabled }:
 
         {/* Node Name */}
         <span className="truncate">{node.name}</span>
+
+        {/* Quality Score Badge */}
+        {!isFolder && score !== undefined && (
+          <span 
+            title={`Quality Health Score: ${score}/100`}
+            className={`ml-auto shrink-0 text-[10px] font-mono font-semibold px-1.5 py-0.5 rounded border ${
+              score >= 80 
+                ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20' 
+                : score >= 50 
+                  ? 'bg-amber-500/10 text-amber-400 border-amber-500/20' 
+                  : 'bg-rose-500/10 text-rose-400 border-rose-500/20'
+            }`}
+          >
+            {score}
+          </span>
+        )}
       </div>
 
       {/* Children Recursion */}
@@ -138,6 +158,7 @@ function TreeNode({ node, depth = 0, onSelectFile, selectedFilePath, disabled }:
               onSelectFile={onSelectFile}
               selectedFilePath={selectedFilePath}
               disabled={disabled}
+              qualityScores={qualityScores}
             />
           ))}
         </div>
@@ -146,7 +167,7 @@ function TreeNode({ node, depth = 0, onSelectFile, selectedFilePath, disabled }:
   );
 }
 
-export default function FileTree({ tree, onSelectFile, selectedFilePath, disabled }: FileTreeProps) {
+export default function FileTree({ tree, onSelectFile, selectedFilePath, disabled, qualityScores }: FileTreeProps) {
   if (!tree || !tree.name) {
     return (
       <div className="text-zinc-500 text-xs italic p-4">
@@ -163,6 +184,7 @@ export default function FileTree({ tree, onSelectFile, selectedFilePath, disable
         onSelectFile={onSelectFile}
         selectedFilePath={selectedFilePath}
         disabled={disabled}
+        qualityScores={qualityScores}
       />
     </div>
   );

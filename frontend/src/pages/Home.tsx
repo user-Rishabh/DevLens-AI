@@ -25,6 +25,7 @@ import HotspotList, { HotspotType } from '../components/HotspotList';
 import FileExplainer from '../components/FileExplainer';
 import SemanticSearch from '../components/SemanticSearch';
 import OnboardingGuide from '../components/OnboardingGuide';
+import QualityScoreCard, { QualityScoreSummary } from '../components/QualityScoreCard';
 
 export default function Home() {
   const [repoUrl, setRepoUrl] = useState('');
@@ -52,6 +53,38 @@ export default function Home() {
   const [indexingStatus, setIndexingStatus] = useState<'idle' | 'indexing' | 'success' | 'error'>('idle');
   const [chunksIndexed, setChunksIndexed] = useState<number | null>(null);
   const [indexingError, setIndexingError] = useState<string | null>(null);
+
+  // Quality score states
+  const [qualitySummary, setQualitySummary] = useState<QualityScoreSummary | null>(null);
+  const [qualityScoresMap, setQualityScoresMap] = useState<Record<string, number>>({});
+  const [loadingQuality, setLoadingQuality] = useState<boolean>(false);
+
+  const fetchQualityScores = async (currentRepoId: string, force: boolean = false) => {
+    if (!currentRepoId) return;
+    setLoadingQuality(true);
+    try {
+      const url = force 
+        ? `http://localhost:8000/api/repos/${currentRepoId}/quality-scores/compute?force_recompute=true` 
+        : `http://localhost:8000/api/repos/${currentRepoId}/quality-scores`;
+      const method = force ? 'POST' : 'GET';
+      const response = await fetch(url, { method });
+      if (response.ok) {
+        const data = await response.json();
+        setQualitySummary(data);
+        if (data.scores && Array.isArray(data.scores)) {
+          const map: Record<string, number> = {};
+          data.scores.forEach((item: any) => {
+            map[item.file_path] = item.composite_score;
+          });
+          setQualityScoresMap(map);
+        }
+      }
+    } catch (err) {
+      console.error('Failed to fetch quality scores:', err);
+    } finally {
+      setLoadingQuality(false);
+    }
+  };
 
   // Background indexing fetcher
   const handleIndex = async (id: string, force: boolean = false) => {
@@ -145,6 +178,9 @@ export default function Home() {
       // Trigger background indexing asynchronously (no await)
       handleIndex(data.repo_id);
       
+      // Fetch code quality scores
+      fetchQualityScores(data.repo_id);
+      
       // Explicitly log the received dependency graph to the developer console
       console.log('=========== DevLens AI Ingestion Report ===========');
       console.log('Repo ID:', data.repo_id);
@@ -170,6 +206,9 @@ export default function Home() {
     setHotspots([]);
     setRepoUrl('');
     setSelectedFilePath('');
+    setQualitySummary(null);
+    setQualityScoresMap({});
+    setIsExplainerLoading(false);
     setIsExplainerLoading(false);
     setError(null);
     setIndexingStatus('idle');
@@ -399,6 +438,7 @@ export default function Home() {
                       onSelectFile={setSelectedFilePath}
                       selectedFilePath={selectedFilePath}
                       disabled={isExplainerLoading}
+                      qualityScores={qualityScoresMap}
                     />
                   ) : (
                     <HotspotList hotspots={hotspots} />
@@ -481,6 +521,14 @@ export default function Home() {
                   </div>
                 </div>
               </div>
+
+              {/* Quality Score Summary Card */}
+              <QualityScoreCard 
+                summary={qualitySummary}
+                loading={loadingQuality}
+                onSelectFile={setSelectedFilePath}
+                onRecompute={() => fetchQualityScores(repoId, true)}
+              />
 
               {/* Toggle Content area: FileExplainer vs Overview features */}
               {selectedFilePath ? (
