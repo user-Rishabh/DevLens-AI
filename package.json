@@ -6,6 +6,7 @@
   "scripts": {
     "install:frontend": "npm install --prefix frontend",
     "dev:frontend": "npm run dev --prefix frontend",
-    "build:frontend": "npm run build --prefix frontend"
+    "build:frontend": "npm run build --prefix frontend",
+    "test:clean": ".venv\\Scripts\\python.exe backend/test_clean.py"
   }
 }

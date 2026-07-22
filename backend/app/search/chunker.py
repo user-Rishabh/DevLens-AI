@@ -51,6 +51,41 @@ def detect_language(file_path: str) -> str:
         return 'tsx'
     return 'unknown'
 
+def is_excluded_file(file_path: str, content: str) -> bool:
+    """
+    Checks if a file should be excluded from chunking, embedding, and AI summary.
+    Excludes lockfiles, minified files, and files larger than 200KB.
+    """
+    if not file_path:
+        return False
+        
+    filename = os.path.basename(file_path).lower()
+    
+    # 1. Check lockfile patterns
+    lockfiles = {
+        "package-lock.json",
+        "yarn.lock",
+        "pnpm-lock.yaml",
+        "gemfile.lock",
+        "poetry.lock",
+        "composer.lock"
+    }
+    if filename in lockfiles:
+        return True
+        
+    # 2. Check minified file patterns
+    if filename.endswith(".min.js") or filename.endswith(".min.css"):
+        return True
+        
+    # 3. Check file size (> 200KB)
+    if content:
+        # Encode content to bytes to get accurate file size in bytes
+        content_size_bytes = len(content.encode("utf-8"))
+        if content_size_bytes > 200 * 1024:
+            return True
+            
+    return False
+
 def get_language_parser(language: str):
     """
     Returns the Tree-Sitter Language object and Parser for the specified language.
@@ -301,6 +336,9 @@ def process_repo_chunks(repo_id: str) -> list[dict]:
         file_path = row["file_path"]
         content = row["content"]
         
+        if is_excluded_file(file_path, content):
+            continue
+            
         language = detect_language(file_path)
         file_chunks = chunk_file(file_path, content, language)
         
