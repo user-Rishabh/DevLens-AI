@@ -26,6 +26,7 @@ import FileExplainer from '../components/FileExplainer';
 import SemanticSearch from '../components/SemanticSearch';
 import OnboardingGuide from '../components/OnboardingGuide';
 import QualityScoreCard, { QualityScoreSummary } from '../components/QualityScoreCard';
+import ArchitectureMap from '../components/ArchitectureMap';
 
 export default function Home() {
   const [repoUrl, setRepoUrl] = useState('');
@@ -530,13 +531,21 @@ export default function Home() {
                 onRecompute={() => fetchQualityScores(repoId, true)}
               />
 
-              {/* Toggle Content area: FileExplainer vs Overview features */}
+              {/* Architecture Map & File Explainer Workspace View */}
+              <ArchitectureMap
+                repoId={repoId}
+                dependencies={dependencies}
+                selectedFilePath={selectedFilePath}
+                onSelectFile={setSelectedFilePath}
+              />
+
               {selectedFilePath ? (
                 <FileExplainer 
                   repoId={repoId}
                   filePath={selectedFilePath}
                   onClose={() => !isExplainerLoading && setSelectedFilePath('')}
                   onLoadingStateChange={setIsExplainerLoading}
+                  onSelectFile={setSelectedFilePath}
                 />
               ) : (
                 <div className="flex flex-col gap-6">
@@ -583,32 +592,13 @@ export default function Home() {
                         </div>
                       </div>
 
-                      {/* Locked/Coming Soon Feature Cards */}
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        
-                        {/* Visual Graph Panel (Locked status is now "Scaffolded / Logging Data") */}
-                        <div className="glass-panel p-5 rounded-xl border border-zinc-900/50 relative overflow-hidden group">
-                          <div className="absolute top-3 right-3 px-2 py-0.5 bg-emerald-500/10 border border-emerald-500/20 text-[9px] text-emerald-400 font-mono rounded">
-                            DATA LOGGED
-                          </div>
-                          <div className="p-2.5 bg-zinc-900/60 border border-zinc-800 rounded-lg w-fit mb-4">
-                            <Network className="w-4 h-4 text-indigo-400" />
-                          </div>
-                          <h4 className="text-zinc-200 font-semibold text-xs mb-1">Dependency Visualizer</h4>
-                          <p className="text-zinc-400 text-[11px] leading-normal">
-                            Import mappings are extracted! The interactive 2D node link visualizer layout will be rendered here in Phase 3.
-                          </p>
-                        </div>
-
-                        {/* Semantic Search UI */}
-                        <SemanticSearch
-                          repoId={repoId}
-                          indexingStatus={indexingStatus}
-                          chunksIndexed={chunksIndexed}
-                          onSelectFile={setSelectedFilePath}
-                        />
-
-                      </div>
+                      {/* Semantic Search UI */}
+                      <SemanticSearch
+                        repoId={repoId}
+                        indexingStatus={indexingStatus}
+                        chunksIndexed={chunksIndexed}
+                        onSelectFile={setSelectedFilePath}
+                      />
                     </>
                   ) : (
                     <OnboardingGuide
