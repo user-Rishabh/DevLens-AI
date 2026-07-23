@@ -1,50 +1,225 @@
 @import "tailwindcss";
 
-@theme {
-  --font-sans: "Inter", system-ui, -apple-system, sans-serif;
-  
-  --color-brand-purple: #8b5cf6;
-  --color-brand-indigo: #6366f1;
-  --color-brand-blue: #3b82f6;
-  
-  --animate-pulse-slow: pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite;
-  --animate-glow-slow: glow 6s ease-in-out infinite;
+:root {
+  --bg-base: #0B0D12;
+  --bg-elevated: #12151D;
+  --primary: #6D5EF5;
+  --primary-glow: #8B7FFF;
+  --hotspot: #F5A623;
+  --path-trace: #3ED9C7;
+  --text-primary: #E8E9ED;
+  --text-muted: #8A8F9C;
+  --border-subtle: #1F2330;
 }
 
-@keyframes glow {
-  0%, 100% {
-    opacity: 0.35;
-    filter: blur(80px);
-  }
-  50% {
-    opacity: 0.6;
-    filter: blur(100px);
-  }
+@theme {
+  --font-display: "Space Grotesk", sans-serif;
+  --font-sans: "Inter", system-ui, -apple-system, sans-serif;
+  --font-mono: "JetBrains Mono", monospace;
+  
+  --color-bg-base: var(--bg-base);
+  --color-bg-elevated: var(--bg-elevated);
+  --color-primary-devlens: var(--primary);
+  --color-primary-glow: var(--primary-glow);
+  --color-hotspot: var(--hotspot);
+  --color-path-trace: var(--path-trace);
+  --color-text-primary: var(--text-primary);
+  --color-text-muted: var(--text-muted);
+  --color-border-subtle: var(--border-subtle);
+}
+
+body {
+  background-color: var(--bg-base);
+  color: var(--text-primary);
+  font-family: var(--font-sans);
+  overflow-x: hidden;
+}
+
+/* Custom font utilities */
+.font-display {
+  font-family: "Space Grotesk", sans-serif;
+}
+
+.font-mono {
+  font-family: "JetBrains Mono", monospace;
 }
 
 /* Glassmorphism custom components */
 .glass-panel {
-  background: rgba(20, 20, 25, 0.65);
+  background: rgba(18, 21, 29, 0.75);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
-  border: 1px solid rgba(255, 255, 255, 0.06);
+  border: 1px solid var(--border-subtle);
 }
 
 .glass-input {
-  background: rgba(10, 10, 12, 0.4);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(11, 13, 18, 0.8);
+  border: 1px solid var(--border-subtle);
   transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .glass-input:focus {
-  border-color: rgba(99, 102, 241, 0.5);
-  box-shadow: 0 0 15px rgba(99, 102, 241, 0.15);
+  border-color: var(--primary);
+  box-shadow: 0 0 20px rgba(109, 95, 245, 0.25);
   outline: none;
 }
 
-/* Base custom styles */
-body {
-  background-color: #09090b; /* Zinc-950 equivalent */
-  color: #fafafa; /* Zinc-50 equivalent */
-  overflow-x: hidden;
+/* ------------------- SCROLL REVEAL ANIMATIONS ------------------- */
+.reveal-on-scroll {
+  opacity: 0;
+  transform: translateY(28px);
+  transition: opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1), transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: opacity, transform;
+}
+
+.reveal-on-scroll.revealed {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Stagger Delays for Grid Children */
+.stagger-1 { transition-delay: 80ms; }
+.stagger-2 { transition-delay: 160ms; }
+.stagger-3 { transition-delay: 240ms; }
+.stagger-4 { transition-delay: 320ms; }
+.stagger-5 { transition-delay: 400ms; }
+.stagger-6 { transition-delay: 480ms; }
+
+/* ------------------- HERO ROUTE-TRACE SVG ANIMATION ------------------- */
+@keyframes routeDraw {
+  0% {
+    stroke-dashoffset: 1200;
+    opacity: 0.3;
+  }
+  15% {
+    opacity: 1;
+  }
+  85% {
+    stroke-dashoffset: 0;
+    opacity: 1;
+  }
+  100% {
+    stroke-dashoffset: 0;
+    opacity: 1;
+  }
+}
+
+@keyframes beaconPulse {
+  0%, 100% {
+    r: 6px;
+    opacity: 0.4;
+    filter: drop-shadow(0 0 4px #3ED9C7);
+  }
+  50% {
+    r: 12px;
+    opacity: 1;
+    filter: drop-shadow(0 0 16px #3ED9C7);
+  }
+}
+
+@keyframes nodeAmbient {
+  0%, 100% {
+    opacity: 0.35;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.75;
+    transform: scale(1.15);
+  }
+}
+
+.animate-route-draw {
+  stroke-dasharray: 1200;
+  stroke-dashoffset: 1200;
+  animation: routeDraw 3.5s ease-in-out infinite;
+  filter: drop-shadow(0 0 10px #3ED9C7);
+}
+
+.animate-beacon {
+  animation: beaconPulse 2.5s ease-in-out infinite;
+}
+
+.animate-node-pulse {
+  animation: nodeAmbient 4s ease-in-out infinite;
+}
+
+/* ------------------- FEATURE CARD HOVER ANIMATIONS ------------------- */
+/* Hotspot card flame glow on hover */
+.feature-card-hotspot:hover .hotspot-icon {
+  filter: drop-shadow(0 0 12px #F5A623);
+  transform: scale(1.15);
+}
+
+/* Search card blinking typing cursor on hover */
+@keyframes cursorBlink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+.search-cursor {
+  display: inline-block;
+  width: 6px;
+  height: 12px;
+  background-color: #8B7FFF;
+  margin-left: 2px;
+  animation: cursorBlink 0.8s infinite;
+}
+
+/* Architecture map node float on hover */
+.feature-card-map:hover .map-node-1 {
+  transform: translate(-3px, -3px);
+}
+.feature-card-map:hover .map-node-2 {
+  transform: translate(3px, -2px);
+}
+.feature-card-map:hover .map-node-3 {
+  transform: translate(2px, 3px);
+}
+
+/* Blast radius ripple ring on hover */
+@keyframes blastExpand {
+  0% { transform: scale(1); opacity: 0.8; }
+  100% { transform: scale(1.8); opacity: 0; }
+}
+.feature-card-blast:hover .blast-ring {
+  animation: blastExpand 1.2s ease-out infinite;
+}
+
+/* Onboarding compass spin on hover */
+.feature-card-[#3ED9C7]:hover .compass-icon {
+  transform: rotate(45deg);
+}
+
+/* Quality Score Shimmer on Hover */
+.feature-card-quality:hover .bar-shimmer {
+  width: 92% !important;
+  background: linear-gradient(90deg, #6D5EF5, #8B7FFF);
+}
+
+/* ------------------- ACCESSIBILITY PREFERS-REDUCED-MOTION ------------------- */
+@media (prefers-reduced-motion: reduce) {
+  .animate-route-draw {
+    animation: none;
+    stroke-dashoffset: 0;
+    opacity: 0.8;
+  }
+  .animate-beacon {
+    animation: none;
+    r: 8px;
+    opacity: 0.8;
+  }
+  .animate-node-pulse {
+    animation: none;
+    opacity: 0.5;
+  }
+  .reveal-on-scroll {
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
+  }
+  .search-cursor {
+    animation: none;
+  }
+  .blast-ring {
+    animation: none;
+  }
 }

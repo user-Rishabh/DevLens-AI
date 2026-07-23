@@ -15,6 +15,7 @@ from app.search.chunker import process_repo_chunks, index_repo, is_excluded_file
 from app.search.embeddings import embed_chunk
 from app.search.hybrid_search import hybrid_search
 from app.analysis.quality_score import compute_repo_quality_scores
+from app.analysis.blast_radius import compute_blast_radius
 
 router = APIRouter()
 
@@ -200,6 +201,29 @@ def explain_file(
         model_used=model_name,
         cached=False
     )
+
+class TransitiveDependent(BaseModel):
+    file_path: str
+    depth: int
+    path: list[str]
+
+class BlastRadiusResponse(BaseModel):
+    file_path: str
+    direct_dependents: list[str]
+    transitive_dependents: list[TransitiveDependent]
+    total_affected_count: int
+
+@router.get("/files/blast-radius", response_model=BlastRadiusResponse)
+def get_file_blast_radius(
+    repo_id: str = Query(..., description="Unique repository identifier"),
+    file_path: str = Query(..., description="Relative file path within the repository"),
+    max_depth: int = Query(3, description="Maximum dependency depth to traverse")
+):
+    """
+    Computes the blast radius for a given file: returning direct and transitive dependents.
+    """
+    res = compute_blast_radius(repo_id=repo_id, file_path=file_path, max_depth=max_depth)
+    return res
 
 @router.get("/repos/{repo_id}/chunks-preview")
 def get_chunks_preview(repo_id: str):
