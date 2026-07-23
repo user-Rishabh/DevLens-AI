@@ -28,6 +28,7 @@ import OnboardingGuide from '../components/OnboardingGuide';
 import QualityScoreCard, { QualityScoreSummary } from '../components/QualityScoreCard';
 import ArchitectureMap from '../components/ArchitectureMap';
 import LandingPage from '../components/LandingPage';
+import LoadingScreen from '../components/LoadingScreen';
 
 export default function Home() {
   const [repoUrl, setRepoUrl] = useState('');
@@ -39,6 +40,7 @@ export default function Home() {
   const [isAnalyzed, setIsAnalyzed] = useState(false);
   const [repoName, setRepoName] = useState('');
   const [repoId, setRepoId] = useState('');
+  const [pendingRepoId, setPendingRepoId] = useState<string | null>(null); // used by LoadingScreen
   const [fileTree, setFileTree] = useState<FileTreeNodeType | null>(null);
   const [dependencies, setDependencies] = useState<any[]>([]);
   const [hotspots, setHotspots] = useState<HotspotType[]>([]);
@@ -140,6 +142,7 @@ export default function Home() {
     
     setIsLoading(true);
     setError(null);
+    setPendingRepoId(null);
     setSelectedFilePath('');
     setIsExplainerLoading(false);
     setLoadingPhase('Validating GitHub URL...');
@@ -147,9 +150,6 @@ export default function Home() {
     const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:8000';
     
     try {
-      // Small artificial delays to show phases smoothly to the user
-      setTimeout(() => setLoadingPhase('Cloning Repository (depth 100 with Git history)...'), 600);
-      
       const response = await fetch(`${apiUrl}/api/repos/ingest`, {
         method: 'POST',
         headers: {
@@ -158,32 +158,28 @@ export default function Home() {
         body: JSON.stringify({ github_url: repoUrl.trim() }),
       });
       
-      setLoadingPhase('Analyzing dependency graph & Git file hotspots...');
-      
       const data = await response.json();
       
       if (!response.ok) {
         throw new Error(data.detail || 'Failed to ingest repository');
       }
       
-      // Update states on success
+      // Store dashboard data (but don't show dashboard yet — LoadingScreen will wait for indexing)
       setRepoId(data.repo_id);
       setRepoName(data.repo_name);
       setFileTree(data.file_tree);
       setDependencies(data.dependencies);
       setHotspots(data.hotspots);
-      setIsAnalyzed(true);
-      
-      // Select the files tab by default
-      setSidebarTab('files');
 
-      // Trigger background indexing asynchronously (no await)
+      // Now make the repo_id available for LoadingScreen to start polling /status
+      setPendingRepoId(data.repo_id);
+
+      // Kick off background indexing (LoadingScreen polls the /status endpoint to track progress)
       handleIndex(data.repo_id);
       
-      // Fetch code quality scores
+      // Fetch code quality scores in background
       fetchQualityScores(data.repo_id);
       
-      // Explicitly log the received dependency graph to the developer console
       console.log('=========== DevLens AI Ingestion Report ===========');
       console.log('Repo ID:', data.repo_id);
       console.log('Project Name:', data.repo_name);
@@ -193,10 +189,31 @@ export default function Home() {
     } catch (err: any) {
       console.error(err);
       setError(err.message || 'An unexpected error occurred while communicating with the backend.');
-    } finally {
       setIsLoading(false);
       setLoadingPhase('');
     }
+    // NOTE: We do NOT call setIsLoading(false) here on success — LoadingScreen
+    // controls the transition via onComplete when /status returns 'done'.
+  };
+
+  // Called by LoadingScreen once the settling animation finishes
+  const handleLoadingComplete = () => {
+    setIsLoading(false);
+    setPendingRepoId(null);
+    setSidebarTab('files');
+    setIsAnalyzed(true);
+  };
+
+  // Called when user clicks Try Again / Back from LoadingScreen
+  const handleLoadingRetry = () => {
+    setIsLoading(false);
+    setPendingRepoId(null);
+    setError(null);
+    setRepoId('');
+    setRepoName('');
+    setFileTree(null);
+    setDependencies([]);
+    setHotspots([]);
   };
 
   const handleReset = () => {
@@ -219,7 +236,21 @@ export default function Home() {
     setDashboardTab('explore');
   };
 
-  if (!isAnalyzed && !isLoading) {
+  // ── Render guards ─────────────────────────────────────────────────────────
+  // 1. Full-page LoadingScreen while ingestion/indexing is running
+  if (isLoading) {
+    return (
+      <LoadingScreen
+        repoUrl={repoUrl}
+        repoId={pendingRepoId}
+        onComplete={handleLoadingComplete}
+        onRetry={handleLoadingRetry}
+      />
+    );
+  }
+
+  // 2. Landing page when no repo has been analyzed yet
+  if (!isAnalyzed) {
     return (
       <LandingPage
         repoUrl={repoUrl}
@@ -282,22 +313,7 @@ export default function Home() {
           </div>
         </header>
 
-        {/* LOADING STATE VIEW */}
-        {isLoading && (
-          <div className="min-h-[60vh] flex flex-col items-center justify-center max-w-md mx-auto text-center">
-            <div className="relative mb-6">
-              <div className="h-16 w-16 border-4 border-indigo-500/25 border-t-indigo-500 rounded-full animate-spin" />
-              <FolderTree className="w-6 h-6 text-indigo-400 absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 animate-pulse" />
-            </div>
-            <h3 className="text-white font-semibold text-lg mb-2 font-display">Calculating Codebase Route</h3>
-            <p className="text-[#3ED9C7] text-sm font-mono animate-pulse mb-1">{loadingPhase}</p>
-            <p className="text-zinc-500 text-xs font-mono">
-              Calculating imports dependency linkages and processing git commit history for hotspot detection.
-            </p>
-          </div>
-        )}
 
-        {/* DASHBOARD VIEW (Successfully Ingested) */}
         {!isLoading && isAnalyzed && fileTree && (
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 my-4">
             

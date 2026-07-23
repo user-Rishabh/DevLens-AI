@@ -1,5 +1,7 @@
 import os
 import hashlib
+import time
+from typing import Optional
 from fastapi import APIRouter, HTTPException, Query
 from pydantic import BaseModel
 
@@ -11,13 +13,40 @@ from app.analysis.git_hotspots import get_hotspots
 from app.db import supabase, save_file_contents, save_repo_analysis
 from app.llm.summarizer import summarize_file
 from app.llm.rag_answer import generate_rag_answer
-from app.search.chunker import process_repo_chunks, index_repo, is_excluded_file
+from app.search.chunker import process_repo_chunks, is_excluded_file
 from app.search.embeddings import embed_chunk
 from app.search.hybrid_search import hybrid_search
 from app.analysis.quality_score import compute_repo_quality_scores
 from app.analysis.blast_radius import compute_blast_radius
 
 router = APIRouter()
+
+# ---------------------------------------------------------------------------
+# In-memory repo ingestion/indexing progress tracker
+# Keys are repo_id strings; values are status dicts.
+# Stages (in order): cloning, parsing, git_mining, saving, chunking, embedding, indexing, done
+# ---------------------------------------------------------------------------
+_repo_status: dict[str, dict] = {}
+
+VALID_STAGES = [
+    "cloning",
+    "parsing",
+    "git_mining",
+    "saving",
+    "chunking",
+    "embedding",
+    "indexing",
+    "done",
+]
+
+def _set_stage(repo_id: str, stage: str, error: Optional[str] = None):
+    """Update the in-memory progress record for a given repo_id."""
+    if repo_id not in _repo_status:
+        _repo_status[repo_id] = {"stage": stage, "error": error, "updated_at": time.time()}
+    else:
+        _repo_status[repo_id]["stage"] = stage
+        _repo_status[repo_id]["error"] = error
+        _repo_status[repo_id]["updated_at"] = time.time()
 
 class IngestRequest(BaseModel):
     github_url: str
@@ -61,6 +90,9 @@ def ingest_repository(request: IngestRequest):
         
     # 2. Generate a stable unique repo_id from the repository URL
     repo_id = hashlib.sha256(github_url_str.encode("utf-8")).hexdigest()[:16]
+
+    # Initialize progress tracking
+    _set_stage(repo_id, "cloning")
         
     local_path = None
     try:
@@ -68,21 +100,29 @@ def ingest_repository(request: IngestRequest):
         local_path = clone_repo(github_url_str)
         
         # 4. Build the file tree structure
+        _set_stage(repo_id, "parsing")
         file_tree = build_file_tree(local_path)
         
         if not file_tree or not file_tree.get("children"):
+            _set_stage(repo_id, "done", error="Failed to parse repository structure. The repository might be empty or restricted.")
             raise HTTPException(
                 status_code=500,
                 detail="Failed to parse repository structure. The repository might be empty or restricted."
             )
             
         # 5. Perform code analysis (dependencies & git hotspots)
+        _set_stage(repo_id, "git_mining")
         dependencies = extract_dependencies(local_path, file_tree)
         hotspots = get_hotspots(local_path)
         
+        # 6. Save to database
+        _set_stage(repo_id, "saving")
         project_files = get_all_project_files(file_tree)
         save_file_contents(repo_id, local_path, project_files)
         save_repo_analysis(repo_id, file_tree, dependencies, hotspots)
+
+        # Mark ingest complete; indexing will update from here
+        _set_stage(repo_id, "chunking")
             
         return IngestResponse(
             repo_id=repo_id,
@@ -91,6 +131,12 @@ def ingest_repository(request: IngestRequest):
             dependencies=dependencies,
             hotspots=hotspots
         )
+
+    except HTTPException:
+        raise
+    except Exception as e:
+        _set_stage(repo_id, "done", error=str(e))
+        raise
         
     finally:
         # 7. Guarantee cleanup of cloned directory
@@ -238,6 +284,18 @@ def get_chunks_preview(repo_id: str):
         )
     return chunks
 
+@router.get("/repos/{repo_id}/status")
+def get_repo_status(repo_id: str):
+    """
+    Returns the current processing stage for a repository ingestion/indexing job.
+    Stages (in order): cloning, parsing, git_mining, saving, chunking, embedding, indexing, done
+    The frontend polls this endpoint every 1-2 seconds to drive the loading screen.
+    """
+    status = _repo_status.get(repo_id)
+    if status is None:
+        return {"stage": "unknown", "error": None, "updated_at": None}
+    return status
+
 @router.post("/repos/{repo_id}/index")
 def trigger_repository_index(repo_id: str, force_reindex: bool = Query(False, description="Forces re-extraction and re-embedding of codebase chunks")):
     """
@@ -245,13 +303,81 @@ def trigger_repository_index(repo_id: str, force_reindex: bool = Query(False, de
     NOTE: In production environments with large repos, this should be executed as an asynchronous background task.
     """
     try:
-        summary = index_repo(repo_id, force_reindex=force_reindex)
+        _set_stage(repo_id, "chunking")
+        # Run chunking + embedding + indexing with stage updates
+        summary = _index_repo_with_stages(repo_id, force_reindex=force_reindex)
+        _set_stage(repo_id, "done")
         return summary
     except Exception as e:
+        _set_stage(repo_id, "done", error=str(e))
         raise HTTPException(
             status_code=500,
             detail=f"Repository indexing failed: {str(e)}"
         )
+
+def _index_repo_with_stages(repo_id: str, force_reindex: bool = False) -> dict:
+    """
+    Wraps index_repo with intermediate stage status updates so the frontend
+    loading screen can show real progress during long embedding runs.
+    """
+    if supabase is None:
+        raise ValueError("Supabase is not initialized.")
+    
+    # Skip if already indexed (idempotency)
+    if not force_reindex:
+        try:
+            existing = supabase.table("code_chunks")\
+                .select("file_path")\
+                .eq("repo_id", repo_id)\
+                .execute()
+            if existing.data and len(existing.data) > 0:
+                unique_files = len(set(row["file_path"] for row in existing.data))
+                return {
+                    "chunks_indexed": len(existing.data),
+                    "files_processed": unique_files,
+                    "message": "Repository indexing skipped: already indexed."
+                }
+        except Exception:
+            pass
+
+    # Stage: chunking
+    _set_stage(repo_id, "chunking")
+    chunks = process_repo_chunks(repo_id)
+    if not chunks:
+        return {"chunks_indexed": 0, "files_processed": 0, "message": "No files found to index."}
+
+    # Stage: embedding
+    _set_stage(repo_id, "embedding")
+    from app.search.embeddings import embed_chunks_batch
+    chunks = embed_chunks_batch(chunks)
+
+    # Stage: indexing (writing to DB)
+    _set_stage(repo_id, "indexing")
+    supabase.table("code_chunks").delete().eq("repo_id", repo_id).execute()
+    records = [
+        {
+            "repo_id": repo_id,
+            "file_path": c["file_path"],
+            "chunk_type": c["chunk_type"],
+            "name": c["name"],
+            "parent_class": c.get("parent_class"),
+            "start_line": c["start_line"],
+            "end_line": c["end_line"],
+            "content": c["content"],
+            "embedding": c["embedding"],
+        }
+        for c in chunks
+    ]
+    chunk_size = 100
+    for i in range(0, len(records), chunk_size):
+        supabase.table("code_chunks").insert(records[i:i + chunk_size]).execute()
+
+    unique_files_count = len(set(c["file_path"] for c in chunks))
+    return {
+        "chunks_indexed": len(records),
+        "files_processed": unique_files_count,
+        "message": "Semantic indexing completed successfully.",
+    }
 
 @router.delete("/repos/{repo_id}/chunks/cleanup-noise")
 def cleanup_noise_chunks(repo_id: str):
