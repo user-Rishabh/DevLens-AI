@@ -27,6 +27,7 @@ import SemanticSearch from '../components/SemanticSearch';
 import OnboardingGuide from '../components/OnboardingGuide';
 import QualityScoreCard, { QualityScoreSummary } from '../components/QualityScoreCard';
 import ArchitectureMap from '../components/ArchitectureMap';
+import LandingPage from '../components/LandingPage';
 
 export default function Home() {
   const [repoUrl, setRepoUrl] = useState('');
@@ -218,6 +219,19 @@ export default function Home() {
     setDashboardTab('explore');
   };
 
+  if (!isAnalyzed && !isLoading) {
+    return (
+      <LandingPage
+        repoUrl={repoUrl}
+        setRepoUrl={setRepoUrl}
+        handleAnalyze={handleAnalyze}
+        isLoading={isLoading}
+        loadingPhase={loadingPhase}
+        error={error}
+      />
+    );
+  }
+
   const { files: fileCount, folders: folderCount } = countTreeNodes(fileTree);
 
   return (
@@ -231,31 +245,34 @@ export default function Home() {
         
         {/* Header */}
         <header className="flex justify-between items-center mb-8 border-b border-zinc-900 pb-4">
-          <div className="flex items-center gap-3">
+          <button 
+            onClick={handleReset}
+            className="flex items-center gap-3 hover:opacity-80 transition-opacity cursor-pointer text-left"
+          >
             <div className="p-2.5 bg-indigo-600/10 border border-indigo-500/20 rounded-xl">
               <Cpu className="w-5 h-5 text-indigo-400" />
             </div>
             <div>
-              <span className="font-bold text-lg tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-zinc-50 via-zinc-200 to-indigo-300">
-                DevLens <span className="text-indigo-400">AI</span>
+              <span className="font-bold text-lg tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-zinc-50 via-zinc-200 to-indigo-300 font-display">
+                DevLens <span className="text-[#3ED9C7]">AI</span>
               </span>
               <span className="block text-[9px] text-zinc-500 font-mono leading-none mt-0.5">Ingestion & Analytics active</span>
             </div>
-          </div>
+          </button>
           
           <div className="flex items-center gap-4">
             {isAnalyzed && (
               <button
                 onClick={handleReset}
                 disabled={isExplainerLoading}
-                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-zinc-800 hover:border-zinc-700 bg-zinc-900/30 hover:bg-zinc-900/70 text-zinc-400 hover:text-zinc-200 text-xs transition-all duration-200 cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-zinc-800 hover:border-zinc-700 bg-zinc-900/30 hover:bg-zinc-900/70 text-zinc-400 hover:text-zinc-200 text-xs transition-all duration-200 cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed font-mono"
               >
                 <ArrowLeft className="w-3.5 h-3.5" />
                 Analyze Another
               </button>
             )}
             <a 
-              href="https://github.com" 
+              href="https://github.com/user-Rishabh/DevLens-AI" 
               target="_blank" 
               rel="noreferrer"
               className="p-2 text-zinc-400 hover:text-zinc-100 transition-colors duration-200"
@@ -272,122 +289,11 @@ export default function Home() {
               <div className="h-16 w-16 border-4 border-indigo-500/25 border-t-indigo-500 rounded-full animate-spin" />
               <FolderTree className="w-6 h-6 text-indigo-400 absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 animate-pulse" />
             </div>
-            <h3 className="text-white font-semibold text-lg mb-2">Analyzing Repository</h3>
-            <p className="text-indigo-400 text-sm font-mono animate-pulse mb-1">{loadingPhase}</p>
-            <p className="text-zinc-500 text-xs">
+            <h3 className="text-white font-semibold text-lg mb-2 font-display">Calculating Codebase Route</h3>
+            <p className="text-[#3ED9C7] text-sm font-mono animate-pulse mb-1">{loadingPhase}</p>
+            <p className="text-zinc-500 text-xs font-mono">
               Calculating imports dependency linkages and processing git commit history for hotspot detection.
             </p>
-          </div>
-        )}
-
-        {/* HOMEPAGE VIEW (Initial Form) */}
-        {!isLoading && !isAnalyzed && (
-          <div className="max-w-3xl mx-auto my-12">
-            
-            {/* Hero Section */}
-            <div className="text-center mb-12">
-              <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-indigo-500/5 border border-indigo-500/10 text-xs text-indigo-400 font-medium mb-6 backdrop-blur-sm">
-                <span className="flex h-2 w-2 rounded-full bg-indigo-400 animate-pulse" />
-                Phase 1 Complete: AI File Explainer Active
-              </div>
-              
-              <h1 className="text-4xl sm:text-5xl font-extrabold tracking-tight text-white mb-6 leading-tight">
-                Inspect Codebases <br />
-                <span className="bg-clip-text text-transparent bg-gradient-to-r from-indigo-400 via-violet-400 to-indigo-300">
-                  Instantly and Safely
-                </span>
-              </h1>
-              
-              <p className="text-base text-zinc-400 mb-8 max-w-xl mx-auto leading-relaxed">
-                Provide any public GitHub repository. We will clone, parse imports, compute hotspots, and generate structured plain-English file explanations.
-              </p>
-
-              {/* Error Alert Box */}
-              {error && (
-                <div className="mb-6 max-w-xl mx-auto p-4 rounded-xl bg-red-950/20 border border-red-500/20 text-left flex gap-3 items-start">
-                  <AlertTriangle className="w-5 h-5 text-red-400 shrink-0 mt-0.5" />
-                  <div>
-                    <h4 className="text-red-300 font-semibold text-sm">Analysis Failed</h4>
-                    <p className="text-red-400/90 text-xs mt-1">{error}</p>
-                  </div>
-                </div>
-              )}
-
-              {/* Repository Input Form */}
-              <form onSubmit={handleAnalyze} className="max-w-2xl mx-auto mb-8">
-                <div className="glass-panel p-2 rounded-2xl flex flex-col sm:flex-row gap-2 shadow-2xl shadow-indigo-950/20">
-                  <div className="flex-1 flex items-center gap-3 px-3 py-2 sm:py-0">
-                    <GitBranch className="w-5 h-5 text-zinc-500 shrink-0" />
-                    <input 
-                      type="url" 
-                      required
-                      placeholder="https://github.com/username/repository"
-                      value={repoUrl}
-                      onChange={(e) => setRepoUrl(e.target.value)}
-                      className="w-full bg-transparent text-zinc-100 placeholder-zinc-500 text-sm focus:outline-none py-1.5"
-                    />
-                  </div>
-                  <button 
-                    type="submit"
-                    className="w-full sm:w-auto px-6 py-3 rounded-xl bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 text-white font-medium text-sm transition-all duration-200 shadow-lg shadow-indigo-600/20 active:scale-[0.98] flex items-center justify-center gap-2 shrink-0 cursor-pointer"
-                  >
-                    Analyze Repository
-                    <ArrowRight className="w-4 h-4" />
-                  </button>
-                </div>
-              </form>
-
-              {/* Quick Demo Links */}
-              <div className="flex items-center justify-center gap-3 text-xs text-zinc-500">
-                <span>Try an example:</span>
-                <button 
-                  type="button"
-                  onClick={() => setRepoUrl('https://github.com/octocat/Spoon-Knife')}
-                  className="text-zinc-400 hover:text-indigo-400 transition-colors duration-150 underline decoration-zinc-700 hover:decoration-indigo-500 underline-offset-4"
-                >
-                  octocat/Spoon-Knife
-                </button>
-                <span>•</span>
-                <button 
-                  type="button"
-                  onClick={() => setRepoUrl('https://github.com/user-Rishabh/DevLens-AI')}
-                  className="text-zinc-400 hover:text-indigo-400 transition-colors duration-150 underline decoration-zinc-700 hover:decoration-indigo-500 underline-offset-4"
-                >
-                  user-Rishabh/DevLens-AI
-                </button>
-              </div>
-            </div>
-
-            {/* Feature Highlights Grid */}
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mt-16">
-              <div className="glass-panel p-5 rounded-xl border border-indigo-500/10">
-                <div className="p-2.5 bg-indigo-500/5 border border-indigo-500/25 rounded-lg w-fit mb-4">
-                  <BookOpen className="w-4 h-4 text-indigo-400" />
-                </div>
-                <h3 className="text-zinc-200 font-semibold text-xs mb-2">AI File Explainer</h3>
-                <p className="text-zinc-400 text-[11px] leading-relaxed">
-                  Click on any file to immediately review plain-English AI summaries describing its purpose, key classes/exports, and side effects.
-                </p>
-              </div>
-              <div className="glass-panel p-5 rounded-xl border border-indigo-500/10">
-                <div className="p-2.5 bg-indigo-500/5 border border-indigo-500/25 rounded-lg w-fit mb-4">
-                  <Flame className="w-4 h-4 text-indigo-400" />
-                </div>
-                <h3 className="text-zinc-200 font-semibold text-xs mb-2">Git Hotspots</h3>
-                <p className="text-zinc-400 text-[11px] leading-relaxed">
-                  Identifies key codebase files by calculating commit edit frequency logs across history.
-                </p>
-              </div>
-              <div className="glass-panel p-5 rounded-xl border border-indigo-500/10">
-                <div className="p-2.5 bg-indigo-500/5 border border-indigo-500/25 rounded-lg w-fit mb-4">
-                  <Network className="w-4 h-4 text-indigo-400" />
-                </div>
-                <h3 className="text-zinc-200 font-semibold text-xs mb-2">Imports Mapping</h3>
-                <p className="text-zinc-400 text-[11px] leading-relaxed">
-                  Tracks internal references between JS, TS, and Python modules. Outputs the edges graph list to the console.
-                </p>
-              </div>
-            </div>
           </div>
         )}
 
