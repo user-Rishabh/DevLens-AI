@@ -20,10 +20,7 @@ app = FastAPI(
     version="0.1.0"
 )
 
-# Register API Router
-app.include_router(api_router, prefix="/api")
-
-# CORS configuration
+# CORS configuration — must be added BEFORE routers are included
 origins = [
     "http://localhost:5173",
     "http://127.0.0.1:5173",
@@ -37,6 +34,9 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# Register API Router
+app.include_router(api_router, prefix="/api")
 
 @app.get("/api/health")
 async def health_check():

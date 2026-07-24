@@ -18,6 +18,7 @@ from app.search.embeddings import embed_chunk
 from app.search.hybrid_search import hybrid_search
 from app.analysis.quality_score import compute_repo_quality_scores
 from app.analysis.blast_radius import compute_blast_radius
+from app.llm.onboarding_guide import generate_onboarding_guide
 
 router = APIRouter()
 
