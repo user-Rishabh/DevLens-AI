@@ -390,12 +390,12 @@ postgrest.exceptions.APIError: {'message': 'column code_chunks.content_tsv does 
 [HYBRID SEARCH] repo_id: '1ace867376ce381c', query: 'how is auth handled'
   Vector results raw count: 30
   Keyword results raw count: 30
-[VECTOR SEARCH] repo_id value: '5870b3d97abd0114', type: <class 'str'>, query: 'hwo is auth handleld'
-[VECTOR SEARCH PYTHON] Fetched 85 chunks for repo_id: 5870b3d97abd0114
-[VECTOR SEARCH SUCCESS] Returning 30 results
-[KEYWORD SEARCH] repo_id value: '5870b3d97abd0114', type: <class 'str'>, query: 'hwo is auth handleld'
-[KEYWORD SEARCH PYTHON] Fetched 85 chunks for repo_id: 5870b3d97abd0114
-[KEYWORD SEARCH SUCCESS] Returning 30 results
-[HYBRID SEARCH] repo_id: '5870b3d97abd0114', query: 'hwo is auth handleld'
-  Vector results raw count: 30
-  Keyword results raw count: 30
+--- HEALTH CHECK DB DIAGNOSTICS ---
+Error in health check diagnostics: {'message': 'column code_chunks.content_tsv does not exist', 'code': '42703', 'hint': None, 'details': None}
+Traceback (most recent call last):
+  File "C:\Users\Anil\Desktop\Projects\DevLens-AI\DevLens-AI\backend\app\main.py", line 54, in health_check
+    res = supabase.table("code_chunks").select("id, repo_id, file_path, content_tsv").limit(5).execute()
+  File "C:\Users\Anil\Desktop\Projects\DevLens-AI\DevLens-AI\backend\.venv\Lib\site-packages\postgrest\_sync\request_builder.py", line 96, in execute
+    raise APIError(dict(json_obj))
+postgrest.exceptions.APIError: {'message': 'column code_chunks.content_tsv does not exist', 'code': '42703', 'hint': None, 'details': None}
+
