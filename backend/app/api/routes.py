@@ -146,7 +146,8 @@ def ingest_repository(request: IngestRequest):
 @router.get("/files/explain", response_model=ExplainResponse)
 def explain_file(
     repo_id: str = Query(..., description="Unique repository identifier"),
-    file_path: str = Query(..., description="Relative file path within the repository")
+    file_path: str = Query(..., description="Relative file path within the repository"),
+    force_regenerate: bool = Query(False, description="Whether to force regenerate the summary and bypass the cache")
 ):
     """
     Retrieves or generates an AI explanation/summary for a given file:
@@ -178,24 +179,25 @@ def explain_file(
             cached=False
         )
 
-    # 1. Check cache first
-    try:
-        cache_check = supabase.table("file_summaries")\
-            .select("summary_text, model_used")\
-            .eq("repo_id", repo_id)\
-            .eq("file_path", file_path)\
-            .execute()
-        
-        if cache_check.data and len(cache_check.data) > 0:
-            cached_data = cache_check.data[0]
-            return ExplainResponse(
-                summary=cached_data["summary_text"],
-                model_used=cached_data["model_used"],
-                cached=True
-            )
-    except Exception as e:
-        print(f"[DevLens AI Database Error] Failed to query file_summaries cache: {str(e)}")
-        # Proceed to fetch and overwrite/generate in case database has issues
+    # 1. Check cache first (unless force regenerating)
+    if not force_regenerate:
+        try:
+            cache_check = supabase.table("file_summaries")\
+                .select("summary_text, model_used")\
+                .eq("repo_id", repo_id)\
+                .eq("file_path", file_path)\
+                .execute()
+            
+            if cache_check.data and len(cache_check.data) > 0:
+                cached_data = cache_check.data[0]
+                return ExplainResponse(
+                    summary=cached_data["summary_text"],
+                    model_used=cached_data["model_used"],
+                    cached=True
+                )
+        except Exception as e:
+            print(f"[DevLens AI Database Error] Failed to query file_summaries cache: {str(e)}")
+            # Proceed to fetch and overwrite/generate in case database has issues
 
     # 2. Retrieve raw file content from database
     try:
