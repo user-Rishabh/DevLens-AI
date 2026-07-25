@@ -268,7 +268,7 @@ export default function FileExplainer({
                   </button>
                 </div>
 
-                <div className="text-zinc-300 text-xs leading-relaxed font-sans bg-zinc-950/40 p-4 rounded-xl border border-zinc-900 whitespace-pre-wrap">
+                <div className="text-zinc-200 text-base leading-relaxed font-sans bg-zinc-950/40 p-4 rounded-xl border border-zinc-900 whitespace-pre-wrap">
                   {summary}
                 </div>
               </div>
