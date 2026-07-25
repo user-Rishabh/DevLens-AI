@@ -77,17 +77,26 @@ def summarize_file(file_path: str, file_content: str) -> str:
             file_content[-4000:]
         )
 
-    # Prompt instructing the LLM to deliver a concise, structured outline
+    # Prompt instructing the LLM to deliver a longer, plain-English explanation
     prompt = (
-        f"You are a Senior Software Architect reviewing a codebase.\n"
-        f"Provide a concise, plain-English summary of the file: '{file_path}'.\n"
-        f"Your summary must cover:\n"
-        f"1. Primary Purpose: What is this file's main role or goal in the codebase?\n"
-        f"2. Key Components: What are the main classes, functions, or exports defined?\n"
-        f"3. Side Effects/Dependencies: Does it perform external network calls, database queries, or write to disk?\n\n"
-        f"Be very concise. Limit your total response to a single short, structured paragraph (max 150 words). "
-        f"Do not write introductory or concluding phrases.\n\n"
-        f"File Content:\n```\n{file_content}\n```"
+        f"You are a friendly and knowledgeable colleague explaining a file to another teammate.\n"
+        f"Provide a clear, detailed, plain-language explanation of the file: '{file_path}'.\n\n"
+        f"YOUR EXPLANATION MUST FOLLOW THESE GUIDELINES:\n"
+        f"1. Length & Structure: Aim for roughly 3 to 5 sentences or a short, descriptive paragraph. Do not write a single dense/terse sentence.\n"
+        f"2. Language: Use plain, everyday language. Avoid unnecessary developer jargon. If you must use a technical term, explain it immediately in plain English (for example, instead of saying 'no side effects', explain that 'this file doesn't change anything elsewhere in the application').\n"
+        f"3. Content Checklist:\n"
+        f"   - (a) What this file is for: State its primary goal or role in one clear, simple sentence that even a non-developer could understand.\n"
+        f"   - (b) What is inside it: Describe the key parts, elements, or logic contained in the file, focusing on what they do rather than just listing technical constructs like classes, functions, or exports.\n"
+        f"   - (c) Project connections: If applicable, explain how it connects to the rest of the project (e.g. how other parts of the system depend on or interact with it).\n"
+        f"4. Tone: Keep the tone clear, helpful, and slightly conversational. Avoid a clinical, dry, or audit-style summary.\n"
+        f"5. Introductory text: Do not include introductory phrases like 'Here is the summary' or concluding remarks. Start directly with the explanation.\n\n"
+        f"STYLE GUIDE CONTRAST (Follow this style direction):\n"
+        f"- TOO SHORT/TECHNICAL (AVOID THIS STYLE):\n"
+        f"  \"The primary purpose of the '.gitignore' file is to specify files and directories that should be ignored by Git. Key components include patterns for Node, Python, and environment-specific files. This file has no side effects or dependencies.\"\n"
+        f"- BETTER / PLAIN LANGUAGE (AIM FOR THIS STYLE):\n"
+        f"  \"This file tells Git which files and folders to leave alone when saving changes to the project — things like temporary build files, personal environment settings, and installed packages that don't need to be tracked or shared with other developers. It's organized into sections for different tools (like Node.js and Python), so the project stays clean and doesn't accidentally upload things like passwords or huge dependency folders to GitHub. This file doesn't affect how the app runs — it only affects what gets saved and shared through version control.\"\n\n"
+        f"File Content to summarize:\n"
+        f"```\n{file_content}\n```"
     )
 
     # Retry configurations for 429 errors from Groq

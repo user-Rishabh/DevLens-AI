@@ -10,7 +10,8 @@ import {
   ArrowRight,
   ShieldCheck,
   GitCommit,
-  Network
+  Network,
+  RefreshCw
 } from 'lucide-react';
 
 interface TransitiveDep {
@@ -117,6 +118,35 @@ export default function FileExplainer({
 
     fetchAllFileData();
   }, [repoId, filePath]);
+
+  const handleRegenerate = async () => {
+    if (!repoId || !filePath || loadingSummary) return;
+    setLoadingSummary(true);
+    setSummaryError(null);
+    setSummary('');
+    if (onLoadingStateChange) onLoadingStateChange(true);
+    
+    const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:8000';
+    const encodedPath = encodeURIComponent(filePath);
+    try {
+      const res = await fetch(`${apiUrl}/api/files/explain?repo_id=${repoId}&file_path=${encodedPath}&force_regenerate=true`);
+      if (res.ok) {
+        const sumData = await res.json();
+        setSummary(sumData.summary);
+        setModelUsed(sumData.model_used);
+        setCached(sumData.cached);
+      } else {
+        const sumErr = await res.json();
+        setSummaryError(sumErr.detail || 'Failed to regenerate explanation.');
+      }
+    } catch (err: any) {
+      console.error(err);
+      setSummaryError(err.message || 'An error occurred while regenerating explanation.');
+    } finally {
+      setLoadingSummary(false);
+      if (onLoadingStateChange) onLoadingStateChange(false);
+    }
+  };
 
   const fileName = filePath.split('/').pop() || filePath;
   const directory = filePath.substring(0, filePath.lastIndexOf('/'));
@@ -226,6 +256,16 @@ export default function FileExplainer({
                       Source: LLM CALCULATION
                     </div>
                   )}
+
+                  <button
+                    onClick={handleRegenerate}
+                    disabled={loadingSummary}
+                    className="flex items-center gap-1.5 px-2.5 py-1 bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 hover:border-zinc-700 rounded-lg text-zinc-400 hover:text-zinc-200 text-[10px] font-mono transition-all cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed ml-auto"
+                    title="Force regenerate summary"
+                  >
+                    <RefreshCw className={`w-3 h-3 text-zinc-500 ${loadingSummary ? 'animate-spin' : ''}`} />
+                    Regenerate
+                  </button>
                 </div>
 
                 <div className="text-zinc-300 text-xs leading-relaxed font-sans bg-zinc-950/40 p-4 rounded-xl border border-zinc-900 whitespace-pre-wrap">
