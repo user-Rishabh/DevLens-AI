@@ -46,75 +46,10 @@ const NAV_ITEMS: NavItem[] = [
   { id: 'quality',      label: 'Quality',     icon: <ShieldCheck className="w-4 h-4" /> },
 ];
 
-function NotReadyState({ icon, title, detail }: { icon: React.ReactNode; title: string; detail: string }) {
-  return (
-    <div className="flex flex-col items-center justify-center h-full min-h-[40vh] gap-4 text-center px-6">
-      <div className="p-4 rounded-2xl bg-[#12151D] border border-[#1F2330] text-[#8A8F9C]">{icon}</div>
-      <div>
-        <p className="text-[#E8E9ED] text-sm font-semibold">{title}</p>
-        <p className="text-[#8A8F9C] text-xs mt-1 max-w-xs leading-relaxed font-mono">{detail}</p>
-      </div>
-    </div>
-  );
-}
-
-// ── Animated Number Component (Counts up on mount) ───────────────────────
-function AnimatedNumber({ value }: { value: number }) {
-  const [displayVal, setDisplayVal] = useState(0);
-
-  useEffect(() => {
-    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    if (prefersReducedMotion) {
-      setDisplayVal(value);
-      return;
-    }
-
-    let start = 0;
-    const end = value;
-    if (start === end) {
-      setDisplayVal(end);
-      return;
-    }
-
-    const duration = 1000;
-    const startTime = performance.now();
-    let animationFrameId: number;
-
-    const updateNumber = (now: number) => {
-      const elapsed = now - startTime;
-      const progress = Math.min(elapsed / duration, 1);
-      const easeProgress = progress * (2 - progress); // easeOutQuad
-      const current = Math.floor(easeProgress * (end - start) + start);
-      setDisplayVal(current);
-
-      if (progress < 1) {
-        animationFrameId = requestAnimationFrame(updateNumber);
-      } else {
-        setDisplayVal(end);
-      }
-    };
-
-    animationFrameId = requestAnimationFrame(updateNumber);
-
-    return () => {
-      cancelAnimationFrame(animationFrameId);
-    };
-  }, [value]);
-
-  return <span>{displayVal}</span>;
-}
-
-// ── Stat Info Tooltip Component ──────────────────────────────────────────
-function StatTooltip({ text }: { text: string }) {
-  return (
-    <div className="group relative inline-flex items-center ml-1.5 text-zinc-500 hover:text-zinc-300 cursor-help select-none">
-      <span className="text-[10px] font-mono leading-none">ⓘ</span>
-      <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-48 p-2.5 rounded-xl bg-[#12151D] border border-[#1F2330] text-[10px] text-zinc-400 font-mono leading-normal shadow-2xl opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-50 text-center">
-        {text}
-      </div>
-    </div>
-  );
-}
+import NotReadyState from '../components/NotReadyState';
+import AnimatedNumber from '../components/AnimatedNumber';
+import StatTooltip from '../components/StatTooltip';
+import { useQualityScores } from '../hooks/useQualityScores';
 
 export default function Home() {
   const [repoUrl, setRepoUrl] = useState('');
@@ -146,9 +81,7 @@ export default function Home() {
   const [indexingError, setIndexingError] = useState<string | null>(null);
 
   // Quality score states
-  const [qualitySummary, setQualitySummary] = useState<QualityScoreSummary | null>(null);
-  const [qualityScoresMap, setQualityScoresMap] = useState<Record<string, number>>({});
-  const [loadingQuality, setLoadingQuality] = useState<boolean>(false);
+  const { qualitySummary, qualityScoresMap, loadingQuality, fetchQualityScores, resetQualityScores } = useQualityScores();
 
   useEffect(() => {
     if (!containerRef.current) return;
@@ -168,33 +101,6 @@ export default function Home() {
       setPillStyle({ opacity: 0, height: 0, top: 0 });
     }
   }, [activeSection]);
-
-  const fetchQualityScores = async (currentRepoId: string, force: boolean = false) => {
-    if (!currentRepoId) return;
-    setLoadingQuality(true);
-    try {
-      const url = force
-        ? `http://localhost:8000/api/repos/${currentRepoId}/quality-scores/compute?force_recompute=true`
-        : `http://localhost:8000/api/repos/${currentRepoId}/quality-scores`;
-      const method = force ? 'POST' : 'GET';
-      const response = await fetch(url, { method });
-      if (response.ok) {
-        const data = await response.json();
-        setQualitySummary(data);
-        if (data.scores && Array.isArray(data.scores)) {
-          const map: Record<string, number> = {};
-          data.scores.forEach((item: any) => {
-            map[item.file_path] = item.composite_score;
-          });
-          setQualityScoresMap(map);
-        }
-      }
-    } catch (err) {
-      console.error('Failed to fetch quality scores:', err);
-    } finally {
-      setLoadingQuality(false);
-    }
-  };
 
   // Background indexing fetcher
   const handleIndex = async (id: string, force: boolean = false) => {
@@ -326,8 +232,7 @@ export default function Home() {
     setHotspots([]);
     setRepoUrl('');
     setSelectedFilePath('');
-    setQualitySummary(null);
-    setQualityScoresMap({});
+    resetQualityScores();
     setIsExplainerLoading(false);
     setError(null);
     setIndexingStatus('idle');
@@ -709,83 +614,6 @@ export default function Home() {
   return (
     <div className="flex flex-col h-screen bg-[#0B0D12] text-[#E8E9ED] overflow-hidden" style={{ fontFamily: '"Inter", system-ui, sans-serif' }}>
       
-      {/* Styles for micro-animations */}
-      <style>{`
-        @keyframes overview-hover-key {
-          0% { transform: scale(1); }
-          50% { transform: scale(1.1) rotate(4deg); }
-          100% { transform: scale(1); }
-        }
-        @keyframes files-hover-key {
-          0% { transform: translateY(0); }
-          50% { transform: translateY(-2px); }
-          100% { transform: translateY(0); }
-        }
-        @keyframes flame-hover-key {
-          0% { transform: scaleY(1); }
-          35% { transform: scaleY(1.25) scaleX(0.85) skewX(-3deg); }
-          70% { transform: scaleY(0.9) scaleX(1.1) skewX(3deg); }
-          100% { transform: scaleY(1); }
-        }
-        @keyframes search-hover-key {
-          0% { transform: scale(1) translate(0, 0); }
-          50% { transform: scale(1.15) translate(-1px, -1px); }
-          100% { transform: scale(1) translate(0, 0); }
-        }
-        @keyframes arch-hover-key {
-          0% { transform: scale(1); }
-          50% { transform: scale(1.2); filter: drop-shadow(0 0 3px #3ED9C7); }
-          100% { transform: scale(1); }
-        }
-        @keyframes compass-hover-key {
-          0% { transform: rotate(0deg); }
-          50% { transform: rotate(45deg); }
-          100% { transform: rotate(0deg); }
-        }
-        @keyframes quality-hover-key {
-          0% { transform: scale(1); }
-          50% { transform: scale(1.1) translateY(-1px); }
-          100% { transform: scale(1); }
-        }
-        @keyframes fade-slide-in-key {
-          from {
-            opacity: 0;
-            transform: translateY(8px);
-          }
-          to {
-            opacity: 1;
-            transform: translateY(0);
-          }
-        }
-
-        @media (prefers-reduced-motion: no-preference) {
-          .animate-overview-hover:hover .icon-target {
-            animation: overview-hover-key 400ms ease-out;
-          }
-          .animate-files-hover:hover .icon-target {
-            animation: files-hover-key 350ms ease-out;
-          }
-          .animate-flame-hover:hover .icon-target {
-            animation: flame-hover-key 450ms ease-out;
-          }
-          .animate-search-hover:hover .icon-target {
-            animation: search-hover-key 350ms ease-out;
-          }
-          .animate-arch-hover:hover .icon-target {
-            animation: arch-hover-key 400ms ease-out;
-          }
-          .animate-compass-hover:hover .icon-target {
-            animation: compass-hover-key 400ms ease-in-out;
-          }
-          .animate-quality-hover:hover .icon-target {
-            animation: quality-hover-key 350ms ease-out;
-          }
-          .animate-fade-in-stagger {
-            animation: fade-slide-in-key 500ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
-            opacity: 0;
-          }
-        }
-      `}</style>
 
       {/* Persistent top bar */}
       <header className="flex-shrink-0 h-12 flex items-center justify-between px-4 border-b border-[#1F2330] bg-[#0B0D12] z-30">

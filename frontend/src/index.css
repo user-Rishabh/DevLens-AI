@@ -223,3 +223,79 @@ body {
     animation: none;
   }
 }
+
+/* ------------------- MICRO-ANIMATIONS ------------------- */
+@keyframes overview-hover-key {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.1) rotate(4deg); }
+  100% { transform: scale(1); }
+}
+@keyframes files-hover-key {
+  0% { transform: translateY(0); }
+  50% { transform: translateY(-2px); }
+  100% { transform: translateY(0); }
+}
+@keyframes flame-hover-key {
+  0% { transform: scaleY(1); }
+  35% { transform: scaleY(1.25) scaleX(0.85) skewX(-3deg); }
+  70% { transform: scaleY(0.9) scaleX(1.1) skewX(3deg); }
+  100% { transform: scaleY(1); }
+}
+@keyframes search-hover-key {
+  0% { transform: scale(1) translate(0, 0); }
+  50% { transform: scale(1.15) translate(-1px, -1px); }
+  100% { transform: scale(1) translate(0, 0); }
+}
+@keyframes arch-hover-key {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.2); filter: drop-shadow(0 0 3px #3ED9C7); }
+  100% { transform: scale(1); }
+}
+@keyframes compass-hover-key {
+  0% { transform: rotate(0deg); }
+  50% { transform: rotate(45deg); }
+  100% { transform: rotate(0deg); }
+}
+@keyframes quality-hover-key {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.1) translateY(-1px); }
+  100% { transform: scale(1); }
+}
+@keyframes fade-slide-in-key {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .animate-overview-hover:hover .icon-target {
+    animation: overview-hover-key 400ms ease-out;
+  }
+  .animate-files-hover:hover .icon-target {
+    animation: files-hover-key 350ms ease-out;
+  }
+  .animate-flame-hover:hover .icon-target {
+    animation: flame-hover-key 450ms ease-out;
+  }
+  .animate-search-hover:hover .icon-target {
+    animation: search-hover-key 350ms ease-out;
+  }
+  .animate-arch-hover:hover .icon-target {
+    animation: arch-hover-key 400ms ease-out;
+  }
+  .animate-compass-hover:hover .icon-target {
+    animation: compass-hover-key 400ms ease-in-out;
+  }
+  .animate-quality-hover:hover .icon-target {
+    animation: quality-hover-key 350ms ease-out;
+  }
+  .animate-fade-in-stagger {
+    animation: fade-slide-in-key 500ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    opacity: 0;
+  }
+}
