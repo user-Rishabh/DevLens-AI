@@ -1,4 +1,5 @@
 import os
+# pyrefly: ignore [missing-import]
 from supabase import create_client, Client
 
 supabase_url = os.getenv("SUPABASE_URL")
@@ -63,6 +64,7 @@ def save_repo_analysis(repo_id: str, file_tree: dict, dependencies: list, hotspo
         print("[DevLens AI Warning] Metadata caching aborted: Supabase client is not initialized.")
         return
         
+    success = False
     try:
         record = {
             "repo_id": repo_id,
@@ -72,8 +74,11 @@ def save_repo_analysis(repo_id: str, file_tree: dict, dependencies: list, hotspo
         }
         supabase.table("repo_analyses").upsert(record).execute()
         print(f"[DevLens AI] Saved analysis metadata for repo ID: {repo_id}")
+        success = True
     except Exception as e:
         print(f"[DevLens AI Error] Failed to save full repo analysis metadata: {str(e)}")
+
+    if not success:
         try:
             record_fallback = {
                 "repo_id": repo_id,
