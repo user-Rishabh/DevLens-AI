@@ -39,7 +39,7 @@ interface NavItem { id: Section; label: string; icon: React.ReactNode; }
 const NAV_ITEMS: NavItem[] = [
   { id: 'overview',     label: 'Overview',    icon: <LayoutDashboard className="w-4 h-4" /> },
   { id: 'files',        label: 'Files',        icon: <FolderTree className="w-4 h-4" /> },
-  { id: 'hotspots',     label: 'Hotspots',    icon: <Flame className="w-4 h-4" /> },
+  { id: 'hotspots',     label: 'Files to Watch', icon: <Flame className="w-4 h-4" /> },
   { id: 'search',       label: 'Search',      icon: <Search className="w-4 h-4" /> },
   { id: 'architecture', label: 'Architecture',icon: <Network className="w-4 h-4" /> },
   { id: 'onboarding',   label: 'Onboarding',  icon: <Compass className="w-4 h-4" /> },
@@ -343,7 +343,7 @@ export default function Home() {
           <span className="text-xs font-mono text-[#3ED9C7] uppercase tracking-wider">Repository</span>
           {indexingStatus === 'success' && (
             <span className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-[10px] font-mono">
-              <Check className="w-2.5 h-2.5" />{chunksIndexed !== null ? `${chunksIndexed} chunks indexed` : 'Indexed'}
+              <Check className="w-2.5 h-2.5" />{chunksIndexed !== null ? `${chunksIndexed} files ready to search` : 'Indexed'}
             </span>
           )}
           {indexingStatus === 'indexing' && (
@@ -369,8 +369,8 @@ export default function Home() {
         {[
           { label: 'Source Files',     value: fileCount,           icon: <Files className="w-4 h-4" />,      color: '#3ED9C7', tooltip: 'The total number of source code and asset files parsed in the repository.' },
           { label: 'Directories',      value: folderCount,         icon: <FolderTree className="w-4 h-4" />, color: '#8B7FFF', tooltip: 'The count of unique folder directories within the parsed structure.' },
-          { label: 'Dep. Edges',       value: dependencies.length, icon: <GitBranch className="w-4 h-4" />,  color: '#6D5EF5', tooltip: 'Total direct file-to-file import connections detected.' },
-          { label: 'Git Hotspots',     value: hotspots.length,     icon: <Flame className="w-4 h-4" />,      color: '#F5A623', tooltip: 'Number of high-activity source files tracked via commit logs.' },
+          { label: 'File Links',       value: dependencies.length, icon: <GitBranch className="w-4 h-4" />,  color: '#6D5EF5', tooltip: 'Total direct file-to-file connections (import relationships) detected.' },
+          { label: 'Frequently Changed', value: hotspots.length,   icon: <Flame className="w-4 h-4" />,      color: '#F5A623', tooltip: 'Number of files that change often — prime candidates for refactoring.' },
         ].map((stat, idx) => (
           <div
             key={stat.label}
@@ -389,7 +389,7 @@ export default function Home() {
             <div className="text-[10px] text-zinc-500 font-mono mt-1.5 border-t border-[#1F2330] pt-1.5">
               {idx === 0 && `Organized in ${folderCount} directories`}
               {idx === 1 && `Max directory depth: ${maxDepth}`}
-              {idx === 2 && `Density: ${(dependencies.length / Math.max(fileCount, 1)).toFixed(1)} edges/file`}
+              {idx === 2 && `Density: ${(dependencies.length / Math.max(fileCount, 1)).toFixed(1)} links/file`}
               {idx === 3 && (topHotspot ? `Top file: ${topHotspotName} (${topHotspotCommits} commits)` : 'No hotspot data')}
             </div>
           </div>
@@ -536,9 +536,9 @@ export default function Home() {
     <div className="p-8 max-w-3xl mx-auto w-full">
       <div className="mb-6">
         <span className="text-xs font-mono text-[#F5A623] uppercase tracking-wider">Git Telemetry</span>
-        <h2 className="text-2xl font-bold text-white mt-1" style={{ fontFamily: '"Space Grotesk", sans-serif' }}>Hotspot Analysis</h2>
+        <h2 className="text-2xl font-bold text-white mt-1" style={{ fontFamily: '"Space Grotesk", sans-serif' }}>Frequently Changed Files</h2>
         <p className="text-xs text-[#8A8F9C] mt-2 font-mono leading-relaxed">
-          Identify high-churn files with frequent commits. Code hotspots that change often are prime candidates for refactoring to prevent regressions and improve maintainability.
+          Files that change most often in your git history. These are prime candidates for refactoring to prevent regressions and improve maintainability.
         </p>
       </div>
       {hotspots.length > 0 ? <HotspotList hotspots={hotspots} /> : <NotReadyState icon={<Flame className="w-8 h-8" />} title="No hotspots detected" detail="No significant git churn signals were found in this repository's commit history." />}
@@ -548,7 +548,7 @@ export default function Home() {
   const renderSearch = () => (
     <div className="p-8 max-w-3xl mx-auto w-full">
       <div className="mb-6">
-        <span className="text-xs font-mono text-[#8B7FFF] uppercase tracking-wider">Hybrid RAG Search</span>
+        <span className="text-xs font-mono text-[#8B7FFF] uppercase tracking-wider">Smart Search</span>
         <h2 className="text-2xl font-bold text-white mt-1" style={{ fontFamily: '"Space Grotesk", sans-serif' }}>Semantic Search</h2>
         <p className="text-xs text-[#8A8F9C] mt-2 font-mono leading-relaxed">
           Ask architectural or behavioral questions in plain English. We scan both BM25 text keyword index and vector embeddings to extract relevant code blocks and explain them.

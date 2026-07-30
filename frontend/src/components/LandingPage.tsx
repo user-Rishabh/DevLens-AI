@@ -456,7 +456,7 @@ export default function LandingPage({
                   </span>
                   <Zap className="w-4 h-4 text-[#F5A623] group-hover:scale-125 transition-transform" />
                 </div>
-                <h3 className="font-display text-base font-bold text-white mb-2">Trace Blast Radius</h3>
+                <h3 className="font-display text-base font-bold text-white mb-2">See What's Affected</h3>
                 <p className="text-xs text-[#8A8F9C] leading-relaxed">
                   Select any file on the spatial map or file tree to calculate direct and transitive dependents with full impact flow chains before modifying function signatures or class interfaces.
                 </p>
@@ -474,7 +474,7 @@ export default function LandingPage({
                 </div>
                 <h3 className="font-display text-base font-bold text-white mb-2">Ship with Confidence</h3>
                 <p className="text-xs text-[#8A8F9C] leading-relaxed">
-                  Query the repository in plain English using hybrid RAG search and review cited AI file explanations to verify downstream safety before shipping PRs to production.
+                  Query the repository in plain English using Smart Search and review cited AI file explanations to verify downstream safety before shipping PRs to production.
                 </p>
               </div>
             </div>
@@ -504,7 +504,7 @@ export default function LandingPage({
             <div>
               <div className="flex items-center justify-between mb-3">
                 <span className="text-[10px] font-mono font-bold text-[#F5A623] uppercase tracking-wider block">
-                  LEGEND — BLAST RADIUS
+                  LEGEND — IMPACT ANALYSIS
                 </span>
                 <div className="relative">
                   <span className="absolute inset-0 rounded-full bg-[#F5A623] blast-ring opacity-0" />
@@ -534,7 +534,7 @@ export default function LandingPage({
               </div>
               <h3 className="font-display text-base font-bold text-white mb-2">2D Visual Node Link Graph</h3>
               <p className="text-xs text-[#8A8F9C] leading-relaxed">
-                Renders an interactive spatial map of repository files as nodes and import statements as directed edges. Includes a live Blast Radius Overlay toggle to visually highlight affected downstream modules in vibrant amber.
+                Renders an interactive spatial map of repository files as nodes and import statements as directed edges. Includes a live Impact View toggle to visually highlight affected downstream modules in vibrant amber.
               </p>
             </div>
           </div>
@@ -544,7 +544,7 @@ export default function LandingPage({
             <div>
               <div className="flex items-center justify-between mb-3">
                 <span className="text-[10px] font-mono font-bold text-[#8B7FFF] uppercase tracking-wider block">
-                  LEGEND — HYBRID RAG SEARCH
+                  LEGEND — SMART SEARCH
                 </span>
                 <Search className="w-4 h-4 text-[#8B7FFF] group-hover:scale-110 transition-transform" />
               </div>
@@ -565,7 +565,7 @@ export default function LandingPage({
             <div>
               <div className="flex items-center justify-between mb-3">
                 <span className="text-[10px] font-mono font-bold text-[#F5A623] uppercase tracking-wider block">
-                  LEGEND — GIT HOTSPOTS
+                  LEGEND — FILES TO WATCH
                 </span>
                 <Flame className="w-4 h-4 text-[#F5A623] hotspot-icon transition-all" />
               </div>

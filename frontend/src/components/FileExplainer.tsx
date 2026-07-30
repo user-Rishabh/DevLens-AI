@@ -200,7 +200,7 @@ export default function FileExplainer({
           }`}
         >
           <Zap className="w-3.5 h-3.5 text-amber-400" />
-          Blast Radius
+          What Depends On This
           {blastData && (
             <span className={`ml-1 px-1.5 py-0.2 rounded-full text-[10px] font-mono ${
               blastData.total_affected_count > 0 
@@ -282,7 +282,7 @@ export default function FileExplainer({
             {loadingBlast && (
               <div className="flex-1 flex flex-col items-center justify-center text-center p-8">
                 <Loader2 className="w-8 h-8 text-amber-500 animate-spin mb-4" />
-                <p className="text-zinc-200 text-sm font-semibold">Computing Blast Radius Graph...</p>
+                <p className="text-zinc-200 text-sm font-semibold">Computing Dependencies...</p>
                 <p className="text-zinc-500 text-xs mt-1 font-mono">Analyzing import dependencies</p>
               </div>
             )}
@@ -292,7 +292,7 @@ export default function FileExplainer({
                 <div className="p-3 bg-red-950/20 border border-red-500/20 rounded-xl text-red-400 mb-4">
                   <AlertTriangle className="w-6 h-6" />
                 </div>
-                <h4 className="text-red-300 font-semibold text-sm">Blast Radius Calculation Error</h4>
+                <h4 className="text-red-300 font-semibold text-sm">Dependency Calculation Error</h4>
                 <p className="text-red-400/90 text-xs mt-2 max-w-sm leading-relaxed">{blastError}</p>
               </div>
             )}

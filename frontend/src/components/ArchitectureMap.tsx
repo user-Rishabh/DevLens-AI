@@ -201,7 +201,7 @@ export default function ArchitectureMap({
             }`}
           >
             <Zap className={`w-3.5 h-3.5 ${showBlastRadius ? 'text-amber-400 fill-amber-400/20' : 'text-zinc-500'}`} />
-            Blast Radius Overlay: {showBlastRadius ? 'ON' : 'OFF'}
+            Impact View: {showBlastRadius ? 'ON' : 'OFF'}
           </button>
 
           {/* Reset Zoom/Pan */}

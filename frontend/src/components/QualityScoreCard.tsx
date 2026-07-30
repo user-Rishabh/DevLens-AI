@@ -127,7 +127,7 @@ export default function QualityScoreCard({ summary, loading, onSelectFile, onRec
       {/* Riskiest Files Section */}
       <div>
         <div className="flex items-center justify-between mb-2">
-          <span className="text-xs font-medium text-zinc-400">Riskiest Files (Lowest Composite Scores)</span>
+          <span className="text-xs font-medium text-zinc-400">Riskiest Files (Lowest Health Scores)</span>
           <span className="text-[10px] text-zinc-500 font-mono">100 = Best</span>
         </div>
 

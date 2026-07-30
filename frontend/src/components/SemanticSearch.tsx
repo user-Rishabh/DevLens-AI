@@ -211,7 +211,7 @@ export default function SemanticSearch({
           <Loader2 className="w-8 h-8 text-indigo-500 animate-spin mb-3" />
           <h4 className="text-zinc-300 font-semibold text-xs">Synthesizing Answer</h4>
           <p className="text-zinc-500 text-[10px] mt-1 font-mono leading-relaxed">
-            Running hybrid retrieval (RRF) & generating response using Groq llama-3.3-70b-versatile
+            Running smart search & generating response using Groq llama-3.3-70b-versatile
           </p>
         </div>
       )}

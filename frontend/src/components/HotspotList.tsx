@@ -14,7 +14,7 @@ export default function HotspotList({ hotspots }: HotspotListProps) {
   if (!hotspots || hotspots.length === 0) {
     return (
       <div className="text-zinc-500 text-xs italic p-6 text-center">
-        No Git history hotspots found.
+        No frequently changed files found.
       </div>
     );
   }
