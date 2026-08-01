@@ -29,9 +29,17 @@ origins = [
     "http://localhost:3000", # Common fallback port
 ]
 
+frontend_url = os.getenv("FRONTEND_URL")
+if frontend_url:
+    origins.append(frontend_url)
+
+# Match Vercel subdomains (previews and production aliases starting with dev-lens-)
+origins_regex = r"https?://dev-lens-.*\.vercel\.app"
+
 app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,
+    allow_origin_regex=origins_regex,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
