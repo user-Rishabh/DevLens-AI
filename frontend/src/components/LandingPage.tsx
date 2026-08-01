@@ -26,6 +26,7 @@ import {
   Activity,
   Maximize2
 } from 'lucide-react';
+import { techStack } from '../config/techStack';
 
 interface LandingPageProps {
   repoUrl: string;
@@ -685,6 +686,41 @@ export default function LandingPage({
         </div>
       </section>
 
+      {/* ------------------- TECH STACK SHOWCASE ------------------- */}
+      <section className="w-full py-16 border-t border-[#1F2330] bg-[#0B0D12]/40 relative z-10">
+        <div className="max-w-7xl mx-auto px-6">
+          <div className="text-center max-w-2xl mx-auto mb-10 reveal-on-scroll">
+            <span className="text-xs font-mono uppercase text-[#3ED9C7] tracking-wider">TECHNOLOGY STACK</span>
+            <h2 className="font-display text-xl sm:text-3xl font-extrabold text-white mt-2">
+              Built With DevLens AI Tech Stack
+            </h2>
+            <p className="text-xs text-[#8A8F9C] mt-2 leading-relaxed">
+              Explore the engineering choices powering our codebase ingestion, AST analysis, and hybrid search pipelines.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6 reveal-on-scroll">
+            {Object.entries(techStack).map(([category, items]) => (
+              <div key={category} className="p-5 rounded-xl bg-[#12151D]/60 border border-[#1F2330]/80">
+                <span className="text-[11px] font-mono text-[#8B7FFF] uppercase tracking-wider block mb-3 font-semibold">
+                  {category}
+                </span>
+                <div className="flex flex-wrap gap-2">
+                  {items.map((item) => (
+                    <span 
+                      key={item} 
+                      className="px-2.5 py-1 bg-[#0B0D12] border border-[#1F2330] text-[#E8E9ED] rounded-lg text-xs font-mono"
+                    >
+                      {item}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
       {/* ------------------- FOOTER / FINAL CTA ------------------- */}
       <footer className="w-full border-t border-[#1F2330] bg-[#0B0D12] py-16 relative z-10">
         <div className="max-w-4xl mx-auto px-6 text-center mb-12 reveal-on-scroll">
@@ -732,11 +768,11 @@ export default function LandingPage({
           <div className="flex items-center gap-6 text-xs font-mono text-[#8A8F9C]">
             <span className="flex items-center gap-1.5">
               <Layers className="w-3.5 h-3.5 text-[#6D5EF5]" />
-              FastAPI Python
+              {techStack["Backend"]?.[1]} {techStack["Backend"]?.[0]}
             </span>
             <span className="flex items-center gap-1.5">
               <Cpu className="w-3.5 h-3.5 text-[#3ED9C7]" />
-              Groq & Supabase
+              {techStack["AI / ML"]?.[0]} & {techStack["Database"]?.[0]?.split(' ')?.[0]}
             </span>
           </div>
         </div>

@@ -30,6 +30,7 @@ import QualityScoreCard, { QualityScoreSummary } from '../components/QualityScor
 import ArchitectureMap from '../components/ArchitectureMap';
 import LandingPage from '../components/LandingPage';
 import LoadingScreen from '../components/LoadingScreen';
+import { techStack } from '../config/techStack';
 
 // ── Navigation section type ────────────────────────────────────────────────
 type Section = 'overview' | 'files' | 'hotspots' | 'search' | 'architecture' | 'onboarding' | 'quality';
@@ -610,6 +611,13 @@ export default function Home() {
   };
   const isFullHeightSection = activeSection === 'files' || activeSection === 'architecture';
 
+  const representativeTech = [
+    techStack["Frontend"]?.[0], // React
+    techStack["Backend"]?.[1],  // FastAPI
+    techStack["Database"]?.[0]?.split(' ')?.[0], // Supabase
+    techStack["AI / ML"]?.[0]?.split(' ')?.[0]   // Groq
+  ].filter(Boolean);
+
   // ── Dashboard render ───────────────────────────────────────────────────────
   return (
     <div className="flex flex-col h-screen bg-[#0B0D12] text-[#E8E9ED] overflow-hidden" style={{ fontFamily: '"Inter", system-ui, sans-serif' }}>
@@ -625,6 +633,14 @@ export default function Home() {
             <span className="font-extrabold text-sm tracking-tight text-white hidden sm:block" style={{ fontFamily: '"Space Grotesk", sans-serif' }}>DevLens <span className="text-[#3ED9C7]">AI</span></span>
             <span className="text-[#1F2330] hidden sm:block">/</span>
             <span className="text-sm text-[#E8E9ED] font-medium truncate max-w-[160px] sm:max-w-xs">{repoName}</span>
+          </div>
+          <div className="hidden md:flex items-center gap-1.5 ml-4 pl-4 border-l border-[#1F2330]">
+            <span className="text-[10px] font-mono text-[#8A8F9C] uppercase tracking-wider mr-1">Stack</span>
+            {representativeTech.map(tech => (
+              <span key={tech} className="px-2.5 py-0.5 rounded-full bg-[#6D5EF5]/10 border border-[#6D5EF5]/40 text-[#E8E9ED] text-[10px] font-mono font-bold tracking-wide shadow-sm">
+                {tech}
+              </span>
+            ))}
           </div>
         </div>
         <div className="flex items-center gap-3">
@@ -650,12 +666,6 @@ export default function Home() {
             />
             {NAV_ITEMS.map(navButton)}
           </nav>
-          <div className="p-3 border-t border-[#1F2330]">
-            <div className="flex flex-col gap-1 text-[10px] font-mono text-[#8A8F9C]">
-              <span className="flex items-center gap-1.5"><Database className="w-3 h-3" />Supabase Postgres</span>
-              <span className="flex items-center gap-1.5"><Layers className="w-3 h-3" />FastAPI Python</span>
-            </div>
-          </div>
         </aside>
 
         {/* Mobile sidebar overlay */}
