@@ -16,7 +16,7 @@
 
 <br/><br/>
 
-### 🔗 [**Live Demo**](https://dev-lens-ai-sage.vercel.app) &nbsp;·&nbsp; [**GitHub Repo**](https://github.com/<your-username>/DevLens-AI)
+### 🔗 [**Live Demo**](https://dev-lens-ai-sage.vercel.app) &nbsp;·&nbsp; [**GitHub Repo**](https://github.com/<user-Rishabh>/DevLens-AI)
 
 <sub>Hosted on Render's free tier — the backend sleeps after inactivity, so the first request after a while may take 30–60s to wake up.</sub>
 
@@ -283,6 +283,6 @@ Deployed as two independent services:
 
 <img src="https://capsule-render.vercel.app/api?type=waving&color=0:6d28d9,100:1a2b4a&height=120&section=footer"/>
 
-**Built by [Rishabh](https://github.com/<your-username>)** · B.Tech AI & Data Science, VESIT · Team AlgoMinds
+**Built by [Rishabh](https://github.com/<user-Rishabh>)** · B.Tech AI & Data Science, VESIT 
 
 </div>
