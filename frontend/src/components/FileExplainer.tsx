@@ -50,6 +50,7 @@ export default function FileExplainer({
   const [modelUsed, setModelUsed] = useState('');
   const [cached, setCached] = useState(false);
   const [summaryError, setSummaryError] = useState<string | null>(null);
+  const [secretsRedacted, setSecretsRedacted] = useState(false);
 
   // Blast Radius states
   const [loadingBlast, setLoadingBlast] = useState(false);
@@ -77,6 +78,7 @@ export default function FileExplainer({
       setBlastError(null);
       setSummary('');
       setBlastData(null);
+      setSecretsRedacted(false);
       
       const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:8000';
       const encodedPath = encodeURIComponent(filePath);
@@ -93,6 +95,7 @@ export default function FileExplainer({
           setSummary(sumData.summary);
           setModelUsed(sumData.model_used);
           setCached(sumData.cached);
+          setSecretsRedacted(sumData.secrets_redacted || false);
         } else {
           const sumErr = await summaryRes.json();
           setSummaryError(sumErr.detail || 'Failed to generate explanation.');
@@ -135,6 +138,7 @@ export default function FileExplainer({
         setSummary(sumData.summary);
         setModelUsed(sumData.model_used);
         setCached(sumData.cached);
+        setSecretsRedacted(sumData.secrets_redacted || false);
       } else {
         const sumErr = await res.json();
         setSummaryError(sumErr.detail || 'Failed to regenerate explanation.');
@@ -169,7 +173,18 @@ export default function FileExplainer({
           <FileText className="w-5 h-5" />
         </div>
         <div className="min-w-0 flex-1">
-          <span className="text-[10px] text-indigo-400 font-mono font-semibold uppercase tracking-wider">File Analyzer</span>
+          <div className="flex items-center gap-2">
+            <span className="text-[10px] text-indigo-400 font-mono font-semibold uppercase tracking-wider">File Analyzer</span>
+            {secretsRedacted && (
+              <span 
+                className="flex items-center gap-1 px-1.5 py-0.5 bg-rose-500/10 border border-rose-500/20 text-rose-400 rounded text-[9px] font-semibold animate-pulse select-none cursor-help"
+                title="Potential secrets were detected and redacted before AI analysis for your safety"
+              >
+                <ShieldCheck className="w-3.5 h-3.5 text-rose-400" />
+                SECRETS REDACTED
+              </span>
+            )}
+          </div>
           <h3 className="text-white font-bold text-base truncate mt-0.5">{fileName}</h3>
           {directory && (
             <p className="text-[10px] text-zinc-500 font-mono truncate mt-0.5">{directory}/</p>

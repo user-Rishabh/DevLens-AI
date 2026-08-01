@@ -113,14 +113,19 @@ def generate_module_docs(repo_id: str) -> list[dict]:
             
             dependencies_text = "\n".join(relevant_deps) if relevant_deps else "No direct dependency relationships detected."
 
+            # Redact secrets just in case any summaries or dependency filenames contain sensitive data
+            from app.security.secret_scanner import redact_secrets
+            file_summaries_text_redacted = redact_secrets(file_summaries_text)["redacted_content"]
+            dependencies_text_redacted = redact_secrets(dependencies_text)["redacted_content"]
+
             # Construct Prompt
             prompt = (
                 f"You are a Senior Software Architect reviewing a codebase.\n"
                 f"Write a professional, cohesive README-style documentation overview for the module directory: '{module_path}'.\n\n"
                 f"Here are the files in this directory and their cached summaries:\n"
-                f"{file_summaries_text}\n"
+                f"{file_summaries_text_redacted}\n"
                 f"Here are the known code dependency links related to this directory:\n"
-                f"{dependencies_text}\n\n"
+                f"{dependencies_text_redacted}\n\n"
                 f"Write a structured overview containing:\n"
                 f"1. **Module Purpose**: What is the overall responsibility of this folder in the codebase?\n"
                 f"2. **Key Files & Roles**: Synthesize the roles of the files in this module. Avoid copying file summaries word-for-word; write a cohesive synthesis.\n"

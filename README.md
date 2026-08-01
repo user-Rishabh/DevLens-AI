@@ -187,6 +187,14 @@ A composite, repo-relative score per file combining churn, size, and complexity 
 
 </details>
 
+<details>
+<summary><b>🛡️ Security & Privacy (Secret Detection & Redaction)</b></summary>
+<br/>
+
+Automatically scans all ingested file content, code chunks, and RAG context inputs for sensitive patterns (AWS keys, Google API keys, GitHub tokens, OpenAI keys, private keys, database connection strings, and generic API keys/credentials) and redacts them using secure placeholders before they are saved to the database, embedded, or sent to external LLMs. A warning shield is rendered in the UI next to the file analysis header when redacted items are detected.
+
+</details>
+
 <br/>
 
 ## 🚀 Getting Started

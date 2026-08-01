@@ -43,10 +43,18 @@ def generate_rag_answer(query: str, chunks: list[dict]) -> dict:
 
     # Format chunks context for prompt
     chunks_context = ""
+    from app.security.secret_scanner import redact_secrets
     for idx, chunk in enumerate(top_chunks, start=1):
+        content = chunk.get("content", "")
+        redaction_res = redact_secrets(content)
+        redacted_content = redaction_res["redacted_content"]
+        
+        if redaction_res["secrets_found"] > 0:
+            print(f"[SECURITY REDACTION] Redacted {redaction_res['secrets_found']} potential secrets in RAG context: {chunk['file_path']}")
+            
         chunks_context += (
             f"--- Chunk {idx}: {chunk['file_path']} (lines {chunk['start_line']}-{chunk['end_line']}) ---\n"
-            f"{chunk['content']}\n\n"
+            f"{redacted_content}\n\n"
         )
 
     # Set up system instructions enforcing grounding and structured JSON responses

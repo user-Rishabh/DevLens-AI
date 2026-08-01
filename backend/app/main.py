@@ -1,6 +1,8 @@
 import os
 import sys
 
+# Triggering uvicorn process reload manually by touching this file.
+
 # Add the parent directory of 'app' (i.e. 'backend') to sys.path to resolve package imports
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 

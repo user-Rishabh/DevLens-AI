@@ -154,6 +154,10 @@ def generate_onboarding_guide(repo_id: str) -> dict:
         )
         
     candidates_context = "\n".join(formatted_candidates)
+    
+    # Redact secrets from candidates context before compiling prompt
+    from app.security.secret_scanner import redact_secrets
+    candidates_context = redact_secrets(candidates_context)["redacted_content"]
 
     # 6. Groq LLM Completion prompt
     system_prompt = (

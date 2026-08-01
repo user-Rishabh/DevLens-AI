@@ -339,8 +339,16 @@ def process_repo_chunks(repo_id: str) -> list[dict]:
         if is_excluded_file(file_path, content):
             continue
             
+        # Redact secrets before chunking to protect stored data and search UI previews
+        from app.security.secret_scanner import redact_secrets
+        redaction_res = redact_secrets(content)
+        redacted_content = redaction_res["redacted_content"]
+        
+        if redaction_res["secrets_found"] > 0:
+            print(f"[SECURITY REDACTION] Redacted {redaction_res['secrets_found']} potential secrets in file: {file_path}")
+            
         language = detect_language(file_path)
-        file_chunks = chunk_file(file_path, content, language)
+        file_chunks = chunk_file(file_path, redacted_content, language)
         
         for chunk in file_chunks:
             chunk["repo_id"] = repo_id

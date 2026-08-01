@@ -68,6 +68,14 @@ def summarize_file(file_path: str, file_content: str) -> str:
             detail=f"Failed to initialize Groq client: {str(e)}"
         )
 
+    # Redact secrets before sending to Groq to protect sensitive credentials
+    from app.security.secret_scanner import redact_secrets
+    redaction_res = redact_secrets(file_content)
+    file_content = redaction_res["redacted_content"]
+    
+    if redaction_res["secrets_found"] > 0:
+        print(f"[SECURITY REDACTION] Redacted {redaction_res['secrets_found']} potential secrets in file summarization: {file_path}")
+
     # Truncate content if very large (> 8,000 characters)
     max_chars = 8000
     if len(file_content) > max_chars:

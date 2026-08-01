@@ -67,6 +67,7 @@ class ExplainResponse(BaseModel):
     summary: str
     model_used: str
     cached: bool
+    secrets_redacted: bool = False
 
 @router.post("/repos/ingest", response_model=IngestResponse)
 def ingest_repository(request: IngestRequest):
@@ -180,27 +181,7 @@ def explain_file(
             cached=False
         )
 
-    # 1. Check cache first (unless force regenerating)
-    if not force_regenerate:
-        try:
-            cache_check = supabase.table("file_summaries")\
-                .select("summary_text, model_used")\
-                .eq("repo_id", repo_id)\
-                .eq("file_path", file_path)\
-                .execute()
-            
-            if cache_check.data and len(cache_check.data) > 0:
-                cached_data = cache_check.data[0]
-                return ExplainResponse(
-                    summary=cached_data["summary_text"],
-                    model_used=cached_data["model_used"],
-                    cached=True
-                )
-        except Exception as e:
-            print(f"[DevLens AI Database Error] Failed to query file_summaries cache: {str(e)}")
-            # Proceed to fetch and overwrite/generate in case database has issues
-
-    # 2. Retrieve raw file content from database
+    # 1. Retrieve raw file content from database
     try:
         content_query = supabase.table("file_contents")\
             .select("content")\
@@ -219,18 +200,48 @@ def explain_file(
             detail=f"File content not found for '{file_path}' in repository ID: {repo_id}. Verify the path is correct and exists."
         )
 
-    raw_content = content_query.data[0]["content"]
+    raw_content = content_query.data[0]["content"] or ""
 
     # Slow-path check: exclude by content size (> 200KB)
     if is_excluded_file(file_path, raw_content):
         return ExplainResponse(
             summary="AI explanation is skipped for lockfiles, minified files, or files larger than 200KB.",
             model_used="skipped",
-            cached=False
+            cached=False,
+            secrets_redacted=False
         )
 
-    # 3. Generate explanation using OpenRouter LLM
-    summary_text = summarize_file(file_path, raw_content)
+    # Scan and redact secrets
+    from app.security.secret_scanner import redact_secrets
+    redaction_res = redact_secrets(raw_content)
+    redacted_content = redaction_res["redacted_content"]
+    secrets_redacted = redaction_res["secrets_found"] > 0
+
+    if secrets_redacted:
+        print(f"[SECURITY REDACTION] Redacted {redaction_res['secrets_found']} potential secrets in explain_file for {file_path}")
+
+    # 2. Check cache first (unless force regenerating)
+    if not force_regenerate:
+        try:
+            cache_check = supabase.table("file_summaries")\
+                .select("summary_text, model_used")\
+                .eq("repo_id", repo_id)\
+                .eq("file_path", file_path)\
+                .execute()
+            
+            if cache_check.data and len(cache_check.data) > 0:
+                cached_data = cache_check.data[0]
+                return ExplainResponse(
+                    summary=cached_data["summary_text"],
+                    model_used=cached_data["model_used"],
+                    cached=True,
+                    secrets_redacted=secrets_redacted
+                )
+        except Exception as e:
+            print(f"[DevLens AI Database Error] Failed to query file_summaries cache: {str(e)}")
+
+    # 3. Generate explanation using OpenRouter LLM with redacted content
+    summary_text = summarize_file(file_path, redacted_content)
 
     # 4. Cache the explanation in the database
     try:
@@ -248,7 +259,8 @@ def explain_file(
     return ExplainResponse(
         summary=summary_text,
         model_used=model_name,
-        cached=False
+        cached=False,
+        secrets_redacted=secrets_redacted
     )
 
 class TransitiveDependent(BaseModel):
@@ -653,6 +665,112 @@ def run_eval_endpoint(request: EvalRequest):
             status_code=500,
             detail=f"Evaluation execution failed: {str(e)}"
         )
+
+
+@router.get("/eval/test-secrets")
+def run_test_secrets():
+    import importlib
+    import app.security.secret_scanner
+    importlib.reload(app.security.secret_scanner)
+    from app.security.secret_scanner import redact_secrets
+    
+    test_cases = [
+        # 1. Normal code (should have 0 secrets)
+        {
+            "name": "normal_code",
+            "content": """
+def calculate_area(width, height):
+    # This is a normal docstring
+    return width * height
+
+class UserProfile:
+    def __init__(self, user_id, email):
+        self.user_id = user_id
+        self.email = email
+""",
+            "expected_secrets": 0
+        },
+        # 2. AWS Key
+        {
+            "name": "aws_key",
+            "content": "aws_access_key = 'AKIAIOSFODNN7EXAMPLE'",
+            "expected_secrets": 1,
+            "contains": "[REDACTED_AWS_KEY]"
+        },
+        # 3. Google API Key
+        {
+            "name": "google_key",
+            "content": "const key = 'AIzaSyA123456789012345678901234567890AB'",
+            "expected_secrets": 1,
+            "contains": "[REDACTED_GOOGLE_KEY]"
+        },
+        # 4. GitHub Token
+        {
+            "name": "github_token",
+            "content": "token = 'ghp_123456789012345678901234567890123456'",
+            "expected_secrets": 1,
+            "contains": "[REDACTED_GITHUB_TOKEN]"
+        },
+        # 5. OpenAI Key
+        {
+            "name": "openai_key",
+            "content": "openai.api_key = 'sk-a1b2c3d4e5f6g7h8i9j0k1l2m3n4o5p6q7r8s9t0'",
+            "expected_secrets": 1,
+            "contains": "[REDACTED_OPENAI_KEY]"
+        },
+        # 6. Database URI
+        {
+            "name": "db_uri",
+            "content": "DATABASE_URL=postgres://admin:super_secret_password_123@localhost:5432/main_db",
+            "expected_secrets": 1,
+            "contains": "[REDACTED_DATABASE_URI]"
+        },
+        # 7. Generic Password Assignment
+        {
+            "name": "generic_password",
+            "content": "db_password = 'my_super_secret_dev_pass_123456789'",
+            "expected_secrets": 1,
+            "contains": "[REDACTED_API_KEY]"
+        },
+        # 8. JWT Token
+        {
+            "name": "jwt_token",
+            "content": "auth_token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c'",
+            "expected_secrets": 1,
+            "contains": "[REDACTED_JWT_TOKEN]"
+        }
+    ]
+
+    results = []
+    all_passed = True
+    for case in test_cases:
+        res = redact_secrets(case["content"])
+        redacted = res["redacted_content"]
+        found = res["secrets_found"]
+        
+        passed = True
+        if found != case["expected_secrets"]:
+            passed = False
+            
+        if "contains" in case and case["contains"] not in redacted:
+            passed = False
+            
+        if not passed:
+            all_passed = False
+            
+        results.append({
+            "name": case["name"],
+            "passed": passed,
+            "expected_secrets": case["expected_secrets"],
+            "found_secrets": found,
+            "redacted_content": redacted
+        })
+        
+    return {
+        "all_passed": all_passed,
+        "results": results
+    }
+
 
 
 
