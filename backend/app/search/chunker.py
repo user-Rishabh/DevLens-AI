@@ -13,26 +13,6 @@ JS_LANGUAGE = None
 TS_LANGUAGE = None
 TSX_LANGUAGE = None
 
-if HAS_TREE_SITTER:
-    try:
-        import tree_sitter_python as tspython
-        PY_LANGUAGE = Language(tspython.language())
-    except (ImportError, AttributeError):
-        pass
-
-    try:
-        import tree_sitter_javascript as tsjavascript
-        JS_LANGUAGE = Language(tsjavascript.language())
-    except (ImportError, AttributeError):
-        pass
-
-    try:
-        import tree_sitter_typescript as ts_typescript
-        TS_LANGUAGE = Language(ts_typescript.language())
-        TSX_LANGUAGE = Language(ts_typescript.language_tsx())
-    except (ImportError, AttributeError):
-        pass
-
 from app.db import supabase
 from app.search.embeddings import embed_chunks_batch
 
@@ -89,15 +69,41 @@ def is_excluded_file(file_path: str, content: str) -> bool:
 def get_language_parser(language: str):
     """
     Returns the Tree-Sitter Language object and Parser for the specified language.
+    Loads each grammar lazily upon first request to prevent server startup delay and reduce memory footprint.
     """
-    if language == "python" and PY_LANGUAGE:
-        return PY_LANGUAGE, Parser(PY_LANGUAGE)
-    elif language == "javascript" and JS_LANGUAGE:
-        return JS_LANGUAGE, Parser(JS_LANGUAGE)
-    elif language == "typescript" and TS_LANGUAGE:
-        return TS_LANGUAGE, Parser(TS_LANGUAGE)
-    elif language == "tsx" and TSX_LANGUAGE:
-        return TSX_LANGUAGE, Parser(TSX_LANGUAGE)
+    global PY_LANGUAGE, JS_LANGUAGE, TS_LANGUAGE, TSX_LANGUAGE
+    
+    if not HAS_TREE_SITTER:
+        return None, None
+        
+    try:
+        if language == "python":
+            if PY_LANGUAGE is None:
+                import tree_sitter_python as tspython
+                PY_LANGUAGE = Language(tspython.language())
+            return PY_LANGUAGE, Parser(PY_LANGUAGE)
+            
+        elif language == "javascript":
+            if JS_LANGUAGE is None:
+                import tree_sitter_javascript as tsjavascript
+                JS_LANGUAGE = Language(tsjavascript.language())
+            return JS_LANGUAGE, Parser(JS_LANGUAGE)
+            
+        elif language == "typescript":
+            if TS_LANGUAGE is None:
+                import tree_sitter_typescript as ts_typescript
+                TS_LANGUAGE = Language(ts_typescript.language())
+            return TS_LANGUAGE, Parser(TS_LANGUAGE)
+            
+        elif language == "tsx":
+            if TSX_LANGUAGE is None:
+                import tree_sitter_typescript as ts_typescript
+                TSX_LANGUAGE = Language(ts_typescript.language_tsx())
+            return TSX_LANGUAGE, Parser(TSX_LANGUAGE)
+            
+    except Exception as e:
+        print(f"[DevLens AI Chunker Error] Failed to load Tree-Sitter language parser for '{language}': {str(e)}")
+        
     return None, None
 
 def get_node_name(node, content_bytes: bytes) -> str:
