@@ -31,6 +31,7 @@ import ArchitectureMap from '../components/ArchitectureMap';
 import LandingPage from '../components/LandingPage';
 import LoadingScreen from '../components/LoadingScreen';
 import { techStack } from '../config/techStack';
+import { API_BASE_URL } from '../lib/apiClient';
 
 // ── Navigation section type ────────────────────────────────────────────────
 type Section = 'overview' | 'files' | 'hotspots' | 'search' | 'architecture' | 'onboarding' | 'quality';
@@ -107,10 +108,9 @@ export default function Home() {
   const handleIndex = async (id: string, force: boolean = false) => {
     setIndexingStatus('indexing');
     setIndexingError(null);
-    const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:8000';
     try {
       console.log(`[DevLens AI] Starting background indexing for: ${id} (force_reindex=${force})`);
-      const response = await fetch(`${apiUrl}/api/repos/${id}/index${force ? '?force_reindex=true' : ''}`, {
+      const response = await fetch(`${API_BASE_URL}/api/repos/${id}/index${force ? '?force_reindex=true' : ''}`, {
         method: 'POST',
       });
       const data = await response.json();
@@ -160,10 +160,8 @@ export default function Home() {
     setIsExplainerLoading(false);
     setLoadingPhase('Validating GitHub URL...');
 
-    const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:8000';
-
     try {
-      const response = await fetch(`${apiUrl}/api/repos/ingest`, {
+      const response = await fetch(`${API_BASE_URL}/api/repos/ingest`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

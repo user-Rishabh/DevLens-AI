@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { QualityScoreSummary } from '../components/QualityScoreCard';
+import { API_BASE_URL } from '../lib/apiClient';
 
 export function useQualityScores() {
   const [qualitySummary, setQualitySummary] = useState<QualityScoreSummary | null>(null);
@@ -11,8 +12,8 @@ export function useQualityScores() {
     setLoadingQuality(true);
     try {
       const url = force
-        ? `http://localhost:8000/api/repos/${currentRepoId}/quality-scores/compute?force_recompute=true`
-        : `http://localhost:8000/api/repos/${currentRepoId}/quality-scores`;
+        ? `${API_BASE_URL}/api/repos/${currentRepoId}/quality-scores/compute?force_recompute=true`
+        : `${API_BASE_URL}/api/repos/${currentRepoId}/quality-scores`;
       const method = force ? 'POST' : 'GET';
       const response = await fetch(url, { method });
       if (response.ok) {

@@ -10,6 +10,7 @@ import {
   HelpCircle,
   AlertCircle
 } from 'lucide-react';
+import { API_BASE_URL } from '../lib/apiClient';
 
 interface CitedChunk {
   file_path: string;
@@ -72,10 +73,8 @@ export default function SemanticSearch({
     setCitedChunks([]);
     setSearchResults([]);
     
-    const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:8000';
-    
     try {
-      const response = await fetch(`${apiUrl}/api/repos/${repoId}/search`, {
+      const response = await fetch(`${API_BASE_URL}/api/repos/${repoId}/search`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

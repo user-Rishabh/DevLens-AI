@@ -13,6 +13,7 @@ import {
   Check,
   ShieldCheck
 } from 'lucide-react';
+import { API_BASE_URL } from '../lib/apiClient';
 
 interface Edge {
   from: string;
@@ -112,11 +113,10 @@ export default function ArchitectureMap({
     }
 
     const fetchBlastData = async () => {
-      const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:8000';
       const encodedPath = encodeURIComponent(selectedFilePath);
 
       try {
-        const response = await fetch(`${apiUrl}/api/files/blast-radius?repo_id=${repoId}&file_path=${encodedPath}`);
+        const response = await fetch(`${API_BASE_URL}/api/files/blast-radius?repo_id=${repoId}&file_path=${encodedPath}`);
         if (response.ok) {
           const data = await response.json();
           const directSet = new Set<string>(data.direct_dependents || []);

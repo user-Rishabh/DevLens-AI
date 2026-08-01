@@ -10,6 +10,7 @@ import {
   RefreshCw, 
   Sparkles 
 } from 'lucide-react';
+import { API_BASE_URL } from '../lib/apiClient';
 
 interface ModuleDoc {
   module_path: string;
@@ -167,9 +168,8 @@ export default function AutoDocs({ repoId, repoName }: AutoDocsProps) {
       setLoadingPhase('Checking cache...');
     }
 
-    const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:8000';
     try {
-      const url = `${apiUrl}/api/repos/${repoId}/docs`;
+      const url = `${API_BASE_URL}/api/repos/${repoId}/docs`;
       const response = await fetch(url);
       const data = await response.json();
       
@@ -207,8 +207,7 @@ export default function AutoDocs({ repoId, repoName }: AutoDocsProps) {
 
   // 3. Export Download Action
   const handleExport = () => {
-    const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:8000';
-    const exportUrl = `${apiUrl}/api/repos/${repoId}/docs/export?repo_name=${encodeURIComponent(repoName)}`;
+    const exportUrl = `${API_BASE_URL}/api/repos/${repoId}/docs/export?repo_name=${encodeURIComponent(repoName)}`;
     // Open in new window/trigger native download
     window.location.href = exportUrl;
   };

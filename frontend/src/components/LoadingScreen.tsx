@@ -15,6 +15,7 @@ import {
   Zap,
   RefreshCw
 } from 'lucide-react';
+import { API_BASE_URL } from '../lib/apiClient';
 
 // ── Stage definitions ───────────────────────────────────────────────────────
 
@@ -168,7 +169,6 @@ export default function LoadingScreen({ repoUrl, repoId, onRetry, onComplete }: 
   const pollIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const elapsedIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const longWaitTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:8000';
 
   // ── Elapsed time counter ─────────────────────────────────────────────────
   useEffect(() => {
@@ -197,7 +197,7 @@ export default function LoadingScreen({ repoUrl, repoId, onRetry, onComplete }: 
 
     const poll = async () => {
       try {
-        const res = await fetch(`${apiUrl}/api/repos/${repoId}/status`);
+        const res = await fetch(`${API_BASE_URL}/api/repos/${repoId}/status`);
         if (!res.ok) return;
         const data: { stage: string; error: string | null } = await res.json();
 

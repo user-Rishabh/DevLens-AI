@@ -9,6 +9,7 @@ import {
   ArrowRight,
   BookOpen
 } from 'lucide-react';
+import { API_BASE_URL } from '../lib/apiClient';
 
 interface ReadingOrderItem {
   file_path: string;
@@ -45,10 +46,9 @@ export default function OnboardingGuide({ repoId, onSelectFile }: OnboardingGuid
       setError(null);
       setGuideData(null);
 
-      const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:8000';
       try {
         console.log(`[DevLens AI] Fetching onboarding guide for repo: "${repoId}"`);
-        const response = await fetch(`${apiUrl}/api/repos/${repoId}/onboarding-guide`);
+        const response = await fetch(`${API_BASE_URL}/api/repos/${repoId}/onboarding-guide`);
         const data = await response.json();
 
         if (!response.ok) {

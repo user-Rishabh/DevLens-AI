@@ -13,6 +13,7 @@ import {
   Network,
   RefreshCw
 } from 'lucide-react';
+import { API_BASE_URL } from '../lib/apiClient';
 
 interface TransitiveDep {
   file_path: string;
@@ -80,14 +81,13 @@ export default function FileExplainer({
       setBlastData(null);
       setSecretsRedacted(false);
       
-      const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:8000';
       const encodedPath = encodeURIComponent(filePath);
       
       // Parallel fetches for summary and blast radius
       try {
         const [summaryRes, blastRes] = await Promise.all([
-          fetch(`${apiUrl}/api/files/explain?repo_id=${repoId}&file_path=${encodedPath}`),
-          fetch(`${apiUrl}/api/files/blast-radius?repo_id=${repoId}&file_path=${encodedPath}`)
+          fetch(`${API_BASE_URL}/api/files/explain?repo_id=${repoId}&file_path=${encodedPath}`),
+          fetch(`${API_BASE_URL}/api/files/blast-radius?repo_id=${repoId}&file_path=${encodedPath}`)
         ]);
 
         if (summaryRes.ok) {
@@ -129,10 +129,9 @@ export default function FileExplainer({
     setSummary('');
     if (onLoadingStateChange) onLoadingStateChange(true);
     
-    const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:8000';
     const encodedPath = encodeURIComponent(filePath);
     try {
-      const res = await fetch(`${apiUrl}/api/files/explain?repo_id=${repoId}&file_path=${encodedPath}&force_regenerate=true`);
+      const res = await fetch(`${API_BASE_URL}/api/files/explain?repo_id=${repoId}&file_path=${encodedPath}&force_regenerate=true`);
       if (res.ok) {
         const sumData = await res.json();
         setSummary(sumData.summary);
