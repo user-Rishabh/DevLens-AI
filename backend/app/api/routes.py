@@ -579,3 +579,82 @@ def get_repo_quality_scores(repo_id: str):
             detail=f"Failed to fetch quality scores: {str(e)}"
         )
 
+
+class EvalRequest(BaseModel):
+    repo_id: Optional[str] = None
+    k: Optional[int] = 5
+
+@router.post("/eval/run")
+def run_eval_endpoint(request: EvalRequest):
+    """
+    Runs the retrieval evaluation harness against the specified repo_id,
+    calculates metrics, writes the markdown report, and returns the JSON results.
+    """
+    if supabase is None:
+        raise HTTPException(
+            status_code=500,
+            detail="Supabase integration is not configured."
+        )
+        
+    repo_id = request.repo_id
+    k = request.k or 5
+    
+    if not repo_id:
+        try:
+            chunks_res = supabase.table("code_chunks").select("repo_id").limit(1000).execute()
+            if chunks_res.data:
+                from collections import Counter
+                counts = Counter(item["repo_id"] for item in chunks_res.data)
+                repo_id = counts.most_common(1)[0][0]
+        except Exception as e:
+            raise HTTPException(
+                status_code=500,
+                detail=f"Could not auto-detect repo_id from database: {str(e)}"
+            )
+            
+    if not repo_id:
+        raise HTTPException(
+            status_code=400,
+            detail="No repository ID specified and no repositories found in the database. Please index a repository first."
+        )
+        
+    try:
+        from app.search.eval_dataset import TEST_CASES
+        from app.search.eval_runner import run_evaluation, write_evaluation_report
+        
+        results = run_evaluation(repo_id=repo_id, test_cases=TEST_CASES, k=k)
+        report_path = write_evaluation_report(results, k=k)
+        
+        return {
+            "status": "success",
+            "repo_id": repo_id,
+            "k": k,
+            "report_path": report_path,
+            "metrics": {
+                "keyword_only": {
+                    "recall_at_k": results["keyword_only"]["recall_at_k"],
+                    "mrr": results["keyword_only"]["mrr"]
+                },
+                "vector_only": {
+                    "recall_at_k": results["vector_only"]["recall_at_k"],
+                    "mrr": results["vector_only"]["mrr"]
+                },
+                "hybrid": {
+                    "recall_at_k": results["hybrid"]["recall_at_k"],
+                    "mrr": results["hybrid"]["mrr"]
+                }
+            },
+            "results": results
+        }
+    except Exception as e:
+        import traceback
+        print(traceback.format_exc())
+        raise HTTPException(
+            status_code=500,
+            detail=f"Evaluation execution failed: {str(e)}"
+        )
+
+
+
+
+

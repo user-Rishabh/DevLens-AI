@@ -417,3 +417,807 @@ postgrest.exceptions.APIError: {'message': 'column code_chunks.content_tsv does 
 [HYBRID SEARCH] repo_id: '5870b3d97abd0114', query: 'hotspot'
   Vector results raw count: 30
   Keyword results raw count: 14
+--- HEALTH CHECK DB DIAGNOSTICS ---
+Error in health check diagnostics: {'message': 'column code_chunks.content_tsv does not exist', 'code': '42703', 'hint': None, 'details': None}
+Traceback (most recent call last):
+  File "C:\Users\Anil\Desktop\Projects\DevLens-AI\DevLens-AI\backend\app\main.py", line 54, in health_check
+    res = supabase.table("code_chunks").select("id, repo_id, file_path, content_tsv").limit(5).execute()
+  File "C:\Users\Anil\Desktop\Projects\DevLens-AI\DevLens-AI\backend\.venv\Lib\site-packages\postgrest\_sync\request_builder.py", line 96, in execute
+    raise APIError(dict(json_obj))
+postgrest.exceptions.APIError: {'message': 'column code_chunks.content_tsv does not exist', 'code': '42703', 'hint': None, 'details': None}
+
+[KEYWORD SEARCH] repo_id value: '1ace867376ce381c', type: <class 'str'>, query: 'compute_blast_radius'
+[KEYWORD SEARCH PYTHON] Fetched 551 chunks for repo_id: 1ace867376ce381c
+[KEYWORD SEARCH SUCCESS] Returning 0 results
+[VECTOR SEARCH] repo_id value: '1ace867376ce381c', type: <class 'str'>, query: 'compute_blast_radius'
+[VECTOR SEARCH PYTHON] Fetched 551 chunks for repo_id: 1ace867376ce381c
+[VECTOR SEARCH SUCCESS] Returning 10 results
+[VECTOR SEARCH] repo_id value: '1ace867376ce381c', type: <class 'str'>, query: 'compute_blast_radius'
+[VECTOR SEARCH PYTHON] Fetched 551 chunks for repo_id: 1ace867376ce381c
+[VECTOR SEARCH SUCCESS] Returning 30 results
+[KEYWORD SEARCH] repo_id value: '1ace867376ce381c', type: <class 'str'>, query: 'compute_blast_radius'
+[KEYWORD SEARCH PYTHON] Fetched 551 chunks for repo_id: 1ace867376ce381c
+[KEYWORD SEARCH SUCCESS] Returning 0 results
+[HYBRID SEARCH] repo_id: '1ace867376ce381c', query: 'compute_blast_radius'
+  Vector results raw count: 30
+  Keyword results raw count: 0
+[KEYWORD SEARCH] repo_id value: '1ace867376ce381c', type: <class 'str'>, query: 'get_hotspots'
+[KEYWORD SEARCH PYTHON] Fetched 551 chunks for repo_id: 1ace867376ce381c
+[KEYWORD SEARCH SUCCESS] Returning 0 results
+[VECTOR SEARCH] repo_id value: '1ace867376ce381c', type: <class 'str'>, query: 'get_hotspots'
+[VECTOR SEARCH PYTHON] Fetched 551 chunks for repo_id: 1ace867376ce381c
+[VECTOR SEARCH SUCCESS] Returning 10 results
+[VECTOR SEARCH] repo_id value: '1ace867376ce381c', type: <class 'str'>, query: 'get_hotspots'
+[VECTOR SEARCH PYTHON] Fetched 551 chunks for repo_id: 1ace867376ce381c
+[VECTOR SEARCH SUCCESS] Returning 30 results
+[KEYWORD SEARCH] repo_id value: '1ace867376ce381c', type: <class 'str'>, query: 'get_hotspots'
+[KEYWORD SEARCH PYTHON] Fetched 551 chunks for repo_id: 1ace867376ce381c
+[KEYWORD SEARCH SUCCESS] Returning 0 results
+[HYBRID SEARCH] repo_id: '1ace867376ce381c', query: 'get_hotspots'
+  Vector results raw count: 30
+  Keyword results raw count: 0
+[KEYWORD SEARCH] repo_id value: '1ace867376ce381c', type: <class 'str'>, query: '_compute_percentile_health_scores'
+[KEYWORD SEARCH PYTHON] Fetched 551 chunks for repo_id: 1ace867376ce381c
+[KEYWORD SEARCH SUCCESS] Returning 0 results
+[VECTOR SEARCH] repo_id value: '1ace867376ce381c', type: <class 'str'>, query: '_compute_percentile_health_scores'
+[VECTOR SEARCH PYTHON] Fetched 551 chunks for repo_id: 1ace867376ce381c
+[VECTOR SEARCH SUCCESS] Returning 10 results
+[VECTOR SEARCH] repo_id value: '1ace867376ce381c', type: <class 'str'>, query: '_compute_percentile_health_scores'
+[VECTOR SEARCH PYTHON] Fetched 551 chunks for repo_id: 1ace867376ce381c
+[VECTOR SEARCH SUCCESS] Returning 30 results
+[KEYWORD SEARCH] repo_id value: '1ace867376ce381c', type: <class 'str'>, query: '_compute_percentile_health_scores'
+[KEYWORD SEARCH PYTHON] Fetched 551 chunks for repo_id: 1ace867376ce381c
+[KEYWORD SEARCH SUCCESS] Returning 0 results
+[HYBRID SEARCH] repo_id: '1ace867376ce381c', query: '_compute_percentile_health_scores'
+  Vector results raw count: 30
+  Keyword results raw count: 0
+[KEYWORD SEARCH] repo_id value: '1ace867376ce381c', type: <class 'str'>, query: 'validate_github_url'
+[KEYWORD SEARCH PYTHON] Fetched 551 chunks for repo_id: 1ace867376ce381c
+[KEYWORD SEARCH SUCCESS] Returning 0 results
+[VECTOR SEARCH] repo_id value: '1ace867376ce381c', type: <class 'str'>, query: 'validate_github_url'
+[VECTOR SEARCH PYTHON] Fetched 551 chunks for repo_id: 1ace867376ce381c
+[VECTOR SEARCH SUCCESS] Returning 10 results
+[VECTOR SEARCH] repo_id value: '1ace867376ce381c', type: <class 'str'>, query: 'validate_github_url'
+[VECTOR SEARCH PYTHON] Fetched 551 chunks for repo_id: 1ace867376ce381c
+[VECTOR SEARCH SUCCESS] Returning 30 results
+[KEYWORD SEARCH] repo_id value: '1ace867376ce381c', type: <class 'str'>, query: 'validate_github_url'
+[KEYWORD SEARCH PYTHON] Fetched 551 chunks for repo_id: 1ace867376ce381c
+[KEYWORD SEARCH SUCCESS] Returning 0 results
+[HYBRID SEARCH] repo_id: '1ace867376ce381c', query: 'validate_github_url'
+  Vector results raw count: 30
+  Keyword results raw count: 0
+[KEYWORD SEARCH] repo_id value: '1ace867376ce381c', type: <class 'str'>, query: 'build_file_tree'
+[KEYWORD SEARCH PYTHON] Fetched 551 chunks for repo_id: 1ace867376ce381c
+[KEYWORD SEARCH SUCCESS] Returning 0 results
+[VECTOR SEARCH] repo_id value: '1ace867376ce381c', type: <class 'str'>, query: 'build_file_tree'
+[VECTOR SEARCH PYTHON] Fetched 551 chunks for repo_id: 1ace867376ce381c
+[VECTOR SEARCH SUCCESS] Returning 10 results
+[VECTOR SEARCH] repo_id value: '1ace867376ce381c', type: <class 'str'>, query: 'build_file_tree'
+[VECTOR SEARCH PYTHON] Fetched 551 chunks for repo_id: 1ace867376ce381c
+[VECTOR SEARCH SUCCESS] Returning 30 results
+[KEYWORD SEARCH] repo_id value: '1ace867376ce381c', type: <class 'str'>, query: 'build_file_tree'
+[KEYWORD SEARCH PYTHON] Fetched 551 chunks for repo_id: 1ace867376ce381c
+[KEYWORD SEARCH SUCCESS] Returning 0 results
+[HYBRID SEARCH] repo_id: '1ace867376ce381c', query: 'build_file_tree'
+  Vector results raw count: 30
+  Keyword results raw count: 0
+[KEYWORD SEARCH] repo_id value: '1ace867376ce381c', type: <class 'str'>, query: 'generate_module_docs'
+[KEYWORD SEARCH PYTHON] Fetched 551 chunks for repo_id: 1ace867376ce381c
+[KEYWORD SEARCH SUCCESS] Returning 0 results
+[VECTOR SEARCH] repo_id value: '1ace867376ce381c', type: <class 'str'>, query: 'generate_module_docs'
+[VECTOR SEARCH PYTHON] Fetched 551 chunks for repo_id: 1ace867376ce381c
+[VECTOR SEARCH SUCCESS] Returning 10 results
+[VECTOR SEARCH] repo_id value: '1ace867376ce381c', type: <class 'str'>, query: 'generate_module_docs'
+[VECTOR SEARCH PYTHON] Fetched 551 chunks for repo_id: 1ace867376ce381c
+[VECTOR SEARCH SUCCESS] Returning 30 results
+[KEYWORD SEARCH] repo_id value: '1ace867376ce381c', type: <class 'str'>, query: 'generate_module_docs'
+[KEYWORD SEARCH PYTHON] Fetched 551 chunks for repo_id: 1ace867376ce381c
+[KEYWORD SEARCH SUCCESS] Returning 0 results
+[HYBRID SEARCH] repo_id: '1ace867376ce381c', query: 'generate_module_docs'
+  Vector results raw count: 30
+  Keyword results raw count: 0
+[KEYWORD SEARCH] repo_id value: '1ace867376ce381c', type: <class 'str'>, query: 'is_excluded_file'
+[KEYWORD SEARCH PYTHON] Fetched 551 chunks for repo_id: 1ace867376ce381c
+[KEYWORD SEARCH SUCCESS] Returning 0 results
+[VECTOR SEARCH] repo_id value: '1ace867376ce381c', type: <class 'str'>, query: 'is_excluded_file'
+[VECTOR SEARCH PYTHON] Fetched 551 chunks for repo_id: 1ace867376ce381c
+[VECTOR SEARCH SUCCESS] Returning 10 results
+[VECTOR SEARCH] repo_id value: '1ace867376ce381c', type: <class 'str'>, query: 'is_excluded_file'
+[VECTOR SEARCH PYTHON] Fetched 551 chunks for repo_id: 1ace867376ce381c
+[VECTOR SEARCH SUCCESS] Returning 30 results
+[KEYWORD SEARCH] repo_id value: '1ace867376ce381c', type: <class 'str'>, query: 'is_excluded_file'
+[KEYWORD SEARCH PYTHON] Fetched 551 chunks for repo_id: 1ace867376ce381c
+[KEYWORD SEARCH SUCCESS] Returning 0 results
+[HYBRID SEARCH] repo_id: '1ace867376ce381c', query: 'is_excluded_file'
+  Vector results raw count: 30
+  Keyword results raw count: 0
+[KEYWORD SEARCH] repo_id value: '1ace867376ce381c', type: <class 'str'>, query: 'embed_chunks_batch'
+[KEYWORD SEARCH PYTHON] Fetched 551 chunks for repo_id: 1ace867376ce381c
+[KEYWORD SEARCH SUCCESS] Returning 0 results
+[VECTOR SEARCH] repo_id value: '1ace867376ce381c', type: <class 'str'>, query: 'embed_chunks_batch'
+[VECTOR SEARCH PYTHON] Fetched 551 chunks for repo_id: 1ace867376ce381c
+[VECTOR SEARCH SUCCESS] Returning 10 results
+[VECTOR SEARCH] repo_id value: '1ace867376ce381c', type: <class 'str'>, query: 'embed_chunks_batch'
+[VECTOR SEARCH PYTHON] Fetched 551 chunks for repo_id: 1ace867376ce381c
+[VECTOR SEARCH SUCCESS] Returning 30 results
+[KEYWORD SEARCH] repo_id value: '1ace867376ce381c', type: <class 'str'>, query: 'embed_chunks_batch'
+[KEYWORD SEARCH PYTHON] Fetched 551 chunks for repo_id: 1ace867376ce381c
+[KEYWORD SEARCH SUCCESS] Returning 0 results
+[HYBRID SEARCH] repo_id: '1ace867376ce381c', query: 'embed_chunks_batch'
+  Vector results raw count: 30
+  Keyword results raw count: 0
+[KEYWORD SEARCH] repo_id value: '1ace867376ce381c', type: <class 'str'>, query: 'rrf_scores'
+[KEYWORD SEARCH PYTHON] Fetched 551 chunks for repo_id: 1ace867376ce381c
+[KEYWORD SEARCH SUCCESS] Returning 0 results
+[VECTOR SEARCH] repo_id value: '1ace867376ce381c', type: <class 'str'>, query: 'rrf_scores'
+[VECTOR SEARCH PYTHON] Fetched 551 chunks for repo_id: 1ace867376ce381c
+[VECTOR SEARCH SUCCESS] Returning 10 results
+[VECTOR SEARCH] repo_id value: '1ace867376ce381c', type: <class 'str'>, query: 'rrf_scores'
+[VECTOR SEARCH PYTHON] Fetched 551 chunks for repo_id: 1ace867376ce381c
+[VECTOR SEARCH SUCCESS] Returning 30 results
+[KEYWORD SEARCH] repo_id value: '1ace867376ce381c', type: <class 'str'>, query: 'rrf_scores'
+[KEYWORD SEARCH PYTHON] Fetched 551 chunks for repo_id: 1ace867376ce381c
+[KEYWORD SEARCH SUCCESS] Returning 0 results
+[HYBRID SEARCH] repo_id: '1ace867376ce381c', query: 'rrf_scores'
+  Vector results raw count: 30
+  Keyword results raw count: 0
+[KEYWORD SEARCH] repo_id value: '1ace867376ce381c', type: <class 'str'>, query: 'dot_product'
+[KEYWORD SEARCH PYTHON] Fetched 551 chunks for repo_id: 1ace867376ce381c
+[KEYWORD SEARCH SUCCESS] Returning 0 results
+[VECTOR SEARCH] repo_id value: '1ace867376ce381c', type: <class 'str'>, query: 'dot_product'
+[VECTOR SEARCH PYTHON] Fetched 551 chunks for repo_id: 1ace867376ce381c
+[VECTOR SEARCH SUCCESS] Returning 10 results
+[VECTOR SEARCH] repo_id value: '1ace867376ce381c', type: <class 'str'>, query: 'dot_product'
+[VECTOR SEARCH PYTHON] Fetched 551 chunks for repo_id: 1ace867376ce381c
+[VECTOR SEARCH SUCCESS] Returning 30 results
+[KEYWORD SEARCH] repo_id value: '1ace867376ce381c', type: <class 'str'>, query: 'dot_product'
+[KEYWORD SEARCH PYTHON] Fetched 551 chunks for repo_id: 1ace867376ce381c
+[KEYWORD SEARCH SUCCESS] Returning 0 results
+[HYBRID SEARCH] repo_id: '1ace867376ce381c', query: 'dot_product'
+  Vector results raw count: 30
+  Keyword results raw count: 0
+[KEYWORD SEARCH] repo_id value: '1ace867376ce381c', type: <class 'str'>, query: 'COMPLEXITY_PATTERN'
+[KEYWORD SEARCH PYTHON] Fetched 551 chunks for repo_id: 1ace867376ce381c
+[KEYWORD SEARCH SUCCESS] Returning 0 results
+[VECTOR SEARCH] repo_id value: '1ace867376ce381c', type: <class 'str'>, query: 'COMPLEXITY_PATTERN'
+[VECTOR SEARCH PYTHON] Fetched 551 chunks for repo_id: 1ace867376ce381c
+[VECTOR SEARCH SUCCESS] Returning 10 results
+[VECTOR SEARCH] repo_id value: '1ace867376ce381c', type: <class 'str'>, query: 'COMPLEXITY_PATTERN'
+[VECTOR SEARCH PYTHON] Fetched 551 chunks for repo_id: 1ace867376ce381c
+[VECTOR SEARCH SUCCESS] Returning 30 results
+[KEYWORD SEARCH] repo_id value: '1ace867376ce381c', type: <class 'str'>, query: 'COMPLEXITY_PATTERN'
+[KEYWORD SEARCH PYTHON] Fetched 551 chunks for repo_id: 1ace867376ce381c
+[KEYWORD SEARCH SUCCESS] Returning 0 results
+[HYBRID SEARCH] repo_id: '1ace867376ce381c', query: 'COMPLEXITY_PATTERN'
+  Vector results raw count: 30
+  Keyword results raw count: 0
+[KEYWORD SEARCH] repo_id value: '1ace867376ce381c', type: <class 'str'>, query: 'cleanup_repo'
+[KEYWORD SEARCH PYTHON] Fetched 551 chunks for repo_id: 1ace867376ce381c
+[KEYWORD SEARCH SUCCESS] Returning 0 results
+[VECTOR SEARCH] repo_id value: '1ace867376ce381c', type: <class 'str'>, query: 'cleanup_repo'
+[VECTOR SEARCH PYTHON] Fetched 551 chunks for repo_id: 1ace867376ce381c
+[VECTOR SEARCH SUCCESS] Returning 10 results
+[VECTOR SEARCH] repo_id value: '1ace867376ce381c', type: <class 'str'>, query: 'cleanup_repo'
+[VECTOR SEARCH PYTHON] Fetched 551 chunks for repo_id: 1ace867376ce381c
+[VECTOR SEARCH SUCCESS] Returning 30 results
+[KEYWORD SEARCH] repo_id value: '1ace867376ce381c', type: <class 'str'>, query: 'cleanup_repo'
+[KEYWORD SEARCH PYTHON] Fetched 551 chunks for repo_id: 1ace867376ce381c
+[KEYWORD SEARCH SUCCESS] Returning 0 results
+[HYBRID SEARCH] repo_id: '1ace867376ce381c', query: 'cleanup_repo'
+  Vector results raw count: 30
+  Keyword results raw count: 0
+[KEYWORD SEARCH] repo_id value: '1ace867376ce381c', type: <class 'str'>, query: 'how do we calculate the downstream files impacted by a file change'
+[KEYWORD SEARCH PYTHON] Fetched 551 chunks for repo_id: 1ace867376ce381c
+[KEYWORD SEARCH SUCCESS] Returning 10 results
+[VECTOR SEARCH] repo_id value: '1ace867376ce381c', type: <class 'str'>, query: 'how do we calculate the downstream files impacted by a file change'
+[VECTOR SEARCH PYTHON] Fetched 551 chunks for repo_id: 1ace867376ce381c
+[VECTOR SEARCH SUCCESS] Returning 10 results
+[VECTOR SEARCH] repo_id value: '1ace867376ce381c', type: <class 'str'>, query: 'how do we calculate the downstream files impacted by a file change'
+[VECTOR SEARCH PYTHON] Fetched 551 chunks for repo_id: 1ace867376ce381c
+[VECTOR SEARCH SUCCESS] Returning 30 results
+[KEYWORD SEARCH] repo_id value: '1ace867376ce381c', type: <class 'str'>, query: 'how do we calculate the downstream files impacted by a file change'
+[KEYWORD SEARCH PYTHON] Fetched 551 chunks for repo_id: 1ace867376ce381c
+[KEYWORD SEARCH SUCCESS] Returning 30 results
+[HYBRID SEARCH] repo_id: '1ace867376ce381c', query: 'how do we calculate the downstream files impacted by a file change'
+  Vector results raw count: 30
+  Keyword results raw count: 30
+[KEYWORD SEARCH] repo_id value: '1ace867376ce381c', type: <class 'str'>, query: 'retrieve the most frequently changed files to identify hotspots'
+[KEYWORD SEARCH PYTHON] Fetched 551 chunks for repo_id: 1ace867376ce381c
+[KEYWORD SEARCH SUCCESS] Returning 10 results
+[VECTOR SEARCH] repo_id value: '1ace867376ce381c', type: <class 'str'>, query: 'retrieve the most frequently changed files to identify hotspots'
+[VECTOR SEARCH PYTHON] Fetched 551 chunks for repo_id: 1ace867376ce381c
+[VECTOR SEARCH SUCCESS] Returning 10 results
+[VECTOR SEARCH] repo_id value: '1ace867376ce381c', type: <class 'str'>, query: 'retrieve the most frequently changed files to identify hotspots'
+[VECTOR SEARCH PYTHON] Fetched 551 chunks for repo_id: 1ace867376ce381c
+[VECTOR SEARCH SUCCESS] Returning 30 results
+[KEYWORD SEARCH] repo_id value: '1ace867376ce381c', type: <class 'str'>, query: 'retrieve the most frequently changed files to identify hotspots'
+[KEYWORD SEARCH PYTHON] Fetched 551 chunks for repo_id: 1ace867376ce381c
+[KEYWORD SEARCH SUCCESS] Returning 30 results
+[HYBRID SEARCH] repo_id: '1ace867376ce381c', query: 'retrieve the most frequently changed files to identify hotspots'
+  Vector results raw count: 30
+  Keyword results raw count: 30
+[KEYWORD SEARCH] repo_id value: '1ace867376ce381c', type: <class 'str'>, query: 'lightweight complexity estimation by counting keywords like switch or case'
+[KEYWORD SEARCH PYTHON] Fetched 551 chunks for repo_id: 1ace867376ce381c
+[KEYWORD SEARCH SUCCESS] Returning 10 results
+[VECTOR SEARCH] repo_id value: '1ace867376ce381c', type: <class 'str'>, query: 'lightweight complexity estimation by counting keywords like switch or case'
+[VECTOR SEARCH PYTHON] Fetched 551 chunks for repo_id: 1ace867376ce381c
+[VECTOR SEARCH SUCCESS] Returning 10 results
+[VECTOR SEARCH] repo_id value: '1ace867376ce381c', type: <class 'str'>, query: 'lightweight complexity estimation by counting keywords like switch or case'
+[VECTOR SEARCH PYTHON] Fetched 551 chunks for repo_id: 1ace867376ce381c
+[VECTOR SEARCH SUCCESS] Returning 30 results
+[KEYWORD SEARCH] repo_id value: '1ace867376ce381c', type: <class 'str'>, query: 'lightweight complexity estimation by counting keywords like switch or case'
+[KEYWORD SEARCH PYTHON] Fetched 551 chunks for repo_id: 1ace867376ce381c
+[KEYWORD SEARCH SUCCESS] Returning 30 results
+[HYBRID SEARCH] repo_id: '1ace867376ce381c', query: 'lightweight complexity estimation by counting keywords like switch or case'
+  Vector results raw count: 30
+  Keyword results raw count: 30
+[KEYWORD SEARCH] repo_id value: '1ace867376ce381c', type: <class 'str'>, query: 'safely remove temporary directory and cloned files from local storage'
+[KEYWORD SEARCH PYTHON] Fetched 551 chunks for repo_id: 1ace867376ce381c
+[KEYWORD SEARCH SUCCESS] Returning 10 results
+[VECTOR SEARCH] repo_id value: '1ace867376ce381c', type: <class 'str'>, query: 'safely remove temporary directory and cloned files from local storage'
+[VECTOR SEARCH PYTHON] Fetched 551 chunks for repo_id: 1ace867376ce381c
+[VECTOR SEARCH SUCCESS] Returning 10 results
+[VECTOR SEARCH] repo_id value: '1ace867376ce381c', type: <class 'str'>, query: 'safely remove temporary directory and cloned files from local storage'
+[VECTOR SEARCH PYTHON] Fetched 551 chunks for repo_id: 1ace867376ce381c
+[VECTOR SEARCH SUCCESS] Returning 30 results
+[KEYWORD SEARCH] repo_id value: '1ace867376ce381c', type: <class 'str'>, query: 'safely remove temporary directory and cloned files from local storage'
+[KEYWORD SEARCH PYTHON] Fetched 551 chunks for repo_id: 1ace867376ce381c
+[KEYWORD SEARCH SUCCESS] Returning 30 results
+[HYBRID SEARCH] repo_id: '1ace867376ce381c', query: 'safely remove temporary directory and cloned files from local storage'
+  Vector results raw count: 30
+  Keyword results raw count: 30
+[KEYWORD SEARCH] repo_id value: '1ace867376ce381c', type: <class 'str'>, query: 'how is the repository downloaded from git URL'
+[KEYWORD SEARCH PYTHON] Fetched 551 chunks for repo_id: 1ace867376ce381c
+[KEYWORD SEARCH SUCCESS] Returning 10 results
+[VECTOR SEARCH] repo_id value: '1ace867376ce381c', type: <class 'str'>, query: 'how is the repository downloaded from git URL'
+[VECTOR SEARCH PYTHON] Fetched 551 chunks for repo_id: 1ace867376ce381c
+[VECTOR SEARCH SUCCESS] Returning 10 results
+[VECTOR SEARCH] repo_id value: '1ace867376ce381c', type: <class 'str'>, query: 'how is the repository downloaded from git URL'
+[VECTOR SEARCH PYTHON] Fetched 551 chunks for repo_id: 1ace867376ce381c
+[VECTOR SEARCH SUCCESS] Returning 30 results
+[KEYWORD SEARCH] repo_id value: '1ace867376ce381c', type: <class 'str'>, query: 'how is the repository downloaded from git URL'
+[KEYWORD SEARCH PYTHON] Fetched 551 chunks for repo_id: 1ace867376ce381c
+[KEYWORD SEARCH SUCCESS] Returning 30 results
+[HYBRID SEARCH] repo_id: '1ace867376ce381c', query: 'how is the repository downloaded from git URL'
+  Vector results raw count: 30
+  Keyword results raw count: 30
+[KEYWORD SEARCH] repo_id value: '1ace867376ce381c', type: <class 'str'>, query: 'recursively parsing folder contents to build hierarchical representation'
+[KEYWORD SEARCH PYTHON] Fetched 551 chunks for repo_id: 1ace867376ce381c
+[KEYWORD SEARCH SUCCESS] Returning 10 results
+[VECTOR SEARCH] repo_id value: '1ace867376ce381c', type: <class 'str'>, query: 'recursively parsing folder contents to build hierarchical representation'
+[VECTOR SEARCH PYTHON] Fetched 551 chunks for repo_id: 1ace867376ce381c
+[VECTOR SEARCH SUCCESS] Returning 10 results
+[VECTOR SEARCH] repo_id value: '1ace867376ce381c', type: <class 'str'>, query: 'recursively parsing folder contents to build hierarchical representation'
+[VECTOR SEARCH PYTHON] Fetched 551 chunks for repo_id: 1ace867376ce381c
+[VECTOR SEARCH SUCCESS] Returning 30 results
+[KEYWORD SEARCH] repo_id value: '1ace867376ce381c', type: <class 'str'>, query: 'recursively parsing folder contents to build hierarchical representation'
+[KEYWORD SEARCH PYTHON] Fetched 551 chunks for repo_id: 1ace867376ce381c
+[KEYWORD SEARCH SUCCESS] Returning 30 results
+[HYBRID SEARCH] repo_id: '1ace867376ce381c', query: 'recursively parsing folder contents to build hierarchical representation'
+  Vector results raw count: 30
+  Keyword results raw count: 30
+[KEYWORD SEARCH] repo_id value: '1ace867376ce381c', type: <class 'str'>, query: 'combining keyword search with vector matching using reciprocal rank fusion'
+[KEYWORD SEARCH PYTHON] Fetched 551 chunks for repo_id: 1ace867376ce381c
+[KEYWORD SEARCH SUCCESS] Returning 10 results
+[VECTOR SEARCH] repo_id value: '1ace867376ce381c', type: <class 'str'>, query: 'combining keyword search with vector matching using reciprocal rank fusion'
+[VECTOR SEARCH PYTHON] Fetched 551 chunks for repo_id: 1ace867376ce381c
+[VECTOR SEARCH SUCCESS] Returning 10 results
+[VECTOR SEARCH] repo_id value: '1ace867376ce381c', type: <class 'str'>, query: 'combining keyword search with vector matching using reciprocal rank fusion'
+[VECTOR SEARCH PYTHON] Fetched 551 chunks for repo_id: 1ace867376ce381c
+[VECTOR SEARCH SUCCESS] Returning 30 results
+[KEYWORD SEARCH] repo_id value: '1ace867376ce381c', type: <class 'str'>, query: 'combining keyword search with vector matching using reciprocal rank fusion'
+[KEYWORD SEARCH PYTHON] Fetched 551 chunks for repo_id: 1ace867376ce381c
+[KEYWORD SEARCH SUCCESS] Returning 30 results
+[HYBRID SEARCH] repo_id: '1ace867376ce381c', query: 'combining keyword search with vector matching using reciprocal rank fusion'
+  Vector results raw count: 30
+  Keyword results raw count: 30
+[KEYWORD SEARCH] repo_id value: '1ace867376ce381c', type: <class 'str'>, query: 'calculating cosine similarity using embedded vectors'
+[KEYWORD SEARCH PYTHON] Fetched 551 chunks for repo_id: 1ace867376ce381c
+[KEYWORD SEARCH SUCCESS] Returning 4 results
+[VECTOR SEARCH] repo_id value: '1ace867376ce381c', type: <class 'str'>, query: 'calculating cosine similarity using embedded vectors'
+[VECTOR SEARCH PYTHON] Fetched 551 chunks for repo_id: 1ace867376ce381c
+[VECTOR SEARCH SUCCESS] Returning 10 results
+[VECTOR SEARCH] repo_id value: '1ace867376ce381c', type: <class 'str'>, query: 'calculating cosine similarity using embedded vectors'
+[VECTOR SEARCH PYTHON] Fetched 551 chunks for repo_id: 1ace867376ce381c
+[VECTOR SEARCH SUCCESS] Returning 30 results
+[KEYWORD SEARCH] repo_id value: '1ace867376ce381c', type: <class 'str'>, query: 'calculating cosine similarity using embedded vectors'
+[KEYWORD SEARCH PYTHON] Fetched 551 chunks for repo_id: 1ace867376ce381c
+[KEYWORD SEARCH SUCCESS] Returning 4 results
+[HYBRID SEARCH] repo_id: '1ace867376ce381c', query: 'calculating cosine similarity using embedded vectors'
+  Vector results raw count: 30
+  Keyword results raw count: 4
+[KEYWORD SEARCH] repo_id value: '1ace867376ce381c', type: <class 'str'>, query: 'generating a structured onboarding guide with reading order'
+[KEYWORD SEARCH PYTHON] Fetched 551 chunks for repo_id: 1ace867376ce381c
+[KEYWORD SEARCH SUCCESS] Returning 10 results
+[VECTOR SEARCH] repo_id value: '1ace867376ce381c', type: <class 'str'>, query: 'generating a structured onboarding guide with reading order'
+[VECTOR SEARCH PYTHON] Fetched 551 chunks for repo_id: 1ace867376ce381c
+[VECTOR SEARCH SUCCESS] Returning 10 results
+[VECTOR SEARCH] repo_id value: '1ace867376ce381c', type: <class 'str'>, query: 'generating a structured onboarding guide with reading order'
+[VECTOR SEARCH PYTHON] Fetched 551 chunks for repo_id: 1ace867376ce381c
+[VECTOR SEARCH SUCCESS] Returning 30 results
+[KEYWORD SEARCH] repo_id value: '1ace867376ce381c', type: <class 'str'>, query: 'generating a structured onboarding guide with reading order'
+[KEYWORD SEARCH PYTHON] Fetched 551 chunks for repo_id: 1ace867376ce381c
+[KEYWORD SEARCH SUCCESS] Returning 30 results
+[HYBRID SEARCH] repo_id: '1ace867376ce381c', query: 'generating a structured onboarding guide with reading order'
+  Vector results raw count: 30
+  Keyword results raw count: 30
+[KEYWORD SEARCH] repo_id value: '1ace867376ce381c', type: <class 'str'>, query: 'synthesizing README documentation grouped by subfolder with Groq LLM'
+[KEYWORD SEARCH PYTHON] Fetched 551 chunks for repo_id: 1ace867376ce381c
+[KEYWORD SEARCH SUCCESS] Returning 10 results
+[VECTOR SEARCH] repo_id value: '1ace867376ce381c', type: <class 'str'>, query: 'synthesizing README documentation grouped by subfolder with Groq LLM'
+[VECTOR SEARCH PYTHON] Fetched 551 chunks for repo_id: 1ace867376ce381c
+[VECTOR SEARCH SUCCESS] Returning 10 results
+[VECTOR SEARCH] repo_id value: '1ace867376ce381c', type: <class 'str'>, query: 'synthesizing README documentation grouped by subfolder with Groq LLM'
+[VECTOR SEARCH PYTHON] Fetched 551 chunks for repo_id: 1ace867376ce381c
+[VECTOR SEARCH SUCCESS] Returning 30 results
+[KEYWORD SEARCH] repo_id value: '1ace867376ce381c', type: <class 'str'>, query: 'synthesizing README documentation grouped by subfolder with Groq LLM'
+[KEYWORD SEARCH PYTHON] Fetched 551 chunks for repo_id: 1ace867376ce381c
+[KEYWORD SEARCH SUCCESS] Returning 30 results
+[HYBRID SEARCH] repo_id: '1ace867376ce381c', query: 'synthesizing README documentation grouped by subfolder with Groq LLM'
+  Vector results raw count: 30
+  Keyword results raw count: 30
+[KEYWORD SEARCH] repo_id value: '1ace867376ce381c', type: <class 'str'>, query: 'find entry points and dependencies mapping in dependency_graph'
+[KEYWORD SEARCH PYTHON] Fetched 551 chunks for repo_id: 1ace867376ce381c
+[KEYWORD SEARCH SUCCESS] Returning 10 results
+[VECTOR SEARCH] repo_id value: '1ace867376ce381c', type: <class 'str'>, query: 'find entry points and dependencies mapping in dependency_graph'
+[VECTOR SEARCH PYTHON] Fetched 551 chunks for repo_id: 1ace867376ce381c
+[VECTOR SEARCH SUCCESS] Returning 10 results
+[VECTOR SEARCH] repo_id value: '1ace867376ce381c', type: <class 'str'>, query: 'find entry points and dependencies mapping in dependency_graph'
+[VECTOR SEARCH PYTHON] Fetched 551 chunks for repo_id: 1ace867376ce381c
+[VECTOR SEARCH SUCCESS] Returning 30 results
+[KEYWORD SEARCH] repo_id value: '1ace867376ce381c', type: <class 'str'>, query: 'find entry points and dependencies mapping in dependency_graph'
+[KEYWORD SEARCH PYTHON] Fetched 551 chunks for repo_id: 1ace867376ce381c
+[KEYWORD SEARCH SUCCESS] Returning 30 results
+[HYBRID SEARCH] repo_id: '1ace867376ce381c', query: 'find entry points and dependencies mapping in dependency_graph'
+  Vector results raw count: 30
+  Keyword results raw count: 30
+[KEYWORD SEARCH] repo_id value: '1ace867376ce381c', type: <class 'str'>, query: 'how does process_repo_chunks parse python code AST'
+[KEYWORD SEARCH PYTHON] Fetched 551 chunks for repo_id: 1ace867376ce381c
+[KEYWORD SEARCH SUCCESS] Returning 10 results
+[VECTOR SEARCH] repo_id value: '1ace867376ce381c', type: <class 'str'>, query: 'how does process_repo_chunks parse python code AST'
+[VECTOR SEARCH PYTHON] Fetched 551 chunks for repo_id: 1ace867376ce381c
+[VECTOR SEARCH SUCCESS] Returning 10 results
+[VECTOR SEARCH] repo_id value: '1ace867376ce381c', type: <class 'str'>, query: 'how does process_repo_chunks parse python code AST'
+[VECTOR SEARCH PYTHON] Fetched 551 chunks for repo_id: 1ace867376ce381c
+[VECTOR SEARCH SUCCESS] Returning 30 results
+[KEYWORD SEARCH] repo_id value: '1ace867376ce381c', type: <class 'str'>, query: 'how does process_repo_chunks parse python code AST'
+[KEYWORD SEARCH PYTHON] Fetched 551 chunks for repo_id: 1ace867376ce381c
+[KEYWORD SEARCH SUCCESS] Returning 30 results
+[HYBRID SEARCH] repo_id: '1ace867376ce381c', query: 'how does process_repo_chunks parse python code AST'
+  Vector results raw count: 30
+  Keyword results raw count: 30
+[KEYWORD SEARCH] repo_id value: '1ace867376ce381c', type: <class 'str'>, query: 'generate rag answer with citations'
+[KEYWORD SEARCH PYTHON] Fetched 551 chunks for repo_id: 1ace867376ce381c
+[KEYWORD SEARCH SUCCESS] Returning 10 results
+[VECTOR SEARCH] repo_id value: '1ace867376ce381c', type: <class 'str'>, query: 'generate rag answer with citations'
+[VECTOR SEARCH PYTHON] Fetched 551 chunks for repo_id: 1ace867376ce381c
+[VECTOR SEARCH SUCCESS] Returning 10 results
+[VECTOR SEARCH] repo_id value: '1ace867376ce381c', type: <class 'str'>, query: 'generate rag answer with citations'
+[VECTOR SEARCH PYTHON] Fetched 551 chunks for repo_id: 1ace867376ce381c
+[VECTOR SEARCH SUCCESS] Returning 30 results
+[KEYWORD SEARCH] repo_id value: '1ace867376ce381c', type: <class 'str'>, query: 'generate rag answer with citations'
+[KEYWORD SEARCH PYTHON] Fetched 551 chunks for repo_id: 1ace867376ce381c
+[KEYWORD SEARCH SUCCESS] Returning 30 results
+[HYBRID SEARCH] repo_id: '1ace867376ce381c', query: 'generate rag answer with citations'
+  Vector results raw count: 30
+  Keyword results raw count: 30
+[KEYWORD SEARCH] repo_id value: '1ace867376ce381c', type: <class 'str'>, query: 'supabase connection client setup'
+[KEYWORD SEARCH PYTHON] Fetched 551 chunks for repo_id: 1ace867376ce381c
+[KEYWORD SEARCH SUCCESS] Returning 10 results
+[VECTOR SEARCH] repo_id value: '1ace867376ce381c', type: <class 'str'>, query: 'supabase connection client setup'
+[VECTOR SEARCH PYTHON] Fetched 551 chunks for repo_id: 1ace867376ce381c
+[VECTOR SEARCH SUCCESS] Returning 10 results
+[VECTOR SEARCH] repo_id value: '1ace867376ce381c', type: <class 'str'>, query: 'supabase connection client setup'
+[VECTOR SEARCH PYTHON] Fetched 551 chunks for repo_id: 1ace867376ce381c
+[VECTOR SEARCH SUCCESS] Returning 30 results
+[KEYWORD SEARCH] repo_id value: '1ace867376ce381c', type: <class 'str'>, query: 'supabase connection client setup'
+[KEYWORD SEARCH PYTHON] Fetched 551 chunks for repo_id: 1ace867376ce381c
+[KEYWORD SEARCH SUCCESS] Returning 30 results
+[HYBRID SEARCH] repo_id: '1ace867376ce381c', query: 'supabase connection client setup'
+  Vector results raw count: 30
+  Keyword results raw count: 30
+[KEYWORD SEARCH] repo_id value: '1ace867376ce381c', type: <class 'str'>, query: 'visualize directory structure in react and node selection'
+[KEYWORD SEARCH PYTHON] Fetched 551 chunks for repo_id: 1ace867376ce381c
+[KEYWORD SEARCH SUCCESS] Returning 10 results
+[VECTOR SEARCH] repo_id value: '1ace867376ce381c', type: <class 'str'>, query: 'visualize directory structure in react and node selection'
+[VECTOR SEARCH PYTHON] Fetched 551 chunks for repo_id: 1ace867376ce381c
+[VECTOR SEARCH SUCCESS] Returning 10 results
+[VECTOR SEARCH] repo_id value: '1ace867376ce381c', type: <class 'str'>, query: 'visualize directory structure in react and node selection'
+[VECTOR SEARCH PYTHON] Fetched 551 chunks for repo_id: 1ace867376ce381c
+[VECTOR SEARCH SUCCESS] Returning 30 results
+[KEYWORD SEARCH] repo_id value: '1ace867376ce381c', type: <class 'str'>, query: 'visualize directory structure in react and node selection'
+[KEYWORD SEARCH PYTHON] Fetched 551 chunks for repo_id: 1ace867376ce381c
+[KEYWORD SEARCH SUCCESS] Returning 30 results
+[HYBRID SEARCH] repo_id: '1ace867376ce381c', query: 'visualize directory structure in react and node selection'
+  Vector results raw count: 30
+  Keyword results raw count: 30
+[KEYWORD SEARCH] repo_id value: '1ace867376ce381c', type: <class 'str'>, query: 'SocietySecretaryDashboard'
+[KEYWORD SEARCH PYTHON] Fetched 551 chunks for repo_id: 1ace867376ce381c
+[KEYWORD SEARCH SUCCESS] Returning 3 results
+[VECTOR SEARCH] repo_id value: '1ace867376ce381c', type: <class 'str'>, query: 'SocietySecretaryDashboard'
+[VECTOR SEARCH PYTHON] Fetched 551 chunks for repo_id: 1ace867376ce381c
+[VECTOR SEARCH SUCCESS] Returning 10 results
+[VECTOR SEARCH] repo_id value: '1ace867376ce381c', type: <class 'str'>, query: 'SocietySecretaryDashboard'
+[VECTOR SEARCH PYTHON] Fetched 551 chunks for repo_id: 1ace867376ce381c
+[VECTOR SEARCH SUCCESS] Returning 30 results
+[KEYWORD SEARCH] repo_id value: '1ace867376ce381c', type: <class 'str'>, query: 'SocietySecretaryDashboard'
+[KEYWORD SEARCH PYTHON] Fetched 551 chunks for repo_id: 1ace867376ce381c
+[KEYWORD SEARCH SUCCESS] Returning 3 results
+[HYBRID SEARCH] repo_id: '1ace867376ce381c', query: 'SocietySecretaryDashboard'
+  Vector results raw count: 30
+  Keyword results raw count: 3
+[KEYWORD SEARCH] repo_id value: '1ace867376ce381c', type: <class 'str'>, query: 'HostelStudentDashboard'
+[KEYWORD SEARCH PYTHON] Fetched 551 chunks for repo_id: 1ace867376ce381c
+[KEYWORD SEARCH SUCCESS] Returning 2 results
+[VECTOR SEARCH] repo_id value: '1ace867376ce381c', type: <class 'str'>, query: 'HostelStudentDashboard'
+[VECTOR SEARCH PYTHON] Fetched 551 chunks for repo_id: 1ace867376ce381c
+[VECTOR SEARCH SUCCESS] Returning 10 results
+[VECTOR SEARCH] repo_id value: '1ace867376ce381c', type: <class 'str'>, query: 'HostelStudentDashboard'
+[VECTOR SEARCH PYTHON] Fetched 551 chunks for repo_id: 1ace867376ce381c
+[VECTOR SEARCH SUCCESS] Returning 30 results
+[KEYWORD SEARCH] repo_id value: '1ace867376ce381c', type: <class 'str'>, query: 'HostelStudentDashboard'
+[KEYWORD SEARCH PYTHON] Fetched 551 chunks for repo_id: 1ace867376ce381c
+[KEYWORD SEARCH SUCCESS] Returning 2 results
+[HYBRID SEARCH] repo_id: '1ace867376ce381c', query: 'HostelStudentDashboard'
+  Vector results raw count: 30
+  Keyword results raw count: 2
+[KEYWORD SEARCH] repo_id value: '1ace867376ce381c', type: <class 'str'>, query: 'SocietySecurityDashboard'
+[KEYWORD SEARCH PYTHON] Fetched 551 chunks for repo_id: 1ace867376ce381c
+[KEYWORD SEARCH SUCCESS] Returning 3 results
+[VECTOR SEARCH] repo_id value: '1ace867376ce381c', type: <class 'str'>, query: 'SocietySecurityDashboard'
+[VECTOR SEARCH PYTHON] Fetched 551 chunks for repo_id: 1ace867376ce381c
+[VECTOR SEARCH SUCCESS] Returning 10 results
+[VECTOR SEARCH] repo_id value: '1ace867376ce381c', type: <class 'str'>, query: 'SocietySecurityDashboard'
+[VECTOR SEARCH PYTHON] Fetched 551 chunks for repo_id: 1ace867376ce381c
+[VECTOR SEARCH SUCCESS] Returning 30 results
+[KEYWORD SEARCH] repo_id value: '1ace867376ce381c', type: <class 'str'>, query: 'SocietySecurityDashboard'
+[KEYWORD SEARCH PYTHON] Fetched 551 chunks for repo_id: 1ace867376ce381c
+[KEYWORD SEARCH SUCCESS] Returning 3 results
+[HYBRID SEARCH] repo_id: '1ace867376ce381c', query: 'SocietySecurityDashboard'
+  Vector results raw count: 30
+  Keyword results raw count: 3
+[KEYWORD SEARCH] repo_id value: '1ace867376ce381c', type: <class 'str'>, query: 'SocietyResidentDashboard'
+[KEYWORD SEARCH PYTHON] Fetched 551 chunks for repo_id: 1ace867376ce381c
+[KEYWORD SEARCH SUCCESS] Returning 5 results
+[VECTOR SEARCH] repo_id value: '1ace867376ce381c', type: <class 'str'>, query: 'SocietyResidentDashboard'
+[VECTOR SEARCH PYTHON] Fetched 551 chunks for repo_id: 1ace867376ce381c
+[VECTOR SEARCH SUCCESS] Returning 10 results
+[VECTOR SEARCH] repo_id value: '1ace867376ce381c', type: <class 'str'>, query: 'SocietyResidentDashboard'
+[VECTOR SEARCH PYTHON] Fetched 551 chunks for repo_id: 1ace867376ce381c
+[VECTOR SEARCH SUCCESS] Returning 30 results
+[KEYWORD SEARCH] repo_id value: '1ace867376ce381c', type: <class 'str'>, query: 'SocietyResidentDashboard'
+[KEYWORD SEARCH PYTHON] Fetched 551 chunks for repo_id: 1ace867376ce381c
+[KEYWORD SEARCH SUCCESS] Returning 5 results
+[HYBRID SEARCH] repo_id: '1ace867376ce381c', query: 'SocietyResidentDashboard'
+  Vector results raw count: 30
+  Keyword results raw count: 5
+[KEYWORD SEARCH] repo_id value: '1ace867376ce381c', type: <class 'str'>, query: 'mockVisitors'
+[KEYWORD SEARCH PYTHON] Fetched 551 chunks for repo_id: 1ace867376ce381c
+[KEYWORD SEARCH SUCCESS] Returning 1 results
+[VECTOR SEARCH] repo_id value: '1ace867376ce381c', type: <class 'str'>, query: 'mockVisitors'
+[VECTOR SEARCH PYTHON] Fetched 551 chunks for repo_id: 1ace867376ce381c
+[VECTOR SEARCH SUCCESS] Returning 10 results
+[VECTOR SEARCH] repo_id value: '1ace867376ce381c', type: <class 'str'>, query: 'mockVisitors'
+[VECTOR SEARCH PYTHON] Fetched 551 chunks for repo_id: 1ace867376ce381c
+[VECTOR SEARCH SUCCESS] Returning 30 results
+[KEYWORD SEARCH] repo_id value: '1ace867376ce381c', type: <class 'str'>, query: 'mockVisitors'
+[KEYWORD SEARCH PYTHON] Fetched 551 chunks for repo_id: 1ace867376ce381c
+[KEYWORD SEARCH SUCCESS] Returning 1 results
+[HYBRID SEARCH] repo_id: '1ace867376ce381c', query: 'mockVisitors'
+  Vector results raw count: 30
+  Keyword results raw count: 1
+[KEYWORD SEARCH] repo_id value: '1ace867376ce381c', type: <class 'str'>, query: 'pendingPaymentsCount'
+[KEYWORD SEARCH PYTHON] Fetched 551 chunks for repo_id: 1ace867376ce381c
+[KEYWORD SEARCH SUCCESS] Returning 3 results
+[VECTOR SEARCH] repo_id value: '1ace867376ce381c', type: <class 'str'>, query: 'pendingPaymentsCount'
+[VECTOR SEARCH PYTHON] Fetched 551 chunks for repo_id: 1ace867376ce381c
+[VECTOR SEARCH SUCCESS] Returning 10 results
+[VECTOR SEARCH] repo_id value: '1ace867376ce381c', type: <class 'str'>, query: 'pendingPaymentsCount'
+[VECTOR SEARCH PYTHON] Fetched 551 chunks for repo_id: 1ace867376ce381c
+[VECTOR SEARCH SUCCESS] Returning 30 results
+[KEYWORD SEARCH] repo_id value: '1ace867376ce381c', type: <class 'str'>, query: 'pendingPaymentsCount'
+[KEYWORD SEARCH PYTHON] Fetched 551 chunks for repo_id: 1ace867376ce381c
+[KEYWORD SEARCH SUCCESS] Returning 3 results
+[HYBRID SEARCH] repo_id: '1ace867376ce381c', query: 'pendingPaymentsCount'
+  Vector results raw count: 30
+  Keyword results raw count: 3
+[KEYWORD SEARCH] repo_id value: '1ace867376ce381c', type: <class 'str'>, query: 'curfew warnings'
+[KEYWORD SEARCH PYTHON] Fetched 551 chunks for repo_id: 1ace867376ce381c
+[KEYWORD SEARCH SUCCESS] Returning 10 results
+[VECTOR SEARCH] repo_id value: '1ace867376ce381c', type: <class 'str'>, query: 'curfew warnings'
+[VECTOR SEARCH PYTHON] Fetched 551 chunks for repo_id: 1ace867376ce381c
+[VECTOR SEARCH SUCCESS] Returning 10 results
+[VECTOR SEARCH] repo_id value: '1ace867376ce381c', type: <class 'str'>, query: 'curfew warnings'
+[VECTOR SEARCH PYTHON] Fetched 551 chunks for repo_id: 1ace867376ce381c
+[VECTOR SEARCH SUCCESS] Returning 30 results
+[KEYWORD SEARCH] repo_id value: '1ace867376ce381c', type: <class 'str'>, query: 'curfew warnings'
+[KEYWORD SEARCH PYTHON] Fetched 551 chunks for repo_id: 1ace867376ce381c
+[KEYWORD SEARCH SUCCESS] Returning 13 results
+[HYBRID SEARCH] repo_id: '1ace867376ce381c', query: 'curfew warnings'
+  Vector results raw count: 30
+  Keyword results raw count: 13
+[KEYWORD SEARCH] repo_id value: '1ace867376ce381c', type: <class 'str'>, query: 'DEMO_CREDENTIALS'
+[KEYWORD SEARCH PYTHON] Fetched 551 chunks for repo_id: 1ace867376ce381c
+[KEYWORD SEARCH SUCCESS] Returning 0 results
+[VECTOR SEARCH] repo_id value: '1ace867376ce381c', type: <class 'str'>, query: 'DEMO_CREDENTIALS'
+[VECTOR SEARCH PYTHON] Fetched 551 chunks for repo_id: 1ace867376ce381c
+[VECTOR SEARCH SUCCESS] Returning 10 results
+[VECTOR SEARCH] repo_id value: '1ace867376ce381c', type: <class 'str'>, query: 'DEMO_CREDENTIALS'
+[VECTOR SEARCH PYTHON] Fetched 551 chunks for repo_id: 1ace867376ce381c
+[VECTOR SEARCH SUCCESS] Returning 30 results
+[KEYWORD SEARCH] repo_id value: '1ace867376ce381c', type: <class 'str'>, query: 'DEMO_CREDENTIALS'
+[KEYWORD SEARCH PYTHON] Fetched 551 chunks for repo_id: 1ace867376ce381c
+[KEYWORD SEARCH SUCCESS] Returning 0 results
+[HYBRID SEARCH] repo_id: '1ace867376ce381c', query: 'DEMO_CREDENTIALS'
+  Vector results raw count: 30
+  Keyword results raw count: 0
+[KEYWORD SEARCH] repo_id value: '1ace867376ce381c', type: <class 'str'>, query: 'joinedAt'
+[KEYWORD SEARCH PYTHON] Fetched 551 chunks for repo_id: 1ace867376ce381c
+[KEYWORD SEARCH SUCCESS] Returning 10 results
+[VECTOR SEARCH] repo_id value: '1ace867376ce381c', type: <class 'str'>, query: 'joinedAt'
+[VECTOR SEARCH PYTHON] Fetched 551 chunks for repo_id: 1ace867376ce381c
+[VECTOR SEARCH SUCCESS] Returning 10 results
+[VECTOR SEARCH] repo_id value: '1ace867376ce381c', type: <class 'str'>, query: 'joinedAt'
+[VECTOR SEARCH PYTHON] Fetched 551 chunks for repo_id: 1ace867376ce381c
+[VECTOR SEARCH SUCCESS] Returning 30 results
+[KEYWORD SEARCH] repo_id value: '1ace867376ce381c', type: <class 'str'>, query: 'joinedAt'
+[KEYWORD SEARCH PYTHON] Fetched 551 chunks for repo_id: 1ace867376ce381c
+[KEYWORD SEARCH SUCCESS] Returning 19 results
+[HYBRID SEARCH] repo_id: '1ace867376ce381c', query: 'joinedAt'
+  Vector results raw count: 30
+  Keyword results raw count: 19
+[KEYWORD SEARCH] repo_id value: '1ace867376ce381c', type: <class 'str'>, query: 'visitingResident'
+[KEYWORD SEARCH PYTHON] Fetched 551 chunks for repo_id: 1ace867376ce381c
+[KEYWORD SEARCH SUCCESS] Returning 10 results
+[VECTOR SEARCH] repo_id value: '1ace867376ce381c', type: <class 'str'>, query: 'visitingResident'
+[VECTOR SEARCH PYTHON] Fetched 551 chunks for repo_id: 1ace867376ce381c
+[VECTOR SEARCH SUCCESS] Returning 10 results
+[VECTOR SEARCH] repo_id value: '1ace867376ce381c', type: <class 'str'>, query: 'visitingResident'
+[VECTOR SEARCH PYTHON] Fetched 551 chunks for repo_id: 1ace867376ce381c
+[VECTOR SEARCH SUCCESS] Returning 30 results
+[KEYWORD SEARCH] repo_id value: '1ace867376ce381c', type: <class 'str'>, query: 'visitingResident'
+[KEYWORD SEARCH PYTHON] Fetched 551 chunks for repo_id: 1ace867376ce381c
+[KEYWORD SEARCH SUCCESS] Returning 16 results
+[HYBRID SEARCH] repo_id: '1ace867376ce381c', query: 'visitingResident'
+  Vector results raw count: 30
+  Keyword results raw count: 16
+[KEYWORD SEARCH] repo_id value: '1ace867376ce381c', type: <class 'str'>, query: 'broadcasting curfew alerts or gate announcements to all hostel students'
+[KEYWORD SEARCH PYTHON] Fetched 551 chunks for repo_id: 1ace867376ce381c
+[KEYWORD SEARCH SUCCESS] Returning 10 results
+[VECTOR SEARCH] repo_id value: '1ace867376ce381c', type: <class 'str'>, query: 'broadcasting curfew alerts or gate announcements to all hostel students'
+[VECTOR SEARCH PYTHON] Fetched 551 chunks for repo_id: 1ace867376ce381c
+[VECTOR SEARCH SUCCESS] Returning 10 results
+[VECTOR SEARCH] repo_id value: '1ace867376ce381c', type: <class 'str'>, query: 'broadcasting curfew alerts or gate announcements to all hostel students'
+[VECTOR SEARCH PYTHON] Fetched 551 chunks for repo_id: 1ace867376ce381c
+[VECTOR SEARCH SUCCESS] Returning 30 results
+[KEYWORD SEARCH] repo_id value: '1ace867376ce381c', type: <class 'str'>, query: 'broadcasting curfew alerts or gate announcements to all hostel students'
+[KEYWORD SEARCH PYTHON] Fetched 551 chunks for repo_id: 1ace867376ce381c
+[KEYWORD SEARCH SUCCESS] Returning 30 results
+[HYBRID SEARCH] repo_id: '1ace867376ce381c', query: 'broadcasting curfew alerts or gate announcements to all hostel students'
+  Vector results raw count: 30
+  Keyword results raw count: 30
+[KEYWORD SEARCH] repo_id value: '1ace867376ce381c', type: <class 'str'>, query: 'hiring local plumbers or technicians for maintenance issues'
+[KEYWORD SEARCH PYTHON] Fetched 551 chunks for repo_id: 1ace867376ce381c
+[KEYWORD SEARCH SUCCESS] Returning 10 results
+[VECTOR SEARCH] repo_id value: '1ace867376ce381c', type: <class 'str'>, query: 'hiring local plumbers or technicians for maintenance issues'
+[VECTOR SEARCH PYTHON] Fetched 551 chunks for repo_id: 1ace867376ce381c
+[VECTOR SEARCH SUCCESS] Returning 10 results
+[VECTOR SEARCH] repo_id value: '1ace867376ce381c', type: <class 'str'>, query: 'hiring local plumbers or technicians for maintenance issues'
+[VECTOR SEARCH PYTHON] Fetched 551 chunks for repo_id: 1ace867376ce381c
+[VECTOR SEARCH SUCCESS] Returning 30 results
+[KEYWORD SEARCH] repo_id value: '1ace867376ce381c', type: <class 'str'>, query: 'hiring local plumbers or technicians for maintenance issues'
+[KEYWORD SEARCH PYTHON] Fetched 551 chunks for repo_id: 1ace867376ce381c
+[KEYWORD SEARCH SUCCESS] Returning 30 results
+[HYBRID SEARCH] repo_id: '1ace867376ce381c', query: 'hiring local plumbers or technicians for maintenance issues'
+  Vector results raw count: 30
+  Keyword results raw count: 30
+[KEYWORD SEARCH] repo_id value: '1ace867376ce381c', type: <class 'str'>, query: 'mock database collection for guest entries and departures'
+[KEYWORD SEARCH PYTHON] Fetched 551 chunks for repo_id: 1ace867376ce381c
+[KEYWORD SEARCH SUCCESS] Returning 10 results
+[VECTOR SEARCH] repo_id value: '1ace867376ce381c', type: <class 'str'>, query: 'mock database collection for guest entries and departures'
+[VECTOR SEARCH PYTHON] Fetched 551 chunks for repo_id: 1ace867376ce381c
+[VECTOR SEARCH SUCCESS] Returning 10 results
+[VECTOR SEARCH] repo_id value: '1ace867376ce381c', type: <class 'str'>, query: 'mock database collection for guest entries and departures'
+[VECTOR SEARCH PYTHON] Fetched 551 chunks for repo_id: 1ace867376ce381c
+[VECTOR SEARCH SUCCESS] Returning 30 results
+[KEYWORD SEARCH] repo_id value: '1ace867376ce381c', type: <class 'str'>, query: 'mock database collection for guest entries and departures'
+[KEYWORD SEARCH PYTHON] Fetched 551 chunks for repo_id: 1ace867376ce381c
+[KEYWORD SEARCH SUCCESS] Returning 30 results
+[HYBRID SEARCH] repo_id: '1ace867376ce381c', query: 'mock database collection for guest entries and departures'
+  Vector results raw count: 30
+  Keyword results raw count: 30
+[KEYWORD SEARCH] repo_id value: '1ace867376ce381c', type: <class 'str'>, query: 'generating OTP gate passes for expected guest pre-approval'
+[KEYWORD SEARCH PYTHON] Fetched 551 chunks for repo_id: 1ace867376ce381c
+[KEYWORD SEARCH SUCCESS] Returning 10 results
+[VECTOR SEARCH] repo_id value: '1ace867376ce381c', type: <class 'str'>, query: 'generating OTP gate passes for expected guest pre-approval'
+[VECTOR SEARCH PYTHON] Fetched 551 chunks for repo_id: 1ace867376ce381c
+[VECTOR SEARCH SUCCESS] Returning 10 results
+[VECTOR SEARCH] repo_id value: '1ace867376ce381c', type: <class 'str'>, query: 'generating OTP gate passes for expected guest pre-approval'
+[VECTOR SEARCH PYTHON] Fetched 551 chunks for repo_id: 1ace867376ce381c
+[VECTOR SEARCH SUCCESS] Returning 30 results
+[KEYWORD SEARCH] repo_id value: '1ace867376ce381c', type: <class 'str'>, query: 'generating OTP gate passes for expected guest pre-approval'
+[KEYWORD SEARCH PYTHON] Fetched 551 chunks for repo_id: 1ace867376ce381c
+[KEYWORD SEARCH SUCCESS] Returning 30 results
+[HYBRID SEARCH] repo_id: '1ace867376ce381c', query: 'generating OTP gate passes for expected guest pre-approval'
+  Vector results raw count: 30
+  Keyword results raw count: 30
+[KEYWORD SEARCH] repo_id value: '1ace867376ce381c', type: <class 'str'>, query: 'committee command center for tracking pending payments and society invoices'
+[KEYWORD SEARCH PYTHON] Fetched 551 chunks for repo_id: 1ace867376ce381c
+[KEYWORD SEARCH SUCCESS] Returning 10 results
+[VECTOR SEARCH] repo_id value: '1ace867376ce381c', type: <class 'str'>, query: 'committee command center for tracking pending payments and society invoices'
+[VECTOR SEARCH PYTHON] Fetched 551 chunks for repo_id: 1ace867376ce381c
+[VECTOR SEARCH SUCCESS] Returning 10 results
+[VECTOR SEARCH] repo_id value: '1ace867376ce381c', type: <class 'str'>, query: 'committee command center for tracking pending payments and society invoices'
+[VECTOR SEARCH PYTHON] Fetched 551 chunks for repo_id: 1ace867376ce381c
+[VECTOR SEARCH SUCCESS] Returning 30 results
+[KEYWORD SEARCH] repo_id value: '1ace867376ce381c', type: <class 'str'>, query: 'committee command center for tracking pending payments and society invoices'
+[KEYWORD SEARCH PYTHON] Fetched 551 chunks for repo_id: 1ace867376ce381c
+[KEYWORD SEARCH SUCCESS] Returning 30 results
+[HYBRID SEARCH] repo_id: '1ace867376ce381c', query: 'committee command center for tracking pending payments and society invoices'
+  Vector results raw count: 30
+  Keyword results raw count: 30
+[KEYWORD SEARCH] repo_id value: '1ace867376ce381c', type: <class 'str'>, query: 'resident dashboard view for tracking corridor maintenance and utility usage'
+[KEYWORD SEARCH PYTHON] Fetched 551 chunks for repo_id: 1ace867376ce381c
+[KEYWORD SEARCH SUCCESS] Returning 10 results
+[VECTOR SEARCH] repo_id value: '1ace867376ce381c', type: <class 'str'>, query: 'resident dashboard view for tracking corridor maintenance and utility usage'
+[VECTOR SEARCH PYTHON] Fetched 551 chunks for repo_id: 1ace867376ce381c
+[VECTOR SEARCH SUCCESS] Returning 10 results
+[VECTOR SEARCH] repo_id value: '1ace867376ce381c', type: <class 'str'>, query: 'resident dashboard view for tracking corridor maintenance and utility usage'
+[VECTOR SEARCH PYTHON] Fetched 551 chunks for repo_id: 1ace867376ce381c
+[VECTOR SEARCH SUCCESS] Returning 30 results
+[KEYWORD SEARCH] repo_id value: '1ace867376ce381c', type: <class 'str'>, query: 'resident dashboard view for tracking corridor maintenance and utility usage'
+[KEYWORD SEARCH PYTHON] Fetched 551 chunks for repo_id: 1ace867376ce381c
+[KEYWORD SEARCH SUCCESS] Returning 30 results
+[HYBRID SEARCH] repo_id: '1ace867376ce381c', query: 'resident dashboard view for tracking corridor maintenance and utility usage'
+  Vector results raw count: 30
+  Keyword results raw count: 30
+[KEYWORD SEARCH] repo_id value: '1ace867376ce381c', type: <class 'str'>, query: 'resident marketplace for selling and purchasing household items'
+[KEYWORD SEARCH PYTHON] Fetched 551 chunks for repo_id: 1ace867376ce381c
+[KEYWORD SEARCH SUCCESS] Returning 10 results
+[VECTOR SEARCH] repo_id value: '1ace867376ce381c', type: <class 'str'>, query: 'resident marketplace for selling and purchasing household items'
+[VECTOR SEARCH PYTHON] Fetched 551 chunks for repo_id: 1ace867376ce381c
+[VECTOR SEARCH SUCCESS] Returning 10 results
+[VECTOR SEARCH] repo_id value: '1ace867376ce381c', type: <class 'str'>, query: 'resident marketplace for selling and purchasing household items'
+[VECTOR SEARCH PYTHON] Fetched 551 chunks for repo_id: 1ace867376ce381c
+[VECTOR SEARCH SUCCESS] Returning 30 results
+[KEYWORD SEARCH] repo_id value: '1ace867376ce381c', type: <class 'str'>, query: 'resident marketplace for selling and purchasing household items'
+[KEYWORD SEARCH PYTHON] Fetched 551 chunks for repo_id: 1ace867376ce381c
+[KEYWORD SEARCH SUCCESS] Returning 30 results
+[HYBRID SEARCH] repo_id: '1ace867376ce381c', query: 'resident marketplace for selling and purchasing household items'
+  Vector results raw count: 30
+  Keyword results raw count: 30
+[KEYWORD SEARCH] repo_id value: '1ace867376ce381c', type: <class 'str'>, query: 'filing maintenance tickets and tracking worker assignments'
+[KEYWORD SEARCH PYTHON] Fetched 551 chunks for repo_id: 1ace867376ce381c
+[KEYWORD SEARCH SUCCESS] Returning 10 results
+[VECTOR SEARCH] repo_id value: '1ace867376ce381c', type: <class 'str'>, query: 'filing maintenance tickets and tracking worker assignments'
+[VECTOR SEARCH PYTHON] Fetched 551 chunks for repo_id: 1ace867376ce381c
+[VECTOR SEARCH SUCCESS] Returning 10 results
+[VECTOR SEARCH] repo_id value: '1ace867376ce381c', type: <class 'str'>, query: 'filing maintenance tickets and tracking worker assignments'
+[VECTOR SEARCH PYTHON] Fetched 551 chunks for repo_id: 1ace867376ce381c
+[VECTOR SEARCH SUCCESS] Returning 30 results
+[KEYWORD SEARCH] repo_id value: '1ace867376ce381c', type: <class 'str'>, query: 'filing maintenance tickets and tracking worker assignments'
+[KEYWORD SEARCH PYTHON] Fetched 551 chunks for repo_id: 1ace867376ce381c
+[KEYWORD SEARCH SUCCESS] Returning 30 results
+[HYBRID SEARCH] repo_id: '1ace867376ce381c', query: 'filing maintenance tickets and tracking worker assignments'
+  Vector results raw count: 30
+  Keyword results raw count: 30
+[KEYWORD SEARCH] repo_id value: '1ace867376ce381c', type: <class 'str'>, query: 'posting missing items and reporting found objects within the society complex'
+[KEYWORD SEARCH PYTHON] Fetched 551 chunks for repo_id: 1ace867376ce381c
+[KEYWORD SEARCH SUCCESS] Returning 10 results
+[VECTOR SEARCH] repo_id value: '1ace867376ce381c', type: <class 'str'>, query: 'posting missing items and reporting found objects within the society complex'
+[VECTOR SEARCH PYTHON] Fetched 551 chunks for repo_id: 1ace867376ce381c
+[VECTOR SEARCH SUCCESS] Returning 10 results
+[VECTOR SEARCH] repo_id value: '1ace867376ce381c', type: <class 'str'>, query: 'posting missing items and reporting found objects within the society complex'
+[VECTOR SEARCH PYTHON] Fetched 551 chunks for repo_id: 1ace867376ce381c
+[VECTOR SEARCH SUCCESS] Returning 30 results
+[KEYWORD SEARCH] repo_id value: '1ace867376ce381c', type: <class 'str'>, query: 'posting missing items and reporting found objects within the society complex'
+[KEYWORD SEARCH PYTHON] Fetched 551 chunks for repo_id: 1ace867376ce381c
+[KEYWORD SEARCH SUCCESS] Returning 30 results
+[HYBRID SEARCH] repo_id: '1ace867376ce381c', query: 'posting missing items and reporting found objects within the society complex'
+  Vector results raw count: 30
+  Keyword results raw count: 30
+[KEYWORD SEARCH] repo_id value: '1ace867376ce381c', type: <class 'str'>, query: 'reserving amenities like tennis courts or the community hall'
+[KEYWORD SEARCH PYTHON] Fetched 551 chunks for repo_id: 1ace867376ce381c
+[KEYWORD SEARCH SUCCESS] Returning 10 results
+[VECTOR SEARCH] repo_id value: '1ace867376ce381c', type: <class 'str'>, query: 'reserving amenities like tennis courts or the community hall'
+[VECTOR SEARCH PYTHON] Fetched 551 chunks for repo_id: 1ace867376ce381c
+[VECTOR SEARCH SUCCESS] Returning 10 results
+[VECTOR SEARCH] repo_id value: '1ace867376ce381c', type: <class 'str'>, query: 'reserving amenities like tennis courts or the community hall'
+[VECTOR SEARCH PYTHON] Fetched 551 chunks for repo_id: 1ace867376ce381c
+[VECTOR SEARCH SUCCESS] Returning 30 results
+[KEYWORD SEARCH] repo_id value: '1ace867376ce381c', type: <class 'str'>, query: 'reserving amenities like tennis courts or the community hall'
+[KEYWORD SEARCH PYTHON] Fetched 551 chunks for repo_id: 1ace867376ce381c
+[KEYWORD SEARCH SUCCESS] Returning 30 results
+[HYBRID SEARCH] repo_id: '1ace867376ce381c', query: 'reserving amenities like tennis courts or the community hall'
+  Vector results raw count: 30
+  Keyword results raw count: 30
+[KEYWORD SEARCH] repo_id value: '1ace867376ce381c', type: <class 'str'>, query: 'guard command center for check-in audits and SOS emergency responses'
+[KEYWORD SEARCH PYTHON] Fetched 551 chunks for repo_id: 1ace867376ce381c
+[KEYWORD SEARCH SUCCESS] Returning 10 results
+[VECTOR SEARCH] repo_id value: '1ace867376ce381c', type: <class 'str'>, query: 'guard command center for check-in audits and SOS emergency responses'
+[VECTOR SEARCH PYTHON] Fetched 551 chunks for repo_id: 1ace867376ce381c
+[VECTOR SEARCH SUCCESS] Returning 10 results
+[VECTOR SEARCH] repo_id value: '1ace867376ce381c', type: <class 'str'>, query: 'guard command center for check-in audits and SOS emergency responses'
+[VECTOR SEARCH PYTHON] Fetched 551 chunks for repo_id: 1ace867376ce381c
+[VECTOR SEARCH SUCCESS] Returning 30 results
+[KEYWORD SEARCH] repo_id value: '1ace867376ce381c', type: <class 'str'>, query: 'guard command center for check-in audits and SOS emergency responses'
+[KEYWORD SEARCH PYTHON] Fetched 551 chunks for repo_id: 1ace867376ce381c
+[KEYWORD SEARCH SUCCESS] Returning 30 results
+[HYBRID SEARCH] repo_id: '1ace867376ce381c', query: 'guard command center for check-in audits and SOS emergency responses'
+  Vector results raw count: 30
+  Keyword results raw count: 30
+[KEYWORD SEARCH] repo_id value: '1ace867376ce381c', type: <class 'str'>, query: 'list of login credentials and usernames for testing role-based dashboards'
+[KEYWORD SEARCH PYTHON] Fetched 551 chunks for repo_id: 1ace867376ce381c
+[KEYWORD SEARCH SUCCESS] Returning 10 results
+[VECTOR SEARCH] repo_id value: '1ace867376ce381c', type: <class 'str'>, query: 'list of login credentials and usernames for testing role-based dashboards'
+[VECTOR SEARCH PYTHON] Fetched 551 chunks for repo_id: 1ace867376ce381c
+[VECTOR SEARCH SUCCESS] Returning 10 results
+[VECTOR SEARCH] repo_id value: '1ace867376ce381c', type: <class 'str'>, query: 'list of login credentials and usernames for testing role-based dashboards'
+[VECTOR SEARCH PYTHON] Fetched 551 chunks for repo_id: 1ace867376ce381c
+[VECTOR SEARCH SUCCESS] Returning 30 results
+[KEYWORD SEARCH] repo_id value: '1ace867376ce381c', type: <class 'str'>, query: 'list of login credentials and usernames for testing role-based dashboards'
+[KEYWORD SEARCH PYTHON] Fetched 551 chunks for repo_id: 1ace867376ce381c
+[KEYWORD SEARCH SUCCESS] Returning 30 results
+[HYBRID SEARCH] repo_id: '1ace867376ce381c', query: 'list of login credentials and usernames for testing role-based dashboards'
+  Vector results raw count: 30
+  Keyword results raw count: 30
+[KEYWORD SEARCH] repo_id value: '1ace867376ce381c', type: <class 'str'>, query: 'visitingResident in mock-visitors'
+[KEYWORD SEARCH PYTHON] Fetched 551 chunks for repo_id: 1ace867376ce381c
+[KEYWORD SEARCH SUCCESS] Returning 10 results
+[VECTOR SEARCH] repo_id value: '1ace867376ce381c', type: <class 'str'>, query: 'visitingResident in mock-visitors'
+[VECTOR SEARCH PYTHON] Fetched 551 chunks for repo_id: 1ace867376ce381c
+[VECTOR SEARCH SUCCESS] Returning 10 results
+[VECTOR SEARCH] repo_id value: '1ace867376ce381c', type: <class 'str'>, query: 'visitingResident in mock-visitors'
+[VECTOR SEARCH PYTHON] Fetched 551 chunks for repo_id: 1ace867376ce381c
+[VECTOR SEARCH SUCCESS] Returning 30 results
+[KEYWORD SEARCH] repo_id value: '1ace867376ce381c', type: <class 'str'>, query: 'visitingResident in mock-visitors'
+[KEYWORD SEARCH PYTHON] Fetched 551 chunks for repo_id: 1ace867376ce381c
+[KEYWORD SEARCH SUCCESS] Returning 30 results
+[HYBRID SEARCH] repo_id: '1ace867376ce381c', query: 'visitingResident in mock-visitors'
+  Vector results raw count: 30
+  Keyword results raw count: 30
+[KEYWORD SEARCH] repo_id value: '1ace867376ce381c', type: <class 'str'>, query: 'announcements page banner notice'
+[KEYWORD SEARCH PYTHON] Fetched 551 chunks for repo_id: 1ace867376ce381c
+[KEYWORD SEARCH SUCCESS] Returning 10 results
+[VECTOR SEARCH] repo_id value: '1ace867376ce381c', type: <class 'str'>, query: 'announcements page banner notice'
+[VECTOR SEARCH PYTHON] Fetched 551 chunks for repo_id: 1ace867376ce381c
+[VECTOR SEARCH SUCCESS] Returning 10 results
+[VECTOR SEARCH] repo_id value: '1ace867376ce381c', type: <class 'str'>, query: 'announcements page banner notice'
+[VECTOR SEARCH PYTHON] Fetched 551 chunks for repo_id: 1ace867376ce381c
+[VECTOR SEARCH SUCCESS] Returning 30 results
+[KEYWORD SEARCH] repo_id value: '1ace867376ce381c', type: <class 'str'>, query: 'announcements page banner notice'
+[KEYWORD SEARCH PYTHON] Fetched 551 chunks for repo_id: 1ace867376ce381c
+[KEYWORD SEARCH SUCCESS] Returning 30 results
+[HYBRID SEARCH] repo_id: '1ace867376ce381c', query: 'announcements page banner notice'
+  Vector results raw count: 30
+  Keyword results raw count: 30
+[KEYWORD SEARCH] repo_id value: '1ace867376ce381c', type: <class 'str'>, query: 'facility-booking reservation slot'
+[KEYWORD SEARCH PYTHON] Fetched 551 chunks for repo_id: 1ace867376ce381c
+[KEYWORD SEARCH SUCCESS] Returning 10 results
+[VECTOR SEARCH] repo_id value: '1ace867376ce381c', type: <class 'str'>, query: 'facility-booking reservation slot'
+[VECTOR SEARCH PYTHON] Fetched 551 chunks for repo_id: 1ace867376ce381c
+[VECTOR SEARCH SUCCESS] Returning 10 results
+[VECTOR SEARCH] repo_id value: '1ace867376ce381c', type: <class 'str'>, query: 'facility-booking reservation slot'
+[VECTOR SEARCH PYTHON] Fetched 551 chunks for repo_id: 1ace867376ce381c
+[VECTOR SEARCH SUCCESS] Returning 30 results
+[KEYWORD SEARCH] repo_id value: '1ace867376ce381c', type: <class 'str'>, query: 'facility-booking reservation slot'
+[KEYWORD SEARCH PYTHON] Fetched 551 chunks for repo_id: 1ace867376ce381c
+[KEYWORD SEARCH SUCCESS] Returning 30 results
+[HYBRID SEARCH] repo_id: '1ace867376ce381c', query: 'facility-booking reservation slot'
+  Vector results raw count: 30
+  Keyword results raw count: 30
+[KEYWORD SEARCH] repo_id value: '1ace867376ce381c', type: <class 'str'>, query: 'lost-found missing keys report'
+[KEYWORD SEARCH PYTHON] Fetched 551 chunks for repo_id: 1ace867376ce381c
+[KEYWORD SEARCH SUCCESS] Returning 10 results
+[VECTOR SEARCH] repo_id value: '1ace867376ce381c', type: <class 'str'>, query: 'lost-found missing keys report'
+[VECTOR SEARCH PYTHON] Fetched 551 chunks for repo_id: 1ace867376ce381c
+[VECTOR SEARCH SUCCESS] Returning 10 results
+[VECTOR SEARCH] repo_id value: '1ace867376ce381c', type: <class 'str'>, query: 'lost-found missing keys report'
+[VECTOR SEARCH PYTHON] Fetched 551 chunks for repo_id: 1ace867376ce381c
+[VECTOR SEARCH SUCCESS] Returning 30 results
+[KEYWORD SEARCH] repo_id value: '1ace867376ce381c', type: <class 'str'>, query: 'lost-found missing keys report'
+[KEYWORD SEARCH PYTHON] Fetched 551 chunks for repo_id: 1ace867376ce381c
+[KEYWORD SEARCH SUCCESS] Returning 30 results
+[HYBRID SEARCH] repo_id: '1ace867376ce381c', query: 'lost-found missing keys report'
+  Vector results raw count: 30
+  Keyword results raw count: 30
