@@ -10,11 +10,17 @@
 
 <br/><br/>
 
-<img src="https://img.shields.io/badge/status-in--development-8B5CF6?style=for-the-badge&labelColor=1a2b4a"/>
-<img src="https://img.shields.io/badge/phase-3%20of%203-2563eb?style=for-the-badge&labelColor=1a2b4a"/>
-<img src="https://img.shields.io/badge/license-MIT-10b981?style=for-the-badge&labelColor=1a2b4a"/>
+<img src="https://img.shields.io/badge/status-live-10b981?style=for-the-badge&labelColor=1a2b4a"/>
+<img src="https://img.shields.io/badge/phases-complete-2563eb?style=for-the-badge&labelColor=1a2b4a"/>
+<img src="https://img.shields.io/badge/license-MIT-8B5CF6?style=for-the-badge&labelColor=1a2b4a"/>
 
 <br/><br/>
+
+### 🔗 [**Live Demo**](https://dev-lens-ai-sage.vercel.app) &nbsp;·&nbsp; [**GitHub Repo**](https://github.com/<user-Rishabh>/DevLens-AI)
+
+<sub>Hosted on Render's free tier — the backend sleeps after inactivity, so the first request after a while may take 30–60s to wake up.</sub>
+
+<br/>
 
 <img src="https://skillicons.dev/icons?i=react,vite,tailwind,fastapi,python,supabase,postgres,ts,nodejs,git&theme=dark" />
 
@@ -34,6 +40,8 @@ DevLens AI is a **codebase intelligence platform**. Paste any GitHub repository 
 - 📚 **Auto-generated module documentation**, exportable as Markdown
 - 🧭 An AI-synthesized **"where should I start?"** onboarding guide for new contributors
 - 📊 A **code quality score** combining churn, size, and complexity signals
+- 🔗 A **blast radius** view — see every file that depends on a given file before you change it
+- 🔒 **Secret redaction** — accidentally-committed API keys and credentials are detected and masked before any code is sent to the AI provider
 
 <br/>
 
@@ -188,12 +196,28 @@ A composite, repo-relative score per file combining churn, size, and complexity 
 </details>
 
 <details>
-<summary><b>🛡️ Security & Privacy (Secret Detection & Redaction)</b></summary>
+<summary><b>🔗 Blast Radius (Impact Analysis)</b></summary>
 <br/>
 
-Automatically scans all ingested file content, code chunks, and RAG context inputs for sensitive patterns (AWS keys, Google API keys, GitHub tokens, OpenAI keys, private keys, database connection strings, and generic API keys/credentials) and redacts them using secure placeholders before they are saved to the database, embedded, or sent to external LLMs. A warning shield is rendered in the UI next to the file analysis header when redacted items are detected.
+Select any file and see every other file that depends on it, direct and transitive, with the actual import chain shown — answers "what breaks if I change this?" before you touch a line of code.
 
 </details>
+
+<details>
+<summary><b>🔒 Secret Redaction</b></summary>
+<br/>
+
+Every file is scanned for common secret patterns (API keys, tokens, private keys, database credentials) before its content is sent to the LLM. Matches are masked, never logged, and never forwarded to the AI provider — protecting against accidentally-committed secrets in public repos.
+
+</details>
+
+<br/>
+
+## 📈 Search Quality — Measured, Not Assumed
+
+Most RAG projects claim their search "works" without ever measuring it. DevLens AI includes an evaluation harness that runs a curated set of real queries against the codebase and compares **keyword-only**, **vector-only**, and **hybrid (RRF)** retrieval, reporting **recall@5** and **Mean Reciprocal Rank (MRR)** for each.
+
+> See [`eval/EVALUATION_RESULTS.md`](./eval/EVALUATION_RESULTS.md) for the full comparison table and example queries once generated for your repo.
 
 <br/>
 
@@ -215,14 +239,50 @@ python app/main.py
 # Frontend setup (new terminal)
 cd frontend
 npm install
+cp .env.example .env          # set VITE_API_BASE_URL=http://localhost:8000
 npm run dev
 ```
 
+<br/>
+
+## ☁️ Deployment
+
+Deployed as two independent services:
+
+| Service | Platform | Notes |
+|---|---|---|
+| Frontend | [Vercel](https://vercel.com) | Reads `VITE_API_BASE_URL` at build time — a redeploy is required after changing it |
+| Backend | [Render](https://render.com) | Free tier (512MB RAM) — embedding model is lazy-loaded on first use to fit within the memory limit; service sleeps after inactivity |
+
+<br/>
+
+## 🗺️ Roadmap
+
+- [x] Repo ingestion + file tree
+- [x] Git hotspot detection + dependency parsing
+- [x] AI file explainer (cached, plain-language)
+- [x] AST-aware chunking (tree-sitter)
+- [x] Embeddings + pgvector storage
+- [x] Hybrid search (keyword + vector, RRF)
+- [x] RAG answer generation with citations
+- [x] Interactive architecture map
+- [x] Auto-generated documentation
+- [x] Onboarding guide
+- [x] Code quality score
+- [x] Blast-radius impact analysis
+- [x] Secret detection & redaction before LLM calls
+- [x] Retrieval evaluation harness (recall@k, MRR benchmarking)
+- [x] Animated landing page + loading experience
+- [x] Deployed live (Vercel + Render)
+
+**All core phases shipped.** Future ideas: custom domain, demo video, multi-language chunking beyond Python/JS/TS.
+
+<br/>
 
 <div align="center">
 
 <img src="https://capsule-render.vercel.app/api?type=waving&color=0:6d28d9,100:1a2b4a&height=120&section=footer"/>
 
-**Built by [Rishabh](https://github.com/<your-username>)** · B.Tech AI & Data Science, VESIT · Team AlgoMinds
+**Built by [Rishabh](https://github.com/<user-Rishabh>)** · B.Tech AI & Data Science, VESIT 
 
 </div>
