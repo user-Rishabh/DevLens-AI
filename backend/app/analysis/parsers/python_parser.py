@@ -10,7 +10,7 @@ def resolve_py_import(current_file_rel_path: str, import_base: str, imported_sym
     Resolves Python imports (absolute or relative) to project files.
     """
     resolved_paths = []
-    current_dir = os.path.dirname(current_file_rel_path)
+    current_dir = os.path.dirname(current_file_rel_path).replace('\\', '/')
     
     # Count leading dots for relative imports
     leading_dots = 0

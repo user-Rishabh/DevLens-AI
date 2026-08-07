@@ -67,18 +67,14 @@ def generate_module_docs(repo_id: str) -> list[dict]:
                 raise HTTPException(status_code=400, detail="No file summaries generated yet. Please select files to summarize or run indexing first.")
 
         # 2. Fetch dependencies metadata to understand relationships
-        dep_res = supabase.table("file_contents")\
-            .select("content")\
+        dep_res = supabase.table("repo_analyses")\
+            .select("dependencies")\
             .eq("repo_id", repo_id)\
-            .eq("file_path", ".devlens/dependencies.json")\
             .execute()
             
         dependencies = []
-        if dep_res.data:
-            try:
-                dependencies = json.loads(dep_res.data[0]["content"])
-            except Exception:
-                pass
+        if dep_res.data and len(dep_res.data) > 0 and dep_res.data[0].get("dependencies"):
+            dependencies = dep_res.data[0]["dependencies"]
 
         # 3. Group files by module path
         module_groups = {}

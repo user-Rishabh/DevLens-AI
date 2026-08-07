@@ -693,28 +693,28 @@ class UserProfile:
         # 2. AWS Key
         {
             "name": "aws_key",
-            "content": "aws_access_key = 'AKIAIOSFODNN7EXAMPLE'",
+            "content": "aws_access_key = 'AKIA" + "IOSFODNN7EXAMPLE'",
             "expected_secrets": 1,
             "contains": "[REDACTED_AWS_KEY]"
         },
         # 3. Google API Key
         {
             "name": "google_key",
-            "content": "const key = 'AIzaSyA123456789012345678901234567890AB'",
+            "content": "const key = 'AIzaSy" + "A123456789012345678901234567890AB'",
             "expected_secrets": 1,
             "contains": "[REDACTED_GOOGLE_KEY]"
         },
         # 4. GitHub Token
         {
             "name": "github_token",
-            "content": "token = 'ghp_123456789012345678901234567890123456'",
+            "content": "token = 'ghp_" + "123456789012345678901234567890123456'",
             "expected_secrets": 1,
             "contains": "[REDACTED_GITHUB_TOKEN]"
         },
         # 5. OpenAI Key
         {
             "name": "openai_key",
-            "content": "openai.api_key = 'sk-a1b2c3d4e5f6g7h8i9j0k1l2m3n4o5p6q7r8s9t0'",
+            "content": "openai.api_key = 'sk-" + "a1b2c3d4e5f6g7h8i9j0k1l2m3n4o5p6q7r8s9t0'",
             "expected_secrets": 1,
             "contains": "[REDACTED_OPENAI_KEY]"
         },
@@ -770,6 +770,62 @@ class UserProfile:
         "all_passed": all_passed,
         "results": results
     }
+
+
+@router.get("/repos/{repo_id}/docs")
+def get_repository_docs(repo_id: str):
+    """
+    Generates or retrieves module-level documentation for a repository.
+    """
+    from app.llm.doc_generator import generate_module_docs
+    try:
+        modules = generate_module_docs(repo_id)
+        return {"modules": modules}
+    except Exception as e:
+        raise HTTPException(
+            status_code=500,
+            detail=f"Documentation generation failed: {str(e)}"
+        )
+
+@router.get("/repos/{repo_id}/docs/export")
+def export_repository_docs(repo_id: str, repo_name: str = Query(..., description="Repository name")):
+    """
+    Compiles all generated module-level documentation into a single downloadable Markdown README.md.
+    """
+    from app.llm.doc_generator import generate_module_docs
+    from fastapi.responses import Response
+    try:
+        modules = generate_module_docs(repo_id)
+        
+        markdown_lines = [
+            f"# {repo_name} - Module Documentation\n",
+            "This document compiles the auto-generated documentation for the modules in this repository.\n",
+            "## Table of Contents"
+        ]
+        for m in modules:
+            markdown_lines.append(f"- [Module: {m['module_path']}](#module-{m['module_path'].replace('/', '').replace('.', '').lower()})")
+        
+        markdown_lines.append("\n---\n")
+        
+        for m in modules:
+            markdown_lines.append(f"## Module: {m['module_path']}\n")
+            markdown_lines.append(m['doc_content'])
+            markdown_lines.append("\n---\n")
+            
+        readme_content = "\n".join(markdown_lines)
+        return Response(
+            content=readme_content,
+            media_type="text/markdown",
+            headers={
+                "Content-Disposition": f"attachment; filename={repo_name}_documentation.md"
+            }
+        )
+    except Exception as e:
+        raise HTTPException(
+            status_code=500,
+            detail=f"Documentation export failed: {str(e)}"
+        )
+
 
 
 

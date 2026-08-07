@@ -241,19 +241,28 @@ def chunk_file(file_path: str, content: str, language: str) -> list[dict]:
         # Traverse top-level children of the program/module root
         for child in root_node.children:
             
+            # If it's an export statement, unpack the inner declaration
+            target_node = child
+            if language in ("javascript", "typescript", "tsx") and child.type == "export_statement":
+                # Find the nested declaration node inside export statement
+                for sub_child in child.children:
+                    if sub_child.type in ("function_declaration", "generator_function_declaration", "class_declaration", "lexical_declaration"):
+                        target_node = sub_child
+                        break
+            
             # Identify Python structures
-            is_py_func = (language == "python" and child.type == "function_definition")
-            is_py_class = (language == "python" and child.type == "class_definition")
+            is_py_func = (language == "python" and target_node.type == "function_definition")
+            is_py_class = (language == "python" and target_node.type == "class_definition")
             
             # Identify JS/TS structures
-            is_js_func = (language in ("javascript", "typescript", "tsx") and child.type in ("function_declaration", "generator_function_declaration"))
-            is_js_class = (language in ("javascript", "typescript", "tsx") and child.type == "class_declaration")
+            is_js_func = (language in ("javascript", "typescript", "tsx") and target_node.type in ("function_declaration", "generator_function_declaration"))
+            is_js_class = (language in ("javascript", "typescript", "tsx") and target_node.type == "class_declaration")
             
             # Scan lexical declarations for arrow function constants
             is_arrow_func = False
             arrow_func_name = None
-            if language in ("javascript", "typescript", "tsx") and child.type == "lexical_declaration":
-                for decl in child.children:
+            if language in ("javascript", "typescript", "tsx") and target_node.type == "lexical_declaration":
+                for decl in target_node.children:
                     if decl.type == "variable_declarator":
                         for sub in decl.children:
                             if sub.type == "arrow_function":
@@ -269,7 +278,7 @@ def chunk_file(file_path: str, content: str, language: str) -> list[dict]:
                 flush_module_level(module_nodes, content_bytes, chunks)
                 
                 if is_py_class or is_js_class:
-                    class_name = get_node_name(child, content_bytes)
+                    class_name = get_node_name(target_node, content_bytes)
                     class_chunk = create_chunk(child, "class", content_bytes, name=class_name)
                     chunks.append(class_chunk)
                     
@@ -283,14 +292,14 @@ def chunk_file(file_path: str, content: str, language: str) -> list[dict]:
                                 else:
                                     extract_py_methods(sub_child)
                                     
-                        body_node = child.child_by_field_name("body")
+                        body_node = target_node.child_by_field_name("body")
                         if body_node:
                             extract_py_methods(body_node)
                         else:
-                            extract_py_methods(child)
+                            extract_py_methods(target_node)
                             
                     elif is_js_class:
-                        body_node = child.child_by_field_name("body")
+                        body_node = target_node.child_by_field_name("body")
                         if body_node:
                             for sub_child in body_node.children:
                                 if sub_child.type == "method_definition":
@@ -298,7 +307,7 @@ def chunk_file(file_path: str, content: str, language: str) -> list[dict]:
                                     chunks.append(method_chunk)
                                     
                 elif is_py_func or is_js_func:
-                    func_chunk = create_chunk(child, "function", content_bytes)
+                    func_chunk = create_chunk(child, "function", content_bytes, name=get_node_name(target_node, content_bytes))
                     chunks.append(func_chunk)
                     
                 elif is_arrow_func:
