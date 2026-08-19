@@ -209,7 +209,7 @@ def generate_onboarding_guide(repo_id: str) -> dict:
                     {"role": "system", "content": system_prompt},
                     {"role": "user", "content": user_prompt}
                 ],
-                model="llama-3.3-70b-versatile",
+                model=os.getenv("GROQ_MODEL", "llama-3.3-70b-versatile"),
                 temperature=0.2,
                 response_format={"type": "json_object"},
                 max_tokens=800

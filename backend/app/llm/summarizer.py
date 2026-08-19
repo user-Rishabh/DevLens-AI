@@ -123,7 +123,7 @@ def summarize_file(file_path: str, file_content: str) -> str:
                         "content": prompt,
                     }
                 ],
-                model="llama-3.3-70b-versatile",
+                model=os.getenv("GROQ_MODEL", "llama-3.3-70b-versatile"),
                 temperature=0.2,
                 max_tokens=300
             )

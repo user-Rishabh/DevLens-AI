@@ -98,7 +98,7 @@ def generate_rag_answer(query: str, chunks: list[dict]) -> dict:
                     {"role": "system", "content": system_prompt},
                     {"role": "user", "content": user_prompt}
                 ],
-                model="llama-3.3-70b-versatile",
+                model=os.getenv("GROQ_MODEL", "llama-3.3-70b-versatile"),
                 temperature=0.1,
                 response_format={"type": "json_object"},
                 max_tokens=800

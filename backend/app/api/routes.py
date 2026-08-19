@@ -159,7 +159,7 @@ def explain_file(
     4. Triggers the AI summarization via OpenRouter.
     5. Saves the summary to file_summaries and returns it.
     """
-    model_name = "llama-3.3-70b-versatile"
+    model_name = os.getenv("GROQ_MODEL", "llama-3.3-70b-versatile")
 
     # Fast-path check: exclude by file name/pattern before DB or LLM call
     if is_excluded_file(file_path, None):
