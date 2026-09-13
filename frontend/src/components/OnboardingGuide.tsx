@@ -74,29 +74,29 @@ export default function OnboardingGuide({ repoId, onSelectFile }: OnboardingGuid
       case 'entry_point':
         return {
           label: 'Entry Point',
-          bgClass: 'bg-indigo-500/10 border-indigo-500/20 text-indigo-400',
-          icon: <Layers className="w-3.5 h-3.5" />,
-          glowClass: 'bg-indigo-500/[0.01]'
+          bgClass: 'bg-indigo-50 border-indigo-200 text-indigo-700',
+          icon: <Layers className="w-3.5 h-3.5 text-indigo-600" />,
+          glowClass: 'bg-indigo-500/[0.02]'
         };
       case 'structural':
         return {
           label: 'Core Abstraction',
-          bgClass: 'bg-cyan-500/10 border-cyan-500/20 text-cyan-400',
-          icon: <Network className="w-3.5 h-3.5" />,
-          glowClass: 'bg-cyan-500/[0.01]'
+          bgClass: 'bg-cyan-50 border-cyan-200 text-cyan-700',
+          icon: <Network className="w-3.5 h-3.5 text-cyan-600" />,
+          glowClass: 'bg-cyan-500/[0.02]'
         };
       case 'hotspot':
         return {
           label: 'Active Business Logic',
-          bgClass: 'bg-rose-500/10 border-rose-500/20 text-rose-400',
-          icon: <Flame className="w-3.5 h-3.5 text-rose-500 animate-pulse" />,
-          glowClass: 'bg-rose-500/[0.01]'
+          bgClass: 'bg-rose-50 border-rose-200 text-rose-700',
+          icon: <Flame className="w-3.5 h-3.5 text-rose-600 animate-pulse" />,
+          glowClass: 'bg-rose-500/[0.02]'
         };
       default:
         return {
           label: 'Module',
-          bgClass: 'bg-zinc-500/10 border-zinc-800 text-zinc-400',
-          icon: <BookOpen className="w-3.5 h-3.5" />,
+          bgClass: 'bg-[#FAFAF7] border-[#E5E1DA] text-[#6B7280]',
+          icon: <BookOpen className="w-3.5 h-3.5 text-[#6B7280]" />,
           glowClass: 'bg-zinc-500/[0.01]'
         };
     }
@@ -107,10 +107,10 @@ export default function OnboardingGuide({ repoId, onSelectFile }: OnboardingGuid
       
       {/* Loading Spinner */}
       {loading && (
-        <div className="glass-panel p-12 rounded-2xl flex flex-col items-center justify-center text-center shadow-xl">
-          <Loader2 className="w-10 h-10 text-indigo-500 animate-spin mb-4" />
-          <h4 className="text-white font-semibold text-sm">Generating Reading Order</h4>
-          <p className="text-zinc-500 text-xs mt-1.5 leading-relaxed max-w-xs font-mono">
+        <div className="bg-white border border-[#E5E1DA] p-12 rounded-2xl flex flex-col items-center justify-center text-center shadow-xs">
+          <Loader2 className="w-10 h-10 text-[#E85D2C] animate-spin mb-4" />
+          <h4 className="text-[#1A1D29] font-semibold text-sm">Generating Reading Order</h4>
+          <p className="text-[#6B7280] text-xs mt-1.5 leading-relaxed max-w-xs font-mono">
             Evaluating entry-point conventions, import hierarchy weights, and Git commits to build recommendations...
           </p>
         </div>
@@ -118,12 +118,12 @@ export default function OnboardingGuide({ repoId, onSelectFile }: OnboardingGuid
 
       {/* Error State */}
       {error && !loading && (
-        <div className="glass-panel p-8 rounded-2xl flex flex-col items-center justify-center text-center border border-red-950/20">
-          <div className="p-3 bg-red-950/20 border border-red-500/20 rounded-xl text-red-400 mb-4">
+        <div className="bg-rose-50 border border-rose-200 p-8 rounded-2xl flex flex-col items-center justify-center text-center">
+          <div className="p-3 bg-rose-100 border border-rose-200 rounded-xl text-rose-600 mb-4">
             <AlertTriangle className="w-6 h-6" />
           </div>
-          <h4 className="text-red-300 font-semibold text-sm">Failed to Generate Guide</h4>
-          <p className="text-red-400/90 text-xs mt-2 max-w-sm leading-relaxed">{error}</p>
+          <h4 className="text-rose-800 font-semibold text-sm">Failed to Generate Guide</h4>
+          <p className="text-rose-700 text-xs mt-2 max-w-sm leading-relaxed">{error}</p>
         </div>
       )}
 
@@ -131,25 +131,25 @@ export default function OnboardingGuide({ repoId, onSelectFile }: OnboardingGuid
       {!loading && !error && guideData && (
         <>
           {/* Summary Box */}
-          <div className="glass-panel p-6 rounded-2xl border border-indigo-500/10 relative overflow-hidden shadow-2xl">
-            <div className="absolute top-0 right-0 p-6 opacity-[0.03] text-indigo-400 pointer-events-none">
+          <div className="bg-white border border-[#E5E1DA] p-6 rounded-2xl relative overflow-hidden shadow-xs">
+            <div className="absolute top-0 right-0 p-6 opacity-[0.03] text-[#E85D2C] pointer-events-none">
               <Compass className="w-24 h-24" />
             </div>
             
-            <span className="text-[10px] text-indigo-400 font-mono font-semibold uppercase tracking-wider">AI Architectural Overview</span>
-            <h3 className="text-white font-extrabold text-lg mt-0.5 mb-3">Codebase Structure</h3>
-            <p className="text-zinc-300 text-xs leading-relaxed font-normal bg-zinc-950/20 p-4 rounded-xl border border-zinc-900/60">
+            <span className="text-[10px] text-[#E85D2C] font-mono font-semibold uppercase tracking-wider">AI Architectural Overview</span>
+            <h3 className="text-[#1A1D29] font-extrabold text-lg mt-0.5 mb-3">Codebase Structure</h3>
+            <p className="text-[#1A1D29] text-xs leading-relaxed font-normal bg-[#FAFAF7] p-4 rounded-xl border border-[#E5E1DA]">
               {guideData.summary}
             </p>
           </div>
 
           {/* Reading List Header */}
           <div>
-            <h4 className="text-sm font-bold text-zinc-100 mb-1 flex items-center gap-2">
-              <Compass className="w-4 h-4 text-indigo-400" />
+            <h4 className="text-sm font-bold text-[#1A1D29] mb-1 flex items-center gap-2">
+              <Compass className="w-4 h-4 text-[#E85D2C]" />
               Suggested Reading Order
             </h4>
-            <p className="text-[10px] text-zinc-500">
+            <p className="text-[10px] text-[#6B7280]">
               Start with the initial setup controllers, study high-use schemas next, then review frequently modified logic.
             </p>
           </div>
@@ -165,30 +165,30 @@ export default function OnboardingGuide({ repoId, onSelectFile }: OnboardingGuid
                 <div 
                   key={item.file_path}
                   onClick={() => onSelectFile(item.file_path)}
-                  className="glass-panel p-4 rounded-xl border border-zinc-900/80 hover:border-zinc-800 bg-zinc-900/10 hover:bg-zinc-900/35 transition-all duration-200 flex flex-col sm:flex-row sm:items-center justify-between gap-4 cursor-pointer relative overflow-hidden group active:scale-[0.99]"
+                  className="bg-white border border-[#E5E1DA] hover:border-[#E85D2C]/40 p-4 rounded-xl shadow-xs hover:shadow-sm transition-all duration-200 flex flex-col sm:flex-row sm:items-center justify-between gap-4 cursor-pointer relative overflow-hidden group active:scale-[0.99]"
                 >
                   {/* Soft background glow based on category */}
                   <div className={`absolute inset-0 ${meta.glowClass} pointer-events-none`} />
 
                   <div className="flex items-start gap-4 min-w-0 relative z-10">
                     {/* Number Badge */}
-                    <div className="w-7 h-7 rounded-lg bg-zinc-900/80 border border-zinc-800 text-xs font-mono font-bold flex items-center justify-center text-zinc-400 group-hover:text-indigo-400 group-hover:border-indigo-500/25 transition-all shrink-0">
+                    <div className="w-7 h-7 rounded-lg bg-[#FAFAF7] border border-[#E5E1DA] text-xs font-mono font-bold flex items-center justify-center text-[#6B7280] group-hover:text-[#E85D2C] group-hover:border-[#E85D2C]/30 transition-all shrink-0">
                       {idx + 1}
                     </div>
 
                     {/* File Path & Reason */}
                     <div className="min-w-0 flex flex-col gap-1.5">
                       <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2">
-                        <span className="text-zinc-200 text-xs font-bold truncate group-hover:text-white transition-colors">
+                        <span className="text-[#1A1D29] text-xs font-bold truncate group-hover:text-[#E85D2C] transition-colors">
                           {fileName}
                         </span>
                         {directory && (
-                          <span className="text-[9px] text-zinc-500 truncate font-mono">
+                          <span className="text-[9px] text-[#6B7280] truncate font-mono">
                             {directory}/
                           </span>
                         )}
                       </div>
-                      <p className="text-zinc-400 text-[11px] leading-relaxed pr-2">
+                      <p className="text-[#6B7280] text-[11px] leading-relaxed pr-2">
                         {item.reason}
                       </p>
                     </div>
@@ -200,7 +200,7 @@ export default function OnboardingGuide({ repoId, onSelectFile }: OnboardingGuid
                       {meta.icon}
                       {meta.label}
                     </div>
-                    <div className="p-1 text-zinc-600 group-hover:text-indigo-400 group-hover:translate-x-0.5 transition-all hidden sm:block">
+                    <div className="p-1 text-[#6B7280] group-hover:text-[#E85D2C] group-hover:translate-x-0.5 transition-all hidden sm:block">
                       <ArrowRight className="w-3.5 h-3.5" />
                     </div>
                   </div>

@@ -118,39 +118,39 @@ export default function SemanticSearch({
   }, [answer, citedChunks]);
 
   return (
-    <div className="glass-panel p-6 rounded-2xl border border-zinc-900/50 relative overflow-hidden group sm:col-span-2">
+    <div className="bg-white border border-[#E5E1DA] p-6 rounded-2xl shadow-xs relative overflow-hidden group sm:col-span-2">
       {/* Background visual element */}
-      <div className="absolute top-0 right-0 p-8 opacity-[0.02] text-indigo-400 pointer-events-none">
+      <div className="absolute top-0 right-0 p-8 opacity-[0.03] text-[#E85D2C] pointer-events-none">
         <Search className="w-48 h-48" />
       </div>
 
-      <div className="flex items-start gap-3 mb-4 pb-3 border-b border-zinc-900 pr-8">
-        <div className="p-2 bg-indigo-600/10 border border-indigo-500/20 rounded-xl text-indigo-400 shrink-0">
-          <Search className="w-4.5 h-4.5 text-indigo-400" />
+      <div className="flex items-start gap-3 mb-4 pb-3 border-b border-[#E5E1DA] pr-8">
+        <div className="p-2 bg-[#E85D2C]/10 border border-[#E85D2C]/20 rounded-xl text-[#E85D2C] shrink-0">
+          <Search className="w-4.5 h-4.5 text-[#E85D2C]" />
         </div>
         <div>
-          <span className="text-[10px] text-indigo-400 font-mono font-semibold uppercase tracking-wider">Semantic Search Engine</span>
-          <h3 className="text-white font-bold text-sm mt-0.5">Codebase Query (RAG)</h3>
+          <span className="text-[10px] text-[#E85D2C] font-mono font-semibold uppercase tracking-wider">Semantic Search Engine</span>
+          <h3 className="text-[#1A1D29] font-bold text-sm mt-0.5">Codebase Query (RAG)</h3>
         </div>
       </div>
 
       {/* Status Warning / Helper Banner */}
       {!isIndexed && (
-        <div className="mb-4 p-3 rounded-xl bg-zinc-900/40 border border-zinc-800 flex gap-2 items-center">
+        <div className="mb-4 p-3 rounded-xl bg-[#FAFAF7] border border-[#E5E1DA] flex gap-2 items-center">
           {indexingStatus === 'indexing' ? (
             <>
-              <Loader2 className="w-4 h-4 text-amber-500 animate-spin shrink-0" />
-              <span className="text-xs text-amber-400 font-mono">Indexing in progress... Search is locked until complete.</span>
+              <Loader2 className="w-4 h-4 text-amber-600 animate-spin shrink-0" />
+              <span className="text-xs text-amber-700 font-mono">Indexing in progress... Search is locked until complete.</span>
             </>
           ) : indexingStatus === 'error' ? (
             <>
-              <AlertTriangle className="w-4 h-4 text-red-500 shrink-0" />
-              <span className="text-xs text-red-400 font-mono">Indexing failed. Please retry indexing to search.</span>
+              <AlertTriangle className="w-4 h-4 text-rose-600 shrink-0" />
+              <span className="text-xs text-rose-700 font-mono">Indexing failed. Please retry indexing to search.</span>
             </>
           ) : (
             <>
-              <AlertCircle className="w-4 h-4 text-zinc-500 shrink-0" />
-              <span className="text-xs text-zinc-500 font-mono">Indexing not initialized.</span>
+              <AlertCircle className="w-4 h-4 text-[#6B7280] shrink-0" />
+              <span className="text-xs text-[#6B7280] font-mono">Indexing not initialized.</span>
             </>
           )}
         </div>
@@ -176,10 +176,10 @@ export default function SemanticSearch({
                   setQueryValidationError(null);
                 }
               }}
-              className="w-full bg-zinc-950 text-zinc-100 placeholder-zinc-500 text-xs rounded-xl border border-zinc-850 hover:border-zinc-800 focus:border-indigo-500/80 focus:outline-none px-4 py-3 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+              className="w-full bg-[#FAFAF7] text-[#1A1D29] placeholder-[#6B7280] text-xs rounded-xl border border-[#E5E1DA] hover:border-[#E85D2C]/40 focus:border-[#E85D2C] focus:bg-white focus:outline-none px-4 py-3 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
             />
             {queryValidationError && (
-              <span className="absolute left-1 -bottom-5 text-[10px] text-red-400 font-mono">
+              <span className="absolute left-1 -bottom-5 text-[10px] text-rose-600 font-mono">
                 {queryValidationError}
               </span>
             )}
@@ -187,7 +187,7 @@ export default function SemanticSearch({
           <button
             type="submit"
             disabled={!isIndexed || isSearching || query.trim().length < 3}
-            className="px-5 py-3 rounded-xl bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 disabled:from-zinc-900 disabled:to-zinc-900 text-white font-medium text-xs transition-all duration-205 shadow-md shadow-indigo-600/10 active:scale-[0.98] flex items-center justify-center gap-1.5 shrink-0 cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed disabled:shadow-none"
+            className="px-5 py-3 rounded-xl bg-[#E85D2C] hover:bg-[#D44E1F] disabled:bg-[#E5E1DA] disabled:text-[#6B7280] text-white font-medium text-xs transition-all duration-200 shadow-sm active:scale-[0.98] flex items-center justify-center gap-1.5 shrink-0 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed disabled:shadow-none"
           >
             {isSearching ? (
               <>
@@ -207,9 +207,9 @@ export default function SemanticSearch({
       {/* SEARCH LOADING STATE */}
       {isSearching && (
         <div className="py-12 flex flex-col items-center justify-center text-center">
-          <Loader2 className="w-8 h-8 text-indigo-500 animate-spin mb-3" />
-          <h4 className="text-zinc-300 font-semibold text-xs">Synthesizing Answer</h4>
-          <p className="text-zinc-500 text-[10px] mt-1 font-mono leading-relaxed">
+          <Loader2 className="w-8 h-8 text-[#E85D2C] animate-spin mb-3" />
+          <h4 className="text-[#1A1D29] font-semibold text-xs">Synthesizing Answer</h4>
+          <p className="text-[#6B7280] text-[10px] mt-1 font-mono leading-relaxed">
             Running smart search & generating response using Groq model
           </p>
         </div>
@@ -217,11 +217,11 @@ export default function SemanticSearch({
 
       {/* ERROR MESSAGE DISPLAY */}
       {error && !isSearching && (
-        <div className="mb-6 p-4 rounded-xl bg-red-950/20 border border-red-500/20 flex gap-3 items-start">
-          <AlertTriangle className="w-5 h-5 text-red-400 shrink-0 mt-0.5" />
+        <div className="mb-6 p-4 rounded-xl bg-rose-50 border border-rose-200 flex gap-3 items-start">
+          <AlertTriangle className="w-5 h-5 text-rose-600 shrink-0 mt-0.5" />
           <div>
-            <h4 className="text-red-300 font-semibold text-xs">Search Failed</h4>
-            <p className="text-red-400/90 text-[10px] font-mono mt-1">{error}</p>
+            <h4 className="text-rose-800 font-semibold text-xs">Search Failed</h4>
+            <p className="text-rose-700 text-[10px] font-mono mt-1">{error}</p>
           </div>
         </div>
       )}
@@ -233,38 +233,38 @@ export default function SemanticSearch({
           {/* Highlighted Synthesized Answer Card */}
           {isNoContext ? (
             /* Warning/Empty visual state for "no relevant information found" */
-            <div className="p-5 rounded-xl bg-zinc-900/40 border border-dashed border-amber-500/35 text-zinc-305 shadow-lg relative overflow-hidden">
+            <div className="p-5 rounded-xl bg-amber-50/80 border border-dashed border-amber-300 text-amber-950 shadow-xs relative overflow-hidden">
               <div className="absolute top-3 right-3 text-amber-500/20">
                 <HelpCircle className="w-12 h-12" />
               </div>
               <div className="flex items-start gap-2.5">
-                <HelpCircle className="w-4 h-4 text-amber-500 shrink-0 mt-0.5" />
-                <h4 className="text-amber-400 font-bold text-xs uppercase tracking-wider font-mono">No Relevant Code Information Found</h4>
+                <HelpCircle className="w-4 h-4 text-amber-600 shrink-0 mt-0.5" />
+                <h4 className="text-amber-800 font-bold text-xs uppercase tracking-wider font-mono">No Relevant Code Information Found</h4>
               </div>
-              <p className="text-zinc-300 text-xs leading-relaxed mt-2.5 pr-8 whitespace-pre-wrap">
+              <p className="text-amber-950 text-xs leading-relaxed mt-2.5 pr-8 whitespace-pre-wrap">
                 {answer}
               </p>
             </div>
           ) : (
             /* Premium highlighted normal answer card */
-            <div className="p-5 rounded-xl bg-indigo-950/20 border border-indigo-500/25 shadow-lg shadow-indigo-950/15 relative overflow-hidden">
-              <div className="absolute top-3 right-3 text-indigo-500/10">
+            <div className="p-5 rounded-xl bg-[#FAFAF7] border border-[#E5E1DA] shadow-xs relative overflow-hidden">
+              <div className="absolute top-3 right-3 text-[#E85D2C]/10">
                 <Sparkles className="w-12 h-12" />
               </div>
               
               <div className="flex items-start gap-2.5">
-                <Sparkles className="w-4 h-4 text-indigo-400 shrink-0 mt-0.5" />
-                <h4 className="text-indigo-400 font-bold text-xs uppercase tracking-wider font-mono">Synthesized Explainer Answer</h4>
+                <Sparkles className="w-4 h-4 text-[#E85D2C] shrink-0 mt-0.5" />
+                <h4 className="text-[#E85D2C] font-bold text-xs uppercase tracking-wider font-mono">Synthesized Explainer Answer</h4>
               </div>
               
-              <p className="text-zinc-200 text-xs leading-relaxed mt-2.5 whitespace-pre-wrap">
+              <p className="text-[#1A1D29] text-xs leading-relaxed mt-2.5 whitespace-pre-wrap">
                 {answer}
               </p>
 
               {/* Clickable Citations */}
               {citedChunks && citedChunks.length > 0 && (
-                <div className="mt-4 pt-3.5 border-t border-zinc-900/70">
-                  <span className="text-[10px] text-zinc-500 font-mono block mb-2 uppercase tracking-wider font-semibold">Citations & References:</span>
+                <div className="mt-4 pt-3.5 border-t border-[#E5E1DA]">
+                  <span className="text-[10px] text-[#6B7280] font-mono block mb-2 uppercase tracking-wider font-semibold">Citations & References:</span>
                   <div className="flex flex-wrap gap-2">
                     {citedChunks.map((citation, index) => {
                       const fileName = citation.file_path.split('/').pop() || citation.file_path;
@@ -272,12 +272,12 @@ export default function SemanticSearch({
                         <button
                           key={index}
                           onClick={() => onSelectFile(citation.file_path)}
-                          className="flex items-center gap-1 px-2.5 py-1 bg-zinc-950 hover:bg-zinc-900 border border-zinc-850 hover:border-zinc-700 rounded-lg text-zinc-300 hover:text-indigo-300 text-[10px] font-mono transition-all duration-150 cursor-pointer"
+                          className="flex items-center gap-1 px-2.5 py-1 bg-white hover:bg-[#FAFAF7] border border-[#E5E1DA] hover:border-[#E85D2C]/40 rounded-lg text-[#1A1D29] hover:text-[#E85D2C] text-[10px] font-mono transition-all duration-150 cursor-pointer shadow-2xs"
                           title={`Open ${citation.file_path}`}
                         >
-                          <FileCode className="w-3 h-3 text-indigo-400/90" />
+                          <FileCode className="w-3 h-3 text-[#E85D2C]" />
                           <span className="font-semibold">{fileName}</span>
-                          <span className="text-zinc-500">L{citation.start_line}-{citation.end_line}</span>
+                          <span className="text-[#6B7280]">L{citation.start_line}-{citation.end_line}</span>
                         </button>
                       );
                     })}
@@ -289,25 +289,25 @@ export default function SemanticSearch({
 
           {/* Collapsible search results section */}
           {searchResults.length > 0 ? (
-            <div className="border border-zinc-900 rounded-xl overflow-hidden bg-zinc-950/20">
+            <div className="border border-[#E5E1DA] rounded-xl overflow-hidden bg-white shadow-xs">
               <button
                 type="button"
                 onClick={() => setShowResultsList(!showResultsList)}
-                className="w-full px-4 py-3 hover:bg-zinc-900/20 flex items-center justify-between transition-colors border-b border-zinc-900 text-zinc-300 hover:text-white cursor-pointer"
+                className="w-full px-4 py-3 hover:bg-[#FAFAF7] flex items-center justify-between transition-colors border-b border-[#E5E1DA] text-[#1A1D29] cursor-pointer"
               >
                 <div className="flex items-center gap-2">
-                  <FileCode className="w-4 h-4 text-zinc-500" />
+                  <FileCode className="w-4 h-4 text-[#6B7280]" />
                   <span className="text-xs font-semibold">View all {searchResults.length} results</span>
                 </div>
                 {showResultsList ? (
-                  <ChevronUp className="w-4 h-4 text-zinc-500" />
+                  <ChevronUp className="w-4 h-4 text-[#6B7280]" />
                 ) : (
-                  <ChevronDown className="w-4 h-4 text-zinc-500" />
+                  <ChevronDown className="w-4 h-4 text-[#6B7280]" />
                 )}
               </button>
 
               {showResultsList && (
-                <div className="p-4 flex flex-col gap-3 max-h-[40vh] overflow-y-auto divide-y divide-zinc-900/50">
+                <div className="p-4 flex flex-col gap-3 max-h-[40vh] overflow-y-auto divide-y divide-[#E5E1DA]">
                   {searchResults.map((result) => {
                     const hasKeyword = result.found_by.includes('keyword');
                     const hasVector = result.found_by.includes('vector');
@@ -318,7 +318,7 @@ export default function SemanticSearch({
                           <button
                             type="button"
                             onClick={() => onSelectFile(result.file_path)}
-                            className="text-zinc-300 hover:text-indigo-400 text-xs font-semibold font-mono hover:underline text-left cursor-pointer truncate max-w-full"
+                            className="text-[#1A1D29] hover:text-[#E85D2C] text-xs font-semibold font-mono hover:underline text-left cursor-pointer truncate max-w-full"
                           >
                             {result.file_path} (L{result.start_line}-{result.end_line})
                           </button>
@@ -326,10 +326,10 @@ export default function SemanticSearch({
                           {/* Found By Badge */}
                           <span className={`text-[9px] font-mono px-2 py-0.5 rounded border uppercase font-medium select-none ${
                             hasKeyword && hasVector 
-                              ? 'bg-purple-950/30 border-purple-500/20 text-purple-400' 
+                              ? 'bg-purple-50 border-purple-200 text-purple-700' 
                               : hasVector 
-                              ? 'bg-blue-950/30 border-blue-500/20 text-blue-400' 
-                              : 'bg-amber-950/30 border-amber-500/20 text-amber-400'
+                              ? 'bg-blue-50 border-blue-200 text-blue-700' 
+                              : 'bg-amber-50 border-amber-200 text-amber-700'
                           }`}>
                             {hasKeyword && hasVector 
                               ? 'keyword + vector' 
@@ -340,13 +340,13 @@ export default function SemanticSearch({
                         </div>
 
                         {/* Chunk Info & Code Block */}
-                        <div className="text-[10px] text-zinc-500 font-mono mb-1.5 flex gap-2">
-                          <span>Name: <strong className="text-zinc-400 font-semibold">{result.name}</strong></span>
+                        <div className="text-[10px] text-[#6B7280] font-mono mb-1.5 flex gap-2">
+                          <span>Name: <strong className="text-[#1A1D29] font-semibold">{result.name}</strong></span>
                           <span>•</span>
-                          <span>Type: <strong className="text-zinc-400 font-semibold">{result.chunk_type}</strong></span>
+                          <span>Type: <strong className="text-[#1A1D29] font-semibold">{result.chunk_type}</strong></span>
                         </div>
 
-                        <pre className="p-3 bg-zinc-950/90 border border-zinc-900 rounded-lg text-[10px] text-zinc-400 font-mono overflow-x-auto whitespace-pre leading-relaxed scrollbar-thin">
+                        <pre className="p-3 bg-[#FAFAF7] border border-[#E5E1DA] rounded-lg text-[10px] text-[#1A1D29] font-mono overflow-x-auto whitespace-pre leading-relaxed scrollbar-thin">
                           {result.content_preview}
                         </pre>
                       </div>
@@ -356,9 +356,9 @@ export default function SemanticSearch({
               )}
             </div>
           ) : (
-            <div className="p-4 rounded-xl border border-dashed border-zinc-900 text-center py-6">
-              <FileCode className="w-6 h-6 text-zinc-700 mx-auto mb-2" />
-              <p className="text-[10px] text-zinc-500 font-mono">No raw code chunks retrieved for query.</p>
+            <div className="p-4 rounded-xl border border-dashed border-[#E5E1DA] text-center py-6">
+              <FileCode className="w-6 h-6 text-[#6B7280] mx-auto mb-2" />
+              <p className="text-[10px] text-[#6B7280] font-mono">No raw code chunks retrieved for query.</p>
             </div>
           )}
 
@@ -367,10 +367,10 @@ export default function SemanticSearch({
 
       {/* NO RESULTS RETURNED */}
       {!isSearching && !error && answer && searchResults.length === 0 && (
-        <div className="p-5 rounded-xl border border-dashed border-zinc-800 text-center py-10">
-          <HelpCircle className="w-8 h-8 text-zinc-650 mx-auto mb-3" />
-          <h4 className="text-zinc-400 font-semibold text-xs">No matching results found</h4>
-          <p className="text-zinc-500 text-[10px] mt-1.5 font-mono max-w-sm mx-auto leading-relaxed">
+        <div className="p-5 rounded-xl border border-dashed border-[#E5E1DA] text-center py-10">
+          <HelpCircle className="w-8 h-8 text-[#6B7280] mx-auto mb-3" />
+          <h4 className="text-[#1A1D29] font-semibold text-xs">No matching results found</h4>
+          <p className="text-[#6B7280] text-[10px] mt-1.5 font-mono max-w-sm mx-auto leading-relaxed">
             The semantic search returned zero chunk matches. Try querying with different keywords or general description terms.
           </p>
         </div>
@@ -378,3 +378,4 @@ export default function SemanticSearch({
     </div>
   );
 }
+

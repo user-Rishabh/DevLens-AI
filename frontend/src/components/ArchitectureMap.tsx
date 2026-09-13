@@ -159,17 +159,17 @@ export default function ArchitectureMap({
   };
 
   return (
-    <div className="glass-panel p-5 rounded-2xl border border-zinc-850 flex flex-col gap-4 relative overflow-hidden shadow-2xl">
+    <div className="bg-white border border-[#E5E1DA] p-5 rounded-2xl flex flex-col gap-4 relative overflow-hidden shadow-xs">
       {/* Top Header & Toolbar */}
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 border-b border-zinc-900 pb-3">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 border-b border-[#E5E1DA] pb-3">
         <div className="flex items-center gap-2.5">
-          <div className="p-2 bg-indigo-500/10 border border-indigo-500/20 rounded-xl text-indigo-400">
+          <div className="p-2 bg-[#E85D2C]/10 border border-[#E85D2C]/20 rounded-xl text-[#E85D2C]">
             <Network className="w-4 h-4" />
           </div>
           <div>
-            <h3 className="text-zinc-100 font-bold text-sm flex items-center gap-2">
+            <h3 className="text-[#1A1D29] font-bold text-sm flex items-center gap-2">
               Architecture & Imports Map
-              <span className="px-2 py-0.5 bg-zinc-900 text-zinc-400 border border-zinc-800 text-[10px] font-mono rounded-full">
+              <span className="px-2 py-0.5 bg-[#FAFAF7] text-[#6B7280] border border-[#E5E1DA] text-[10px] font-mono rounded-full">
                 {nodes.length} files • {edges.length} connections
               </span>
             </h3>
@@ -180,13 +180,13 @@ export default function ArchitectureMap({
         <div className="flex items-center gap-2.5 w-full sm:w-auto flex-wrap">
           {/* Search Box */}
           <div className="relative flex-1 sm:w-44">
-            <Search className="w-3.5 h-3.5 text-zinc-500 absolute left-2.5 top-2.5" />
+            <Search className="w-3.5 h-3.5 text-[#6B7280] absolute left-2.5 top-2.5" />
             <input
               type="text"
               placeholder="Find node..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full bg-zinc-950/80 border border-zinc-800 text-zinc-200 text-xs pl-8 pr-2 py-1.5 rounded-lg focus:outline-none focus:border-indigo-500 font-mono"
+              className="w-full bg-[#FAFAF7] border border-[#E5E1DA] text-[#1A1D29] placeholder-[#6B7280] text-xs pl-8 pr-2 py-1.5 rounded-lg focus:outline-none focus:border-[#E85D2C] focus:bg-white font-mono"
             />
           </div>
 
@@ -196,11 +196,11 @@ export default function ArchitectureMap({
             onClick={() => setShowBlastRadius(!showBlastRadius)}
             className={`px-3 py-1.5 rounded-lg border text-xs font-mono font-medium transition-all flex items-center gap-1.5 cursor-pointer ${
               showBlastRadius
-                ? 'bg-amber-500/15 border-amber-500/40 text-amber-300 shadow-lg shadow-amber-950/20'
-                : 'bg-zinc-900 border-zinc-800 text-zinc-400 hover:text-zinc-200'
+                ? 'bg-amber-50 border-amber-300 text-amber-800 shadow-xs'
+                : 'bg-white border-[#E5E1DA] text-[#6B7280] hover:text-[#1A1D29]'
             }`}
           >
-            <Zap className={`w-3.5 h-3.5 ${showBlastRadius ? 'text-amber-400 fill-amber-400/20' : 'text-zinc-500'}`} />
+            <Zap className={`w-3.5 h-3.5 ${showBlastRadius ? 'text-amber-600 fill-amber-500/20' : 'text-[#6B7280]'}`} />
             Impact View: {showBlastRadius ? 'ON' : 'OFF'}
           </button>
 
@@ -208,7 +208,7 @@ export default function ArchitectureMap({
           <button
             type="button"
             onClick={resetView}
-            className="p-1.5 bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 rounded-lg text-zinc-400 hover:text-zinc-200 transition-all cursor-pointer"
+            className="p-1.5 bg-white hover:bg-[#FAFAF7] border border-[#E5E1DA] rounded-lg text-[#6B7280] hover:text-[#1A1D29] transition-all cursor-pointer"
             title="Reset Map View"
           >
             <RefreshCw className="w-3.5 h-3.5" />
@@ -218,60 +218,60 @@ export default function ArchitectureMap({
 
       {/* SVG Canvas Map Area */}
       <div 
-        className="w-full h-[450px] bg-zinc-950/90 rounded-xl border border-zinc-900 relative overflow-hidden cursor-grab active:cursor-grabbing select-none"
+        className="w-full h-[450px] bg-[#FAFAF7] rounded-xl border border-[#E5E1DA] relative overflow-hidden cursor-grab active:cursor-grabbing select-none"
         onMouseDown={handleMouseDown}
         onMouseMove={handleMouseMove}
         onMouseUp={handleMouseUp}
         onMouseLeave={handleMouseUp}
       >
         {/* Floating Map Legend & Stats Box */}
-        <div className="absolute top-3 left-3 z-10 glass-panel p-3 rounded-xl border border-zinc-800/80 text-[10px] font-mono text-zinc-300 flex flex-col gap-1.5 backdrop-blur-md shadow-xl max-w-xs">
-          <div className="font-bold uppercase tracking-wider text-indigo-400 text-[9px] flex items-center gap-1">
+        <div className="absolute top-3 left-3 z-10 bg-white/95 border border-[#E5E1DA] p-3 rounded-xl text-[10px] font-mono text-[#1A1D29] flex flex-col gap-1.5 backdrop-blur-md shadow-md max-w-xs">
+          <div className="font-bold uppercase tracking-wider text-[#E85D2C] text-[9px] flex items-center gap-1">
             <Layers className="w-3 h-3" /> Graph Legend
           </div>
 
           {selectedFilePath ? (
-            <div className="flex flex-col gap-1 pt-1 border-t border-zinc-850">
-              <div className="truncate text-zinc-200 font-bold">
-                Selected: <span className="text-amber-400">{selectedFilePath.split('/').pop()}</span>
+            <div className="flex flex-col gap-1 pt-1 border-t border-[#E5E1DA]">
+              <div className="truncate text-[#1A1D29] font-bold">
+                Selected: <span className="text-[#E85D2C]">{selectedFilePath.split('/').pop()}</span>
               </div>
               {showBlastRadius && (
-                <div className="flex flex-col gap-0.5 mt-0.5 text-zinc-400">
-                  <span className="flex items-center gap-1 text-amber-300">
-                    <span className="h-2 w-2 rounded-full bg-amber-400 shadow-sm shadow-amber-400" />
+                <div className="flex flex-col gap-0.5 mt-0.5 text-[#6B7280]">
+                  <span className="flex items-center gap-1 text-amber-800">
+                    <span className="h-2 w-2 rounded-full bg-amber-500 shadow-sm shadow-amber-400" />
                     Direct Dependents ({blastData.direct.size})
                   </span>
-                  <span className="flex items-center gap-1 text-orange-300">
-                    <span className="h-2 w-2 rounded-full bg-orange-500 shadow-sm shadow-orange-500" />
+                  <span className="flex items-center gap-1 text-orange-800">
+                    <span className="h-2 w-2 rounded-full bg-[#E85D2C] shadow-sm shadow-orange-500" />
                     Transitive Dependents ({blastData.transitive.size})
                   </span>
-                  <span className="flex items-center gap-1 text-zinc-500">
-                    <span className="h-2 w-2 rounded-full bg-zinc-700" />
+                  <span className="flex items-center gap-1 text-[#6B7280]">
+                    <span className="h-2 w-2 rounded-full bg-[#D1CDC7]" />
                     Unaffected Modules
                   </span>
                 </div>
               )}
             </div>
           ) : (
-            <p className="text-zinc-500 text-[10px] leading-tight">
+            <p className="text-[#6B7280] text-[10px] leading-tight">
               Click any file node on the map to visualize its import dependency blast radius spatially.
             </p>
           )}
         </div>
 
         {/* Zoom Controls */}
-        <div className="absolute bottom-3 right-3 z-10 flex gap-1.5 glass-panel p-1 rounded-xl border border-zinc-800 backdrop-blur-md shadow-lg">
+        <div className="absolute bottom-3 right-3 z-10 flex gap-1.5 bg-white/95 p-1 rounded-xl border border-[#E5E1DA] backdrop-blur-md shadow-md">
           <button
             type="button"
             onClick={() => setZoom(prev => Math.min(prev + 0.2, 2.5))}
-            className="p-1.5 text-zinc-400 hover:text-zinc-100 hover:bg-zinc-850 rounded-lg cursor-pointer"
+            className="p-1.5 text-[#6B7280] hover:text-[#1A1D29] hover:bg-[#FAFAF7] rounded-lg cursor-pointer"
           >
             <ZoomIn className="w-3.5 h-3.5" />
           </button>
           <button
             type="button"
             onClick={() => setZoom(prev => Math.max(prev - 0.2, 0.4))}
-            className="p-1.5 text-zinc-400 hover:text-zinc-100 hover:bg-zinc-850 rounded-lg cursor-pointer"
+            className="p-1.5 text-[#6B7280] hover:text-[#1A1D29] hover:bg-[#FAFAF7] rounded-lg cursor-pointer"
           >
             <ZoomOut className="w-3.5 h-3.5" />
           </button>
@@ -292,7 +292,7 @@ export default function ArchitectureMap({
               refY="3"
               orient="auto"
             >
-              <polygon points="0 0, 8 3, 0 6" fill="#6366f1" opacity="0.6" />
+              <polygon points="0 0, 8 3, 0 6" fill="#C5BFB6" opacity="0.8" />
             </marker>
             <marker
               id="arrowhead-blast"
@@ -302,7 +302,7 @@ export default function ArchitectureMap({
               refY="3"
               orient="auto"
             >
-              <polygon points="0 0, 8 3, 0 6" fill="#f59e0b" opacity="0.9" />
+              <polygon points="0 0, 8 3, 0 6" fill="#E85D2C" opacity="0.9" />
             </marker>
           </defs>
 
@@ -328,15 +328,15 @@ export default function ArchitectureMap({
                   y2={target.y}
                   stroke={
                     isDirectEdge 
-                      ? '#f59e0b' 
+                      ? '#D97706' 
                       : isTransitiveEdge 
-                        ? '#f97316' 
-                        : '#4f46e5'
+                        ? '#E85D2C' 
+                        : '#D1CDC7'
                   }
-                  strokeWidth={isDirectEdge || isTransitiveEdge ? 2.5 : 1}
-                  strokeOpacity={isDimmed ? 0.15 : isDirectEdge ? 0.9 : 0.4}
+                  strokeWidth={isDirectEdge || isTransitiveEdge ? 2.5 : 1.2}
+                  strokeOpacity={isDimmed ? 0.2 : isDirectEdge ? 0.95 : 0.7}
                   strokeDasharray={isTransitiveEdge ? '4 3' : 'none'}
-                  markerEnd={isDirectEdge ? 'url(#arrowhead-blast)' : 'url(#arrowhead)'}
+                  markerEnd={isDirectEdge || isTransitiveEdge ? 'url(#arrowhead-blast)' : 'url(#arrowhead)'}
                 />
               );
             })}
@@ -350,25 +350,26 @@ export default function ArchitectureMap({
               
               const isDimmed = showBlastRadius && selectedFilePath && !isSelected && !isDirect && !isTransitive;
 
-              let fillColor = '#18181b'; // zinc-900 default
-              let strokeColor = '#3f3f46'; // zinc-700 default
-              let textColor = '#a1a1aa';
+              let fillColor = '#FFFFFF';
+              let strokeColor = node.inDegree > 3 ? '#1A1D29' : '#C5BFB6';
+              let textColor = '#1A1D29';
 
               if (isSelected) {
-                fillColor = '#312e81'; // indigo-900
-                strokeColor = '#818cf8'; // indigo-400
-                textColor = '#ffffff';
+                fillColor = '#E85D2C';
+                strokeColor = '#FFFFFF';
+                textColor = '#E85D2C';
               } else if (isDirect) {
-                fillColor = '#451a03'; // amber-950
-                strokeColor = '#f59e0b'; // amber-500
-                textColor = '#fef3c7';
+                fillColor = '#FEF3C7'; // amber-100
+                strokeColor = '#D97706'; // amber-600
+                textColor = '#92400E';
               } else if (isTransitive) {
-                fillColor = '#431407'; // orange-950
-                strokeColor = '#f97316'; // orange-500
-                textColor = '#ffedd5';
+                fillColor = '#FFEDD5'; // orange-100
+                strokeColor = '#EA580C'; // orange-600
+                textColor = '#9A3412';
               } else if (isMatchesSearch) {
-                strokeColor = '#e0e7ff';
-                textColor = '#ffffff';
+                strokeColor = '#E85D2C';
+                fillColor = '#FFF7ED';
+                textColor = '#C2410C';
               }
 
               return (
@@ -380,16 +381,16 @@ export default function ArchitectureMap({
                     if (onSelectFile) onSelectFile(node.id);
                   }}
                   className="cursor-pointer group"
-                  opacity={isDimmed ? 0.25 : 1}
+                  opacity={isDimmed ? 0.3 : 1}
                 >
                   {/* Outer glow ring for selected or blast radius target */}
                   {(isSelected || isDirect) && (
                     <circle
-                      r={16}
+                      r={18}
                       fill="none"
-                      stroke={isSelected ? '#818cf8' : '#f59e0b'}
+                      stroke={isSelected ? '#E85D2C' : '#D97706'}
                       strokeWidth={2}
-                      className="animate-ping opacity-30"
+                      className="animate-ping opacity-25"
                     />
                   )}
 
@@ -399,7 +400,7 @@ export default function ArchitectureMap({
                     fill={fillColor}
                     stroke={strokeColor}
                     strokeWidth={isSelected || isDirect || isTransitive ? 2.5 : 1.5}
-                    className="transition-all duration-200 group-hover:scale-125"
+                    className="transition-all duration-200 group-hover:scale-125 shadow-sm"
                   />
 
                   {/* Node Label Text */}
@@ -410,7 +411,7 @@ export default function ArchitectureMap({
                     fontSize={isSelected || isDirect ? 11 : 9}
                     fontWeight={isSelected || isDirect ? 'bold' : 'normal'}
                     fontFamily="monospace"
-                    className="pointer-events-none select-none drop-shadow-md"
+                    className="pointer-events-none select-none font-medium"
                   >
                     {node.label}
                   </text>

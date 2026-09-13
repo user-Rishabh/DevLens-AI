@@ -28,31 +28,31 @@ interface FileTreeProps {
 // Helper to determine the appropriate icon for a file extension
 function getFileIcon(fileName: string, isDisabled: boolean) {
   const ext = fileName.split('.').pop()?.toLowerCase();
-  const colorClass = isDisabled ? 'text-zinc-600 shrink-0' : 'shrink-0';
+  const colorClass = isDisabled ? 'text-[#6B7280]/40 shrink-0' : 'shrink-0';
   
   switch (ext) {
     case 'py':
-      return <FileCode className={`w-4 h-4 ${isDisabled ? colorClass : 'text-emerald-400 shrink-0'}`} />;
+      return <FileCode className={`w-4 h-4 ${isDisabled ? colorClass : 'text-emerald-600 shrink-0'}`} />;
     case 'js':
     case 'jsx':
     case 'ts':
     case 'tsx':
-      return <FileCode className={`w-4 h-4 ${isDisabled ? colorClass : 'text-indigo-400 shrink-0'}`} />;
+      return <FileCode className={`w-4 h-4 ${isDisabled ? colorClass : 'text-indigo-600 shrink-0'}`} />;
     case 'json':
     case 'yaml':
     case 'yml':
     case 'toml':
-      return <FileJson className={`w-4 h-4 ${isDisabled ? colorClass : 'text-amber-400 shrink-0'}`} />;
+      return <FileJson className={`w-4 h-4 ${isDisabled ? colorClass : 'text-amber-600 shrink-0'}`} />;
     case 'md':
     case 'txt':
-      return <FileText className={`w-4 h-4 ${isDisabled ? colorClass : 'text-sky-400 shrink-0'}`} />;
+      return <FileText className={`w-4 h-4 ${isDisabled ? colorClass : 'text-sky-600 shrink-0'}`} />;
     case 'css':
     case 'scss':
-      return <FileCode className={`w-4 h-4 ${isDisabled ? colorClass : 'text-pink-400 shrink-0'}`} />;
+      return <FileCode className={`w-4 h-4 ${isDisabled ? colorClass : 'text-pink-600 shrink-0'}`} />;
     case 'html':
-      return <FileCode className={`w-4 h-4 ${isDisabled ? colorClass : 'text-orange-400 shrink-0'}`} />;
+      return <FileCode className={`w-4 h-4 ${isDisabled ? colorClass : 'text-[#E85D2C] shrink-0'}`} />;
     default:
-      return <File className={`w-4 h-4 ${isDisabled ? colorClass : 'text-zinc-400 shrink-0'}`} />;
+      return <File className={`w-4 h-4 ${isDisabled ? colorClass : 'text-[#6B7280] shrink-0'}`} />;
   }
 }
 
@@ -96,16 +96,16 @@ function TreeNode({ node, depth = 0, onSelectFile, selectedFilePath, disabled, q
         onClick={handleClick}
         className={`flex items-center gap-2 py-1.5 px-2 rounded-lg cursor-pointer transition-all duration-150 ${
           isSelected 
-            ? 'bg-indigo-600/10 border-l-2 border-indigo-500 text-indigo-300 font-semibold' 
+            ? 'bg-[#E85D2C]/10 border-l-2 border-[#E85D2C] text-[#E85D2C] font-semibold' 
             : isItemDisabled
-              ? 'text-zinc-600 cursor-not-allowed border-l-2 border-transparent'
-              : 'text-zinc-400 hover:text-zinc-200 hover:bg-zinc-900/40 border-l-2 border-transparent'
+              ? 'text-[#6B7280]/40 cursor-not-allowed border-l-2 border-transparent'
+              : 'text-[#1A1D29] hover:text-[#1A1D29] hover:bg-[#FAFAF7] border-l-2 border-transparent'
         }`}
         style={{ paddingLeft: `${depth * 14 + 6}px` }}
       >
         {/* Toggle Arrow for folders */}
         {isFolder ? (
-          <span className="text-zinc-600 shrink-0">
+          <span className="text-[#6B7280] shrink-0">
             {isExpanded ? (
               <ChevronDown className="w-3 h-3" />
             ) : (
@@ -119,9 +119,9 @@ function TreeNode({ node, depth = 0, onSelectFile, selectedFilePath, disabled, q
         {/* Node Icon */}
         {isFolder ? (
           isExpanded ? (
-            <FolderOpen className="w-3.5 h-3.5 text-indigo-500/80 shrink-0" />
+            <FolderOpen className="w-3.5 h-3.5 text-[#3B5FE0] shrink-0" />
           ) : (
-            <Folder className="w-3.5 h-3.5 text-indigo-500/80 shrink-0" />
+            <Folder className="w-3.5 h-3.5 text-[#3B5FE0] shrink-0" />
           )
         ) : (
           getFileIcon(node.name, !!isItemDisabled)
@@ -136,10 +136,10 @@ function TreeNode({ node, depth = 0, onSelectFile, selectedFilePath, disabled, q
             title={`Quality Health Score: ${score}/100`}
             className={`ml-auto shrink-0 text-[10px] font-mono font-semibold px-1.5 py-0.5 rounded border ${
               score >= 80 
-                ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20' 
+                ? 'bg-emerald-50 text-emerald-700 border-emerald-200' 
                 : score >= 50 
-                  ? 'bg-amber-500/10 text-amber-400 border-amber-500/20' 
-                  : 'bg-rose-500/10 text-rose-400 border-rose-500/20'
+                  ? 'bg-amber-50 text-amber-700 border-amber-200' 
+                  : 'bg-rose-50 text-rose-700 border-rose-200'
             }`}
           >
             {score}
@@ -170,18 +170,18 @@ function TreeNode({ node, depth = 0, onSelectFile, selectedFilePath, disabled, q
 export default function FileTree({ tree, onSelectFile, selectedFilePath, disabled, qualityScores }: FileTreeProps) {
   if (!tree || !tree.name) {
     return (
-      <div className="text-zinc-500 text-xs italic p-4">
+      <div className="text-[#6B7280] text-xs italic p-4">
         No directory structure found.
       </div>
     );
   }
 
   return (
-    <div className="w-full h-full max-h-[68vh] overflow-y-auto pr-1.5 scrollbar-thin scrollbar-thumb-zinc-800 scrollbar-track-transparent">
+    <div className="w-full h-full max-h-[68vh] overflow-y-auto pr-1.5 scrollbar-thin scrollbar-thumb-[#E5E1DA] scrollbar-track-transparent">
       <TreeNode 
         node={tree} 
         depth={0} 
-        onSelectFile={onSelectFile}
+        onSelectFile={onSelectFile} 
         selectedFilePath={selectedFilePath}
         disabled={disabled}
         qualityScores={qualityScores}
