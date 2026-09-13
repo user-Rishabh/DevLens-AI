@@ -1,15 +1,15 @@
 @import "tailwindcss";
 
 :root {
-  --bg-base: #0B0D12;
-  --bg-elevated: #12151D;
-  --primary: #6D5EF5;
-  --primary-glow: #8B7FFF;
-  --hotspot: #F5A623;
-  --path-trace: #3ED9C7;
-  --text-primary: #E8E9ED;
-  --text-muted: #8A8F9C;
-  --border-subtle: #1F2330;
+  --bg-base: #FAFAF7;
+  --bg-elevated: #FFFFFF;
+  --primary: #E85D2C;
+  --primary-light: #F4A688;
+  --path-trace: #E85D2C;
+  --pin-blue: #3B5FE0;
+  --text-primary: #1A1D29;
+  --text-muted: #6B7280;
+  --border-subtle: #E5E1DA;
 }
 
 @theme {
@@ -19,10 +19,10 @@
   
   --color-bg-base: var(--bg-base);
   --color-bg-elevated: var(--bg-elevated);
-  --color-primary-devlens: var(--primary);
-  --color-primary-glow: var(--primary-glow);
-  --color-hotspot: var(--hotspot);
+  --color-primary: var(--primary);
+  --color-primary-light: var(--primary-light);
   --color-path-trace: var(--path-trace);
+  --color-pin-blue: var(--pin-blue);
   --color-text-primary: var(--text-primary);
   --color-text-muted: var(--text-muted);
   --color-border-subtle: var(--border-subtle);
@@ -46,21 +46,21 @@ body {
 
 /* Glassmorphism custom components */
 .glass-panel {
-  background: rgba(18, 21, 29, 0.75);
+  background: rgba(255, 255, 255, 0.88);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
   border: 1px solid var(--border-subtle);
 }
 
 .glass-input {
-  background: rgba(11, 13, 18, 0.8);
+  background: rgba(255, 255, 255, 0.95);
   border: 1px solid var(--border-subtle);
   transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .glass-input:focus {
   border-color: var(--primary);
-  box-shadow: 0 0 20px rgba(109, 95, 245, 0.25);
+  box-shadow: 0 0 20px rgba(232, 93, 44, 0.18);
   outline: none;
 }
 
@@ -85,7 +85,157 @@ body {
 .stagger-5 { transition-delay: 400ms; }
 .stagger-6 { transition-delay: 480ms; }
 
-/* ------------------- HERO ROUTE-TRACE SVG ANIMATION ------------------- */
+/* ------------------- GOOGLE MAPS HERO ANIMATIONS ------------------- */
+
+/* 1. Street grid fast fade-in (~300ms) */
+@keyframes mapGridFadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.99);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+.animate-map-grid {
+  animation: mapGridFadeIn 0.35s ease-out forwards;
+}
+
+/* 2. Map Pin Drop with realistic gravity bounce on landing */
+@keyframes mapPinDrop {
+  0% {
+    opacity: 0;
+    transform: translateY(-85px) scale(0.65, 1.25);
+  }
+  38% {
+    opacity: 1;
+    transform: translateY(6px) scale(1.18, 0.82);
+  }
+  58% {
+    transform: translateY(-16px) scale(0.92, 1.08);
+  }
+  74% {
+    transform: translateY(4px) scale(1.05, 0.95);
+  }
+  88% {
+    transform: translateY(-3px) scale(0.98, 1.02);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1, 1);
+  }
+}
+
+/* Pin shadow synchronization with drop */
+@keyframes mapPinShadow {
+  0% {
+    opacity: 0;
+    transform: scale(0.2);
+  }
+  38% {
+    opacity: 0.35;
+    transform: scale(1.3);
+  }
+  58% {
+    opacity: 0.15;
+    transform: scale(0.7);
+  }
+  74% {
+    opacity: 0.28;
+    transform: scale(1.05);
+  }
+  100% {
+    opacity: 0.22;
+    transform: scale(1);
+  }
+}
+
+/* 3. Progressive one-time route draw over 1.8s, staying settled */
+@keyframes mapsRouteDraw {
+  0% {
+    stroke-dashoffset: 2000;
+    opacity: 0;
+  }
+  4% {
+    opacity: 1;
+  }
+  100% {
+    stroke-dashoffset: 0;
+    opacity: 1;
+  }
+}
+.animate-maps-route {
+  stroke-dasharray: 2000;
+  stroke-dashoffset: 2000;
+  animation: mapsRouteDraw 1.8s cubic-bezier(0.4, 0, 0.2, 1) 0.8s forwards;
+}
+
+/* 4. Origin pin drops in at 0.3s */
+.animate-pin-origin {
+  animation: mapPinDrop 0.7s cubic-bezier(0.175, 0.885, 0.32, 1.275) 0.3s both;
+  transform-box: fill-box;
+  transform-origin: bottom center;
+}
+.animate-pin-origin-shadow {
+  animation: mapPinShadow 0.7s ease-out 0.3s both;
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+/* Intermediate waypoint pin drops when route passes (~1.7s) */
+.animate-pin-waypoint {
+  animation: mapPinDrop 0.65s cubic-bezier(0.175, 0.885, 0.32, 1.275) 1.7s both;
+  transform-box: fill-box;
+  transform-origin: bottom center;
+}
+.animate-pin-waypoint-shadow {
+  animation: mapPinShadow 0.65s ease-out 1.7s both;
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+/* Destination pin drops in as route arrives (2.6s) */
+.animate-pin-dest {
+  animation: mapPinDrop 0.7s cubic-bezier(0.175, 0.885, 0.32, 1.275) 2.6s both;
+  transform-box: fill-box;
+  transform-origin: bottom center;
+}
+.animate-pin-dest-shadow {
+  animation: mapPinShadow 0.7s ease-out 2.6s both;
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+/* 5. Route info card slides/fades in after pins settle (~3.2s) */
+@keyframes routeCardSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(12px) scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+.animate-route-card {
+  animation: routeCardSlideIn 0.5s cubic-bezier(0.16, 1, 0.3, 1) 3.2s both;
+}
+
+/* 6. Subtle idle resting bob after full sequence completes */
+@keyframes pinRestingBob {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-4px);
+  }
+}
+.animate-pin-idle {
+  animation: pinRestingBob 3.8s ease-in-out 3.4s infinite;
+}
+
+/* Legacy support for LoadingScreen and remaining elements */
 @keyframes routeDraw {
   0% {
     stroke-dashoffset: 1200;
@@ -103,50 +253,17 @@ body {
     opacity: 1;
   }
 }
-
-@keyframes beaconPulse {
-  0%, 100% {
-    r: 6px;
-    opacity: 0.4;
-    filter: drop-shadow(0 0 4px #3ED9C7);
-  }
-  50% {
-    r: 12px;
-    opacity: 1;
-    filter: drop-shadow(0 0 16px #3ED9C7);
-  }
-}
-
-@keyframes nodeAmbient {
-  0%, 100% {
-    opacity: 0.35;
-    transform: scale(1);
-  }
-  50% {
-    opacity: 0.75;
-    transform: scale(1.15);
-  }
-}
-
 .animate-route-draw {
   stroke-dasharray: 1200;
   stroke-dashoffset: 1200;
   animation: routeDraw 3.5s ease-in-out infinite;
-  filter: drop-shadow(0 0 10px #3ED9C7);
 }
 
-.animate-beacon {
-  animation: beaconPulse 2.5s ease-in-out infinite;
-}
-
-.animate-node-pulse {
-  animation: nodeAmbient 4s ease-in-out infinite;
-}
 
 /* ------------------- FEATURE CARD HOVER ANIMATIONS ------------------- */
 /* Hotspot card flame glow on hover */
 .feature-card-hotspot:hover .hotspot-icon {
-  filter: drop-shadow(0 0 12px #F5A623);
+  filter: drop-shadow(0 0 10px rgba(232, 93, 44, 0.5));
   transform: scale(1.15);
 }
 
@@ -159,7 +276,7 @@ body {
   display: inline-block;
   width: 6px;
   height: 12px;
-  background-color: #8B7FFF;
+  background-color: #E85D2C;
   margin-left: 2px;
   animation: cursorBlink 0.8s infinite;
 }
@@ -185,14 +302,15 @@ body {
 }
 
 /* Onboarding compass spin on hover */
-.feature-card-[#3ED9C7]:hover .compass-icon {
+.feature-card-onboarding:hover .compass-icon,
+.feature-card-\[\#3ED9C7\]:hover .compass-icon {
   transform: rotate(45deg);
 }
 
 /* Quality Score Shimmer on Hover */
 .feature-card-quality:hover .bar-shimmer {
   width: 92% !important;
-  background: linear-gradient(90deg, #6D5EF5, #8B7FFF);
+  background: linear-gradient(90deg, #E85D2C, #F4A688);
 }
 
 /* ------------------- ACCESSIBILITY PREFERS-REDUCED-MOTION ------------------- */
@@ -222,6 +340,154 @@ body {
   .blast-ring {
     animation: none;
   }
+  .sparkle-particle {
+    animation: none !important;
+    opacity: 0.4 !important;
+    transform: none !important;
+  }
+  .animate-node-pop,
+  .animate-edge-draw,
+  .animate-active-stage-pulse,
+  .animate-graph-settle,
+  .animate-map-grid,
+  .animate-maps-route,
+  .animate-pin-origin,
+  .animate-pin-origin-shadow,
+  .animate-pin-waypoint,
+  .animate-pin-waypoint-shadow,
+  .animate-pin-dest,
+  .animate-pin-dest-shadow,
+  .animate-route-card,
+  .animate-pin-idle {
+    animation: none !important;
+    transform: none !important;
+    stroke-dashoffset: 0 !important;
+    opacity: 1 !important;
+  }
+}
+
+/* ------------------- LOADING SCREEN GRAPH & STAGE ANIMATIONS ------------------- */
+@keyframes stageItemEntrance {
+  0% {
+    opacity: 0;
+    transform: translateX(18px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.animate-stage-stagger {
+  animation: stageItemEntrance 0.35s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@keyframes nodePopIn {
+  0% {
+    transform: scale(0);
+    opacity: 0;
+  }
+  65% {
+    transform: scale(1.22);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.animate-node-pop {
+  animation: nodePopIn 0.18s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+@keyframes edgeDrawAnim {
+  from {
+    stroke-dashoffset: 300;
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+.animate-edge-draw {
+  stroke-dasharray: 300;
+  stroke-dashoffset: 300;
+  animation: edgeDrawAnim 0.25s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+@keyframes activeStagePulseAnim {
+  0%, 100% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(232, 93, 44, 0.25);
+  }
+  50% {
+    transform: scale(1.08);
+    box-shadow: 0 0 0 5px rgba(232, 93, 44, 0);
+  }
+}
+
+.animate-active-stage-pulse {
+  animation: activeStagePulseAnim 2.2s ease-in-out infinite;
+}
+
+@keyframes graphSettleAnim {
+  0% {
+    transform: scale(1);
+  }
+  45% {
+    transform: scale(1.03);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+.animate-graph-settle {
+  animation: graphSettleAnim 0.85s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+/* ------------------- STATUS PILL SPARKLE / PARTICLE ANIMATIONS ------------------- */
+@keyframes sparklePulse {
+  0%, 100% {
+    opacity: 0.2;
+    transform: scale(0.65) translate(0, 0);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.25) translate(1px, -1px);
+  }
+}
+
+.sparkle-particle {
+  position: absolute;
+  pointer-events: none;
+  border-radius: 9999px;
+  animation: sparklePulse 3s ease-in-out infinite;
+}
+
+.sparkle-particle-1 {
+  animation-delay: 0s;
+  animation-duration: 2.6s;
+}
+
+.sparkle-particle-2 {
+  animation-delay: 0.8s;
+  animation-duration: 3.2s;
+}
+
+.sparkle-particle-3 {
+  animation-delay: 1.6s;
+  animation-duration: 2.8s;
+}
+
+.sparkle-particle-4 {
+  animation-delay: 1.1s;
+  animation-duration: 3.5s;
 }
 
 /* ------------------- MICRO-ANIMATIONS ------------------- */

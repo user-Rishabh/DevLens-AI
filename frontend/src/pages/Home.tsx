@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import {
   GitBranch,
   Search,
@@ -19,6 +19,7 @@ import {
   Menu,
   X,
   ChevronRight,
+  ChevronDown,
   Sparkles,
 } from 'lucide-react';
 import FileTree, { FileTreeNodeType } from '../components/FileTree';
@@ -66,16 +67,12 @@ export default function Home() {
   const [fileTree, setFileTree] = useState<FileTreeNodeType | null>(null);
   const [dependencies, setDependencies] = useState<any[]>([]);
   const [hotspots, setHotspots] = useState<HotspotType[]>([]);
+  const [isDataReady, setIsDataReady] = useState(false);
 
   // Navigation & UI state
   const [activeSection, setActiveSection] = useState<Section>('overview');
-  const [sidebarOpen, setSidebarOpen] = useState(false);
   const [selectedFilePath, setSelectedFilePath] = useState<string>('');
   const [isExplainerLoading, setIsExplainerLoading] = useState(false);
-
-  // Sliding Nav Pill State
-  const containerRef = useRef<HTMLDivElement>(null);
-  const [pillStyle, setPillStyle] = useState<React.CSSProperties>({ opacity: 0, height: 0, top: 0 });
 
   // Background Indexing states
   const [indexingStatus, setIndexingStatus] = useState<'idle' | 'indexing' | 'success' | 'error'>('idle');
@@ -85,24 +82,49 @@ export default function Home() {
   // Quality score states
   const { qualitySummary, qualityScoresMap, loadingQuality, fetchQualityScores, resetQualityScores } = useQualityScores();
 
-  useEffect(() => {
-    if (!containerRef.current) return;
-    const activeBtn = containerRef.current.querySelector('[data-active="true"]') as HTMLElement;
-    if (activeBtn) {
-      const parentRect = containerRef.current.getBoundingClientRect();
-      const btnRect = activeBtn.getBoundingClientRect();
-      const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  // Top Navigation Bar State (Hover reveal & Click/Touch toggle)
+  const [isHovered, setIsHovered] = useState(false);
+  const [isNavPinned, setIsNavPinned] = useState(false);
+  const hoverTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const menuButtonRef = useRef<HTMLButtonElement>(null);
 
-      setPillStyle({
-        opacity: 1,
-        height: `${btnRect.height}px`,
-        top: `${btnRect.top - parentRect.top}px`,
-        transition: prefersReducedMotion ? 'none' : 'top 300ms cubic-bezier(0.16, 1, 0.3, 1), height 300ms cubic-bezier(0.16, 1, 0.3, 1), opacity 150ms',
-      });
-    } else {
-      setPillStyle({ opacity: 0, height: 0, top: 0 });
+  const isNavOpen = isHovered || isNavPinned;
+
+  const handleMouseEnter = () => {
+    if (hoverTimeoutRef.current) {
+      clearTimeout(hoverTimeoutRef.current);
+      hoverTimeoutRef.current = null;
     }
-  }, [activeSection]);
+    setIsHovered(true);
+  };
+
+  const handleMouseLeave = () => {
+    if (hoverTimeoutRef.current) {
+      clearTimeout(hoverTimeoutRef.current);
+    }
+    hoverTimeoutRef.current = setTimeout(() => {
+      setIsHovered(false);
+    }, 220);
+  };
+
+  const handleSelectSection = (section: Section) => {
+    setActiveSection(section);
+    setIsNavPinned(false);
+    setIsHovered(false);
+  };
+
+  // Close pinned top nav on Escape key press
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && isNavOpen) {
+        setIsNavPinned(false);
+        setIsHovered(false);
+        menuButtonRef.current?.focus();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isNavOpen]);
 
   // Background indexing fetcher
   const handleIndex = async (id: string, force: boolean = false) => {
@@ -149,16 +171,32 @@ export default function Home() {
     return { files, folders };
   };
 
+  // Deterministic SHA-256 repo_id matching backend route algorithm
+  const computeRepoId = async (url: string): Promise<string> => {
+    try {
+      const msgUint8 = new TextEncoder().encode(url.trim());
+      const hashBuffer = await crypto.subtle.digest('SHA-256', msgUint8);
+      const hashArray = Array.from(new Uint8Array(hashBuffer));
+      return hashArray.map(b => b.toString(16).padStart(2, '0')).join('').slice(0, 16);
+    } catch {
+      return '';
+    }
+  };
+
   const handleAnalyze = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!repoUrl && !repoUrl.trim()) return;
 
     setIsLoading(true);
     setError(null);
-    setPendingRepoId(null);
+    setIsDataReady(false);
     setSelectedFilePath('');
     setIsExplainerLoading(false);
     setLoadingPhase('Validating GitHub URL...');
+
+    // Immediately compute and assign repoId so LoadingScreen can poll real stage progress right away
+    const calculatedId = await computeRepoId(repoUrl);
+    setPendingRepoId(calculatedId || null);
 
     try {
       const response = await fetch(`${API_BASE_URL}/api/repos/ingest`, {
@@ -180,6 +218,7 @@ export default function Home() {
       setFileTree(data.file_tree);
       setDependencies(data.dependencies);
       setHotspots(data.hotspots);
+      setIsDataReady(true);
 
       // Now make the repo_id available for LoadingScreen to start polling /status
       setPendingRepoId(data.repo_id);
@@ -204,16 +243,17 @@ export default function Home() {
     }
   };
 
-  const handleLoadingComplete = () => {
+  const handleLoadingComplete = useCallback(() => {
     setIsLoading(false);
     setPendingRepoId(null);
     setActiveSection('overview');
     setIsAnalyzed(true);
-  };
+  }, []);
 
   const handleLoadingRetry = () => {
     setIsLoading(false);
     setPendingRepoId(null);
+    setIsDataReady(false);
     setError(null);
     setRepoId('');
     setRepoName('');
@@ -224,6 +264,7 @@ export default function Home() {
 
   const handleReset = () => {
     setIsAnalyzed(false);
+    setIsDataReady(false);
     setRepoId('');
     setRepoName('');
     setFileTree(null);
@@ -238,7 +279,8 @@ export default function Home() {
     setChunksIndexed(null);
     setIndexingError(null);
     setActiveSection('overview');
-    setSidebarOpen(false);
+    setIsNavPinned(false);
+    setIsHovered(false);
   };
 
   // ── Derived ────────────────────────────────────────────────────────────────
@@ -286,6 +328,7 @@ export default function Home() {
       <LoadingScreen
         repoUrl={repoUrl}
         repoId={pendingRepoId}
+        isDataReady={isDataReady}
         onComplete={handleLoadingComplete}
         onRetry={handleLoadingRetry}
       />
@@ -304,38 +347,10 @@ export default function Home() {
     );
   }
 
-  // ── Nav button renderer ────────────────────────────────────────────────────
-  const navButton = (item: NavItem) => {
-    const isActive = activeSection === item.id;
-    return (
-      <button
-        key={item.id}
-        data-active={isActive}
-        onClick={() => { setActiveSection(item.id); setSidebarOpen(false); }}
-        className={`flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-300 cursor-pointer text-left w-full relative z-10 select-none group ${
-          item.id === 'overview' ? 'animate-overview-hover' :
-          item.id === 'files' ? 'animate-files-hover' :
-          item.id === 'hotspots' ? 'animate-flame-hover' :
-          item.id === 'search' ? 'animate-search-hover' :
-          item.id === 'architecture' ? 'animate-arch-hover' :
-          item.id === 'onboarding' ? 'animate-compass-hover' :
-          'animate-quality-hover'
-        } ${
-          isActive
-            ? 'text-white font-semibold'
-            : 'text-[#8A8F9C] hover:text-[#E8E9ED] hover:bg-[#12151D]/40'
-        }`}
-      >
-        <span className={`icon-target transition-colors duration-300 shrink-0 ${isActive ? 'text-[#3ED9C7]' : 'text-[#8A8F9C] group-hover:text-[#6D5EF5]'}`}>{item.icon}</span>
-        {item.label}
-        {isActive && <span className="ml-auto w-1.5 h-1.5 rounded-full bg-[#3ED9C7] flex-shrink-0" />}
-      </button>
-    );
-  };
 
   // ── Section renderers ──────────────────────────────────────────────────────
   const renderOverview = () => (
-    <div className="p-8 max-w-4xl mx-auto w-full">
+    <div className="p-6 md:p-8 max-w-7xl mx-auto w-full">
       {/* Repo Title Intro */}
       <div className="mb-8 animate-fade-in-stagger" style={{ animationDelay: '0ms' }}>
         <div className="flex items-center gap-2 mb-1 flex-wrap">
@@ -501,7 +516,7 @@ export default function Home() {
 
   const renderFiles = () => (
     <div className="flex h-full overflow-hidden">
-      <div className="w-72 flex-shrink-0 border-r border-[#1F2330] flex flex-col overflow-hidden">
+      <div className="w-80 flex-shrink-0 border-r border-[#1F2330] flex flex-col overflow-hidden">
         <div className="p-4 border-b border-[#1F2330] flex-shrink-0">
           <h2 className="text-xs font-mono text-[#8A8F9C] uppercase tracking-wider">Workspace Files</h2>
           <p className="text-[10px] text-zinc-500 font-mono mt-1 leading-normal">
@@ -532,7 +547,7 @@ export default function Home() {
   );
 
   const renderHotspots = () => (
-    <div className="p-8 max-w-3xl mx-auto w-full">
+    <div className="p-6 md:p-8 max-w-6xl mx-auto w-full">
       <div className="mb-6">
         <span className="text-xs font-mono text-[#F5A623] uppercase tracking-wider">Git Telemetry</span>
         <h2 className="text-2xl font-bold text-white mt-1" style={{ fontFamily: '"Space Grotesk", sans-serif' }}>Frequently Changed Files</h2>
@@ -545,7 +560,7 @@ export default function Home() {
   );
 
   const renderSearch = () => (
-    <div className="p-8 max-w-3xl mx-auto w-full">
+    <div className="p-6 md:p-8 max-w-6xl mx-auto w-full">
       <div className="mb-6">
         <span className="text-xs font-mono text-[#8B7FFF] uppercase tracking-wider">Smart Search</span>
         <h2 className="text-2xl font-bold text-white mt-1" style={{ fontFamily: '"Space Grotesk", sans-serif' }}>Semantic Search</h2>
@@ -573,7 +588,7 @@ export default function Home() {
   );
 
   const renderOnboarding = () => (
-    <div className="p-8 max-w-3xl mx-auto w-full">
+    <div className="p-6 md:p-8 max-w-6xl mx-auto w-full">
       <div className="mb-6">
         <span className="text-xs font-mono text-[#3ED9C7] uppercase tracking-wider">Navigation Guide</span>
         <h2 className="text-2xl font-bold text-white mt-1" style={{ fontFamily: '"Space Grotesk", sans-serif' }}>Onboarding Guide</h2>
@@ -586,7 +601,7 @@ export default function Home() {
   );
 
   const renderQuality = () => (
-    <div className="p-8 max-w-3xl mx-auto w-full">
+    <div className="p-6 md:p-8 max-w-6xl mx-auto w-full">
       <div className="mb-6">
         <span className="text-xs font-mono text-[#8B7FFF] uppercase tracking-wider">Code Health</span>
         <h2 className="text-2xl font-bold text-white mt-1" style={{ fontFamily: '"Space Grotesk", sans-serif' }}>Quality Scores</h2>
@@ -617,87 +632,139 @@ export default function Home() {
   ].filter(Boolean);
 
   // ── Dashboard render ───────────────────────────────────────────────────────
+  const activeNavItem = NAV_ITEMS.find(item => item.id === activeSection) || NAV_ITEMS[0];
+
   return (
     <div className="flex flex-col h-screen bg-[#0B0D12] text-[#E8E9ED] overflow-hidden" style={{ fontFamily: '"Inter", system-ui, sans-serif' }}>
       
+      {/* Top Navigation Wrapper (Hover zone + Click-pinned state) */}
+      <div
+        className="relative z-40 flex-shrink-0"
+        onMouseEnter={handleMouseEnter}
+        onMouseLeave={handleMouseLeave}
+      >
+        {/* Slim Primary Header Row */}
+        <header className="h-13 flex items-center justify-between px-4 border-b border-[#1F2330] bg-[#0B0D12] select-none transition-colors duration-200">
+          <div className="flex items-center gap-2.5 sm:gap-3.5 min-w-0">
+            {/* Accessible Navigation Menu Toggle Button (Keyboard & Touch fallback) */}
+            <button
+              ref={menuButtonRef}
+              onClick={() => setIsNavPinned(prev => !prev)}
+              aria-label="Toggle navigation menu"
+              aria-expanded={isNavOpen}
+              aria-controls="top-navigation-tabs"
+              className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl border transition-all cursor-pointer text-xs font-mono outline-none focus-visible:ring-2 focus-visible:ring-[#6D5EF5] shrink-0 ${
+                isNavOpen
+                  ? 'bg-[#6D5EF5]/20 border-[#6D5EF5]/50 text-white shadow-sm'
+                  : 'bg-[#12151D] border-[#1F2330] text-[#8A8F9C] hover:text-white hover:border-[#6D5EF5]/30'
+              }`}
+              title="Click or press Enter to toggle navigation tabs"
+            >
+              <Menu className="w-3.5 h-3.5" />
+              <span className="hidden sm:inline font-medium">Nav</span>
+              <ChevronDown className={`w-3 h-3 text-[#8A8F9C] transition-transform duration-200 ${isNavOpen ? 'rotate-180 text-white' : ''}`} />
+            </button>
 
-      {/* Persistent top bar */}
-      <header className="flex-shrink-0 h-12 flex items-center justify-between px-4 border-b border-[#1F2330] bg-[#0B0D12] z-30">
-        <div className="flex items-center gap-3">
-          <button className="lg:hidden p-1.5 rounded-lg text-[#8A8F9C] hover:text-[#E8E9ED] hover:bg-[#12151D] transition-all cursor-pointer" onClick={() => setSidebarOpen(v => !v)} aria-label="Toggle sidebar">
-            {sidebarOpen ? <X className="w-4 h-4" /> : <Menu className="w-4 h-4" />}
-          </button>
-          <div className="flex items-center gap-2">
-            <span className="font-extrabold text-sm tracking-tight text-white hidden sm:block" style={{ fontFamily: '"Space Grotesk", sans-serif' }}>DevLens <span className="text-[#3ED9C7]">AI</span></span>
-            <span className="text-[#1F2330] hidden sm:block">/</span>
-            <span className="text-sm text-[#E8E9ED] font-medium truncate max-w-[160px] sm:max-w-xs">{repoName}</span>
-          </div>
-          <div className="hidden md:flex items-center gap-1.5 ml-4 pl-4 border-l border-[#1F2330]">
-            <span className="text-[10px] font-mono text-[#8A8F9C] uppercase tracking-wider mr-1">Stack</span>
-            {representativeTech.map(tech => (
-              <span key={tech} className="px-2.5 py-0.5 rounded-full bg-[#6D5EF5]/10 border border-[#6D5EF5]/40 text-[#E8E9ED] text-[10px] font-mono font-bold tracking-wide shadow-sm">
-                {tech}
+            {/* Repo Breadcrumb */}
+            <div className="flex items-center gap-2 shrink-0">
+              <span className="font-extrabold text-sm tracking-tight text-white hidden sm:block" style={{ fontFamily: '"Space Grotesk", sans-serif' }}>
+                DevLens <span className="text-[#3ED9C7]">AI</span>
               </span>
-            ))}
+              <span className="text-[#1F2330] hidden sm:block">/</span>
+              <span className="text-sm text-[#E8E9ED] font-medium truncate max-w-[130px] sm:max-w-xs">{repoName}</span>
+            </div>
+
+            {/* Current Active Section Badge & Quick Trigger Indicator */}
+            <button
+              onClick={() => setIsNavPinned(prev => !prev)}
+              className="flex items-center gap-2 px-3 py-1 rounded-full bg-[#12151D] border border-[#1F2330] hover:border-[#6D5EF5]/40 text-xs font-mono transition-all cursor-pointer group shrink-0"
+              title="Current section. Hover over top bar or click to switch."
+              aria-label={`Current section: ${activeNavItem.label}. Click to toggle navigation tabs.`}
+            >
+              <span className="text-[#3ED9C7] flex-shrink-0">
+                {activeNavItem.icon}
+              </span>
+              <span className="text-white font-medium">
+                {activeNavItem.label}
+              </span>
+              <span className="text-[10px] text-[#8A8F9C] uppercase tracking-wider hidden md:inline ml-0.5 group-hover:text-[#6D5EF5] transition-colors">
+                (Hover to switch)
+              </span>
+              <ChevronDown
+                className={`w-3 h-3 text-[#8A8F9C] group-hover:text-white transition-transform duration-200 ${
+                  isNavOpen ? 'rotate-180 text-white' : ''
+                }`}
+              />
+            </button>
+
+            {/* Tech Stack Badges */}
+            <div className="hidden xl:flex items-center gap-1.5 ml-2 pl-3 border-l border-[#1F2330]">
+              <span className="text-[10px] font-mono text-[#8A8F9C] uppercase tracking-wider mr-1">Stack</span>
+              {representativeTech.map(tech => (
+                <span key={tech} className="px-2.5 py-0.5 rounded-full bg-[#6D5EF5]/10 border border-[#6D5EF5]/40 text-[#E8E9ED] text-[10px] font-mono font-bold tracking-wide shadow-sm">
+                  {tech}
+                </span>
+              ))}
+            </div>
+          </div>
+
+          {/* Right Action Controls */}
+          <div className="flex items-center gap-2.5 shrink-0">
+            <button onClick={handleReset} className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-[#1F2330] hover:border-[#6D5EF5]/40 bg-[#12151D] text-[#8A8F9C] hover:text-[#E8E9ED] text-xs font-mono transition-all cursor-pointer">
+              <ArrowLeft className="w-3 h-3" /><span className="hidden sm:inline">Load another</span>
+            </button>
+            <a href="https://github.com/user-Rishabh/DevLens-AI" target="_blank" rel="noreferrer" className="p-1.5 text-[#8A8F9C] hover:text-[#E8E9ED] transition-colors" title="GitHub Repository">
+              <Github className="w-4 h-4" />
+            </a>
+          </div>
+        </header>
+
+        {/* Revealed Horizontal Navigation Row (Dropdown on Hover / Click-Toggle) */}
+        <div
+          id="top-navigation-tabs"
+          role="region"
+          aria-label="Dashboard Navigation Sections"
+          className={`border-b border-[#1F2330] bg-[#0E1118]/98 backdrop-blur-md shadow-2xl transition-all duration-200 ease-out overflow-hidden ${
+            isNavOpen
+              ? 'max-h-20 opacity-100 translate-y-0 py-2'
+              : 'max-h-0 opacity-0 -translate-y-1 py-0 pointer-events-none border-transparent'
+          }`}
+        >
+          <div className="max-w-7xl mx-auto px-4 flex items-center gap-2 overflow-x-auto scrollbar-none">
+            {NAV_ITEMS.map(item => {
+              const isActive = activeSection === item.id;
+              return (
+                <button
+                  key={item.id}
+                  onClick={() => handleSelectSection(item.id)}
+                  className={`flex items-center gap-2 px-3.5 py-1.5 rounded-xl text-xs font-mono font-medium transition-all duration-200 cursor-pointer whitespace-nowrap flex-shrink-0 outline-none focus-visible:ring-2 focus-visible:ring-[#6D5EF5] ${
+                    isActive
+                      ? 'bg-[#6D5EF5]/20 border border-[#6D5EF5]/40 text-white shadow-sm'
+                      : 'text-[#8A8F9C] hover:text-[#E8E9ED] hover:bg-[#12151D] border border-transparent'
+                  }`}
+                >
+                  <span className={isActive ? 'text-[#3ED9C7]' : 'text-[#8A8F9C] group-hover:text-[#6D5EF5]'}>
+                    {item.icon}
+                  </span>
+                  <span>{item.label}</span>
+                  {isActive && (
+                    <span className="w-1.5 h-1.5 rounded-full bg-[#3ED9C7] ml-0.5" />
+                  )}
+                </button>
+              );
+            })}
           </div>
         </div>
-        <div className="flex items-center gap-3">
-          <button onClick={handleReset} className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-[#1F2330] hover:border-[#6D5EF5]/40 bg-[#12151D] text-[#8A8F9C] hover:text-[#E8E9ED] text-xs font-mono transition-all cursor-pointer">
-            <ArrowLeft className="w-3 h-3" /><span className="hidden sm:inline">Load another</span>
-          </button>
-          <a href="https://github.com/user-Rishabh/DevLens-AI" target="_blank" rel="noreferrer" className="p-1.5 text-[#8A8F9C] hover:text-[#E8E9ED] transition-colors">
-            <Github className="w-4 h-4" />
-          </a>
-        </div>
-      </header>
-
-      {/* Body: sidebar + content */}
-      <div className="flex flex-1 min-h-0 relative">
-
-        {/* Desktop Left Sidebar */}
-        <aside className="hidden lg:flex flex-col w-52 flex-shrink-0 border-r border-[#1F2330] bg-[#0B0D12] overflow-y-auto">
-          <nav ref={containerRef} className="flex flex-col gap-0.5 p-3 flex-1 relative select-none">
-            {/* Sliding Active Pill */}
-            <div
-              className="absolute left-3 right-3 rounded-xl bg-[#6D5EF5]/15 border border-[#6D5EF5]/25 pointer-events-none"
-              style={pillStyle}
-            />
-            {NAV_ITEMS.map(navButton)}
-          </nav>
-        </aside>
-
-        {/* Mobile sidebar overlay */}
-        {sidebarOpen && (
-          <>
-            <div className="lg:hidden fixed inset-0 bg-black/60 z-40 backdrop-blur-sm" onClick={() => setSidebarOpen(false)} />
-            <aside className="lg:hidden fixed left-0 top-12 bottom-0 w-60 bg-[#0B0D12] border-r border-[#1F2330] z-50 overflow-y-auto flex flex-col">
-              <nav className="flex flex-col gap-0.5 p-3 flex-1">{NAV_ITEMS.map(navButton)}</nav>
-            </aside>
-          </>
-        )}
-
-        {/* Main content area */}
-        <main className={`flex-1 min-w-0 bg-[#0B0D12] ${ isFullHeightSection ? 'overflow-hidden flex flex-col' : 'overflow-y-auto pb-20 lg:pb-0' }`}>
-          <div className="fixed top-12 left-0 w-[40vw] h-[40vh] rounded-full bg-[#6D5EF5]/4 blur-[120px] pointer-events-none z-0" />
-          <div className="fixed bottom-0 right-0 w-[30vw] h-[30vh] rounded-full bg-[#3ED9C7]/3 blur-[100px] pointer-events-none z-0" />
-          <div className={`relative z-10 ${ isFullHeightSection ? 'h-full flex flex-col' : '' }`}>
-            {sectionContent[activeSection]}
-          </div>
-        </main>
-
-        {/* Mobile bottom tab bar */}
-        <nav className="lg:hidden fixed bottom-0 left-0 right-0 bg-[#0B0D12]/95 backdrop-blur-sm border-t border-[#1F2330] z-30 flex items-center justify-around px-1 py-1">
-          {NAV_ITEMS.map(item => {
-            const isActive = activeSection === item.id;
-            return (
-              <button key={item.id} onClick={() => { setActiveSection(item.id); setSidebarOpen(false); }} className={`flex flex-col items-center gap-0.5 px-2 py-1.5 rounded-xl transition-all cursor-pointer ${ isActive ? 'text-[#3ED9C7]' : 'text-[#8A8F9C]' }`}>
-                {item.icon}
-                <span className="text-[8px] font-mono leading-none">{item.label}</span>
-              </button>
-            );
-          })}
-        </nav>
       </div>
+
+      {/* Main Full-Width Content Area */}
+      <main className={`flex-1 min-w-0 w-full bg-[#0B0D12] relative ${ isFullHeightSection ? 'overflow-hidden flex flex-col' : 'overflow-y-auto' }`}>
+        <div className="fixed top-12 left-0 w-[40vw] h-[40vh] rounded-full bg-[#6D5EF5]/4 blur-[120px] pointer-events-none z-0" />
+        <div className="fixed bottom-0 right-0 w-[30vw] h-[30vh] rounded-full bg-[#3ED9C7]/3 blur-[100px] pointer-events-none z-0" />
+        <div className={`relative z-10 w-full ${ isFullHeightSection ? 'h-full flex flex-col' : '' }`}>
+          {sectionContent[activeSection]}
+        </div>
+      </main>
     </div>
   );
 }
