@@ -131,11 +131,11 @@ export default function QualityScoreCard({ summary, loading, onSelectFile, onRec
           <span className="text-[10px] text-[#6B7280] font-mono">100 = Best</span>
         </div>
 
-        {summary.riskiest_files.length === 0 ? (
+        {(!summary.riskiest_files || summary.riskiest_files.length === 0) ? (
           <p className="text-xs text-[#6B7280] italic py-2">No high-risk files identified.</p>
         ) : (
           <div className="space-y-1.5">
-            {summary.riskiest_files.map((file) => {
+            {(summary.riskiest_files || []).map((file) => {
               const score = file.composite_score;
               const badgeClass = score >= 80 
                 ? 'bg-emerald-50 text-emerald-700 border-emerald-200' 

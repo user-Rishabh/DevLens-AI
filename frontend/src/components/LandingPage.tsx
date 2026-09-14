@@ -840,7 +840,7 @@ export default function LandingPage({
               </p>
               {/* Shimmer health bar on hover */}
               <div className="mt-3 w-full bg-[#E5E1DA] h-1.5 rounded-full overflow-hidden">
-                <div className="bg-[#E85D2C] h-full w-[70%] transition-all duration-500 bar-shimmer" />
+                <div className="bg-[#E85D2C] h-full w-[70%] transition-all duration-800 ease-out bar-shimmer" />
               </div>
             </div>
           </div>

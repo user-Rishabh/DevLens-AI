@@ -311,6 +311,7 @@ body {
 .feature-card-quality:hover .bar-shimmer {
   width: 92% !important;
   background: linear-gradient(90deg, #E85D2C, #F4A688);
+  transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 /* ------------------- ACCESSIBILITY PREFERS-REDUCED-MOTION ------------------- */
@@ -538,6 +539,23 @@ body {
   }
 }
 
+@keyframes topo-drift-key {
+  0% {
+    transform: translate(0, 0) scale(1);
+  }
+  50% {
+    transform: translate(-10px, -6px) scale(1.008);
+  }
+  100% {
+    transform: translate(0, 0) scale(1);
+  }
+}
+
+.animate-topo-drift {
+  animation: topo-drift-key 60s ease-in-out infinite;
+  will-change: transform;
+}
+
 @media (prefers-reduced-motion: no-preference) {
   .animate-overview-hover:hover .icon-target {
     animation: overview-hover-key 400ms ease-out;
@@ -563,5 +581,17 @@ body {
   .animate-fade-in-stagger {
     animation: fade-slide-in-key 500ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
     opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-delay: -1ms !important;
+    animation-duration: 1ms !important;
+    animation-iteration-count: 1 !important;
+    transition-delay: 0s !important;
+    transition-duration: 0s !important;
   }
 }
