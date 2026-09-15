@@ -556,6 +556,156 @@ body {
   will-change: transform;
 }
 
+/* ------------------- QUICK NAVIGATION CHIP MICRO-ANIMATIONS ------------------- */
+/* 1. Files: branch/tree unfold expand (under 400ms) */
+@keyframes nav-files-unfold {
+  0% {
+    transform: scale(1);
+  }
+  35% {
+    transform: scale(1.14) translateX(0.5px);
+  }
+  70% {
+    transform: scale(1.02);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+/* 2. Hotspots: flame flicker (gentle scale & skew pulse loop while hovered) */
+@keyframes nav-flame-flicker {
+  0% {
+    transform: scaleY(1) scaleX(1) rotate(0deg);
+    opacity: 0.95;
+  }
+  25% {
+    transform: scaleY(1.15) scaleX(0.92) rotate(-2deg);
+    opacity: 1;
+  }
+  50% {
+    transform: scaleY(0.95) scaleX(1.06) rotate(1.5deg);
+    opacity: 0.88;
+  }
+  75% {
+    transform: scaleY(1.1) scaleX(0.95) rotate(-1deg);
+    opacity: 1;
+  }
+  100% {
+    transform: scaleY(1) scaleX(1) rotate(0deg);
+    opacity: 0.95;
+  }
+}
+
+/* 3. Search: magnifying glass sweep motion (scanning arc, under 450ms) */
+@keyframes nav-search-sweep {
+  0% {
+    transform: translate(0, 0) rotate(0deg);
+  }
+  25% {
+    transform: translate(-1.5px, -1px) rotate(-6deg);
+  }
+  55% {
+    transform: translate(2px, 0.5px) rotate(4deg);
+  }
+  80% {
+    transform: translate(-0.5px, 0) rotate(-1.5deg);
+  }
+  100% {
+    transform: translate(0, 0) rotate(0deg);
+  }
+}
+
+/* 4. Architecture: network dots & nodes sequential trace pulse (under 500ms) */
+@keyframes nav-arch-pulse {
+  0% {
+    transform: scale(1);
+    filter: drop-shadow(0 0 0 rgba(124, 58, 237, 0));
+  }
+  35% {
+    transform: scale(1.1);
+    filter: drop-shadow(0 0 3.5px rgba(124, 58, 237, 0.4));
+  }
+  70% {
+    transform: scale(1.02);
+    filter: drop-shadow(0 0 2px rgba(124, 58, 237, 0.2));
+  }
+  100% {
+    transform: scale(1);
+    filter: drop-shadow(0 0 0 rgba(124, 58, 237, 0));
+  }
+}
+
+@keyframes nav-node-seq {
+  0% {
+    transform: scale(1);
+    opacity: 0.9;
+  }
+  40% {
+    transform: scale(1.35);
+    opacity: 1;
+    filter: drop-shadow(0 0 2.5px #7C3AED);
+  }
+  100% {
+    transform: scale(1);
+    opacity: 0.9;
+  }
+}
+
+/* 5. Onboarding: compass needle swing & settle (under 450ms) */
+@keyframes nav-compass-swing {
+  0% {
+    transform: rotate(0deg);
+  }
+  30% {
+    transform: rotate(24deg);
+  }
+  60% {
+    transform: rotate(-8deg);
+  }
+  80% {
+    transform: rotate(3deg);
+  }
+  100% {
+    transform: rotate(0deg);
+  }
+}
+
+/* 6. Quality: shield protective check pulse & glow (under 450ms) */
+@keyframes nav-shield-pulse {
+  0% {
+    transform: scale(1);
+    filter: drop-shadow(0 0 0 rgba(5, 150, 105, 0));
+  }
+  35% {
+    transform: scale(1.12);
+    filter: drop-shadow(0 0 4.5px rgba(5, 150, 105, 0.5));
+  }
+  70% {
+    transform: scale(0.98);
+    filter: drop-shadow(0 0 2px rgba(5, 150, 105, 0.2));
+  }
+  100% {
+    transform: scale(1);
+    filter: drop-shadow(0 0 0 rgba(5, 150, 105, 0));
+  }
+}
+
+@keyframes nav-check-fade {
+  0% {
+    opacity: 0.5;
+    transform: scale(0.8);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.15);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
 @media (prefers-reduced-motion: no-preference) {
   .animate-overview-hover:hover .icon-target {
     animation: overview-hover-key 400ms ease-out;
@@ -582,9 +732,67 @@ body {
     animation: fade-slide-in-key 500ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
     opacity: 0;
   }
+
+  /* Quick Navigation Hover Micro-Animations */
+  .nav-card-files:hover .nav-icon-files {
+    animation: nav-files-unfold 360ms cubic-bezier(0.16, 1, 0.3, 1);
+    transform-origin: 25% 25%;
+  }
+
+  .nav-card-hotspots:hover .nav-icon-hotspots {
+    animation: nav-flame-flicker 700ms ease-in-out infinite;
+    transform-origin: 50% 85%;
+  }
+
+  .nav-card-search:hover .nav-icon-search {
+    animation: nav-search-sweep 420ms cubic-bezier(0.25, 1, 0.5, 1);
+  }
+
+  .nav-card-architecture:hover .nav-icon-architecture {
+    animation: nav-arch-pulse 440ms ease-out;
+  }
+  .nav-card-architecture:hover .nav-icon-architecture rect:nth-of-type(3) {
+    animation: nav-node-seq 320ms ease-out 0ms;
+    transform-origin: 12px 5px;
+  }
+  .nav-card-architecture:hover .nav-icon-architecture rect:nth-of-type(2) {
+    animation: nav-node-seq 320ms ease-out 90ms;
+    transform-origin: 5px 19px;
+  }
+  .nav-card-architecture:hover .nav-icon-architecture rect:nth-of-type(1) {
+    animation: nav-node-seq 320ms ease-out 180ms;
+    transform-origin: 19px 19px;
+  }
+
+  .nav-card-onboarding:hover .nav-icon-onboarding {
+    animation: nav-compass-swing 440ms cubic-bezier(0.2, 0.9, 0.3, 1);
+    transform-origin: 50% 50%;
+  }
+
+  .nav-card-quality:hover .nav-icon-quality {
+    animation: nav-shield-pulse 420ms ease-out;
+  }
+  .nav-card-quality:hover .nav-icon-quality path:nth-of-type(2) {
+    animation: nav-check-fade 380ms ease-out;
+    transform-origin: 12px 12px;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
+  .animate-topo-drift,
+  .nav-icon-files,
+  .nav-icon-hotspots,
+  .nav-icon-search,
+  .nav-icon-architecture,
+  .nav-icon-onboarding,
+  .nav-icon-quality,
+  .nav-icon-architecture rect,
+  .nav-icon-quality path {
+    animation: none !important;
+    transform: none !important;
+    filter: none !important;
+  }
+
   *,
   *::before,
   *::after {

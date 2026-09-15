@@ -48,6 +48,106 @@ const NAV_ITEMS: NavItem[] = [
   { id: 'quality',      label: 'Quality',     icon: <ShieldCheck className="w-4 h-4" /> },
 ];
 
+const QUICK_NAV_ACCENTS: Record<Exclude<Section, 'overview'>, {
+  badgeBg: string;
+  badgeHoverBg: string;
+  badgeBorder: string;
+  badgeHoverBorder: string;
+  iconColor: string;
+  accentBar: string;
+  borderHover: string;
+  shadowHover: string;
+  gradientWash: string;
+  cardClass: string;
+  iconClass: string;
+  description: string;
+}> = {
+  files: {
+    badgeBg: 'bg-[#4F46E5]/10',
+    badgeHoverBg: 'group-hover:bg-[#4F46E5]/18',
+    badgeBorder: 'border-[#4F46E5]/20',
+    badgeHoverBorder: 'group-hover:border-[#4F46E5]/35',
+    iconColor: 'text-[#4F46E5]',
+    accentBar: 'bg-[#4F46E5]',
+    borderHover: 'hover:border-[#4F46E5]/35',
+    shadowHover: 'hover:shadow-[0_8px_20px_-4px_rgba(79,70,229,0.14),0_2px_6px_-1px_rgba(79,70,229,0.06)]',
+    gradientWash: 'bg-[radial-gradient(circle_at_top_left,rgba(79,70,229,0.06)_0%,transparent_70%)]',
+    cardClass: 'nav-card-files',
+    iconClass: 'nav-icon-files',
+    description: 'Browse structure & AI summaries',
+  },
+  hotspots: {
+    badgeBg: 'bg-[#EA580C]/10',
+    badgeHoverBg: 'group-hover:bg-[#EA580C]/18',
+    badgeBorder: 'border-[#EA580C]/20',
+    badgeHoverBorder: 'group-hover:border-[#EA580C]/35',
+    iconColor: 'text-[#EA580C]',
+    accentBar: 'bg-[#EA580C]',
+    borderHover: 'hover:border-[#EA580C]/35',
+    shadowHover: 'hover:shadow-[0_8px_20px_-4px_rgba(234,88,12,0.14),0_2px_6px_-1px_rgba(234,88,12,0.06)]',
+    gradientWash: 'bg-[radial-gradient(circle_at_top_left,rgba(234,88,12,0.06)_0%,transparent_70%)]',
+    cardClass: 'nav-card-hotspots',
+    iconClass: 'nav-icon-hotspots',
+    description: 'Most frequently changed files',
+  },
+  search: {
+    badgeBg: 'bg-[#E85D2C]/10',
+    badgeHoverBg: 'group-hover:bg-[#E85D2C]/18',
+    badgeBorder: 'border-[#E85D2C]/20',
+    badgeHoverBorder: 'group-hover:border-[#E85D2C]/35',
+    iconColor: 'text-[#E85D2C]',
+    accentBar: 'bg-[#E85D2C]',
+    borderHover: 'hover:border-[#E85D2C]/40',
+    shadowHover: 'hover:shadow-[0_8px_20px_-4px_rgba(232,93,44,0.16),0_2px_6px_-1px_rgba(232,93,44,0.06)]',
+    gradientWash: 'bg-[radial-gradient(circle_at_top_left,rgba(232,93,44,0.07)_0%,transparent_70%)]',
+    cardClass: 'nav-card-search',
+    iconClass: 'nav-icon-search',
+    description: 'Ask questions in plain English',
+  },
+  architecture: {
+    badgeBg: 'bg-[#7C3AED]/10',
+    badgeHoverBg: 'group-hover:bg-[#7C3AED]/18',
+    badgeBorder: 'border-[#7C3AED]/20',
+    badgeHoverBorder: 'group-hover:border-[#7C3AED]/35',
+    iconColor: 'text-[#7C3AED]',
+    accentBar: 'bg-[#7C3AED]',
+    borderHover: 'hover:border-[#7C3AED]/35',
+    shadowHover: 'hover:shadow-[0_8px_20px_-4px_rgba(124,58,237,0.14),0_2px_6px_-1px_rgba(124,58,237,0.06)]',
+    gradientWash: 'bg-[radial-gradient(circle_at_top_left,rgba(124,58,237,0.06)_0%,transparent_70%)]',
+    cardClass: 'nav-card-architecture',
+    iconClass: 'nav-icon-architecture',
+    description: 'Visualize file dependencies',
+  },
+  onboarding: {
+    badgeBg: 'bg-[#D97706]/10',
+    badgeHoverBg: 'group-hover:bg-[#D97706]/18',
+    badgeBorder: 'border-[#D97706]/20',
+    badgeHoverBorder: 'group-hover:border-[#D97706]/35',
+    iconColor: 'text-[#D97706]',
+    accentBar: 'bg-[#D97706]',
+    borderHover: 'hover:border-[#D97706]/35',
+    shadowHover: 'hover:shadow-[0_8px_20px_-4px_rgba(217,119,6,0.14),0_2px_6px_-1px_rgba(217,119,6,0.06)]',
+    gradientWash: 'bg-[radial-gradient(circle_at_top_left,rgba(217,119,6,0.06)_0%,transparent_70%)]',
+    cardClass: 'nav-card-onboarding',
+    iconClass: 'nav-icon-onboarding',
+    description: 'Suggested reading order',
+  },
+  quality: {
+    badgeBg: 'bg-[#059669]/10',
+    badgeHoverBg: 'group-hover:bg-[#059669]/18',
+    badgeBorder: 'border-[#059669]/20',
+    badgeHoverBorder: 'group-hover:border-[#059669]/35',
+    iconColor: 'text-[#059669]',
+    accentBar: 'bg-[#059669]',
+    borderHover: 'hover:border-[#059669]/35',
+    shadowHover: 'hover:shadow-[0_8px_20px_-4px_rgba(5,150,105,0.14),0_2px_6px_-1px_rgba(5,150,105,0.06)]',
+    gradientWash: 'bg-[radial-gradient(circle_at_top_left,rgba(5,150,105,0.06)_0%,transparent_70%)]',
+    cardClass: 'nav-card-quality',
+    iconClass: 'nav-icon-quality',
+    description: 'Risk & health scoring',
+  },
+};
+
 import NotReadyState from '../components/NotReadyState';
 import AnimatedNumber from '../components/AnimatedNumber';
 import StatTooltip from '../components/StatTooltip';
@@ -577,29 +677,66 @@ export default function Home() {
         <div className="p-5 rounded-2xl bg-white border border-[#E5E1DA] shadow-xs animate-fade-in-stagger flex flex-col justify-between" style={{ animationDelay: '480ms' }}>
           <div>
             <div className="flex items-center justify-between mb-3">
-              <span className="text-xs font-mono text-[#6B7280] uppercase tracking-wider">Quick Navigation</span>
-              <span className="text-[10px] font-mono text-[#E85D2C] bg-[#E85D2C]/10 px-2 py-0.5 rounded-full font-medium">6 sections</span>
+              <span className="text-xs font-mono text-[#6B7280] uppercase tracking-wider font-semibold">Quick Navigation</span>
+              <span className="text-[10px] font-mono text-[#6B7280] bg-[#FAFAF7] border border-[#E5E1DA] px-2 py-0.5 rounded-md font-medium">6 sections</span>
             </div>
-            <div className="grid grid-cols-2 gap-2.5">
-              {NAV_ITEMS.filter(n => n.id !== 'overview').map((item, idx) => (
-                <button
-                  key={item.id}
-                  onClick={() => setActiveSection(item.id)}
-                  style={{ animationDelay: `${520 + idx * 50}ms` }}
-                  className="flex items-center gap-2 px-3 py-2.5 rounded-xl border border-[#E5E1DA] bg-[#FAFAF7]/80 hover:bg-[#E85D2C]/10 hover:border-[#E85D2C]/35 hover:scale-[1.03] hover:-translate-y-0.5 hover:shadow-xs text-xs font-mono font-medium text-[#1A1D29] hover:text-[#E85D2C] transition-all duration-180 ease-out cursor-pointer group outline-none focus-visible:ring-2 focus-visible:ring-[#E85D2C] animate-fade-in-stagger select-none motion-reduce:transform-none motion-reduce:transition-none"
-                >
-                  <span className="text-[#6B7280] group-hover:text-[#E85D2C] group-hover:scale-110 transition-all duration-180 shrink-0">
-                    {item.icon}
-                  </span>
-                  <span className="truncate text-left">{item.label}</span>
-                  <ChevronRight className="w-3 h-3 ml-auto text-[#6B7280] opacity-40 group-hover:opacity-100 group-hover:text-[#E85D2C] group-hover:translate-x-0.5 transition-all duration-180 shrink-0" />
-                </button>
-              ))}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              {NAV_ITEMS.filter(n => n.id !== 'overview').map((item, idx) => {
+                const accent = QUICK_NAV_ACCENTS[item.id as Exclude<Section, 'overview'>];
+                return (
+                  <button
+                    key={item.id}
+                    onClick={() => setActiveSection(item.id)}
+                    style={{ animationDelay: `${520 + idx * 45}ms` }}
+                    className={`group relative flex items-center gap-3 p-3 rounded-xl border border-[#E5E1DA] bg-white ${accent.borderHover} ${accent.shadowHover} ${accent.cardClass} shadow-[0_2px_8px_-2px_rgba(26,29,41,0.05),0_1px_3px_rgba(26,29,41,0.03)] hover:-translate-y-[1.5px] active:translate-y-[0.5px] transition-all duration-200 ease-out cursor-pointer outline-none focus-visible:ring-2 focus-visible:ring-[#E85D2C] animate-fade-in-stagger select-none overflow-hidden text-left motion-reduce:transform-none motion-reduce:transition-none`}
+                  >
+                    {/* Soft gradient wash: faint accent color wash (4-8%) fading into base */}
+                    <span
+                      aria-hidden="true"
+                      className={`absolute inset-0 rounded-xl pointer-events-none ${accent.gradientWash} opacity-90 group-hover:opacity-100 transition-opacity duration-300`}
+                    />
+
+                    {/* Micro-subtle light sweep on hover */}
+                    <span
+                      aria-hidden="true"
+                      className="absolute inset-0 -translate-x-full group-hover:translate-x-full bg-gradient-to-r from-transparent via-white/60 to-transparent transition-transform duration-500 ease-out pointer-events-none"
+                    />
+
+                    {/* Left vertical accent indicator (2.5px in section's accent color, animates in on hover) */}
+                    <span
+                      aria-hidden="true"
+                      className={`absolute left-0 top-0 bottom-0 w-[2.5px] ${accent.accentBar} opacity-0 group-hover:opacity-100 transition-all duration-200`}
+                    />
+
+                    {/* Colored icon badge (soft-tinted bg + full accent icon) */}
+                    <span
+                      className={`relative z-10 w-9 h-9 rounded-lg border flex items-center justify-center shrink-0 ${accent.badgeBg} ${accent.badgeHoverBg} ${accent.badgeBorder} ${accent.badgeHoverBorder} ${accent.iconColor} shadow-[0_1px_2px_rgba(0,0,0,0.02)] transition-all duration-200 [&>svg]:w-4.5 [&>svg]:h-4.5`}
+                    >
+                      <span className={`inline-flex items-center justify-center ${accent.iconClass}`}>
+                        {item.icon}
+                      </span>
+                    </span>
+
+                    {/* Destination label & short one-line description */}
+                    <div className="relative z-10 flex flex-col min-w-0 flex-1 justify-center">
+                      <span className="text-xs font-mono font-semibold text-[#1A1D29] tracking-tight truncate">
+                        {item.label}
+                      </span>
+                      <span className="text-[10px] font-mono text-[#6B7280] leading-snug truncate mt-0.5">
+                        {accent.description}
+                      </span>
+                    </div>
+
+                    {/* Animated right chevron with 2-3px shift on hover */}
+                    <ChevronRight className="relative z-10 w-3.5 h-3.5 ml-1 text-[#9CA3AF] opacity-40 group-hover:opacity-100 group-hover:text-[#1A1D29] group-hover:translate-x-[3px] transition-all duration-200 shrink-0" />
+                  </button>
+                );
+              })}
             </div>
           </div>
           <div className="mt-3 pt-2.5 border-t border-[#E5E1DA] text-[10px] font-mono text-[#6B7280] flex items-center justify-between">
             <span>Direct codebase jumps</span>
-            <span className="text-[#E85D2C]">Instant switch</span>
+            <span className="text-[#6B7280]">Instant switch</span>
           </div>
         </div>
       </div>
