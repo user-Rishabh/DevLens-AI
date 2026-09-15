@@ -13,8 +13,8 @@ from dotenv import load_dotenv
 
 from app.api.routes import router as api_router
 
-# Load environment variables from .env if present
-load_dotenv()
+# Load environment variables from .env if present (with override)
+load_dotenv(override=True)
 
 app = FastAPI(
     title="DevLens AI API",

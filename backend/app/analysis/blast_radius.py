@@ -26,7 +26,11 @@ def compute_blast_radius(repo_id: str, file_path: str, max_depth: int = 3, depen
     # 1. Obtain dependency edges if not passed explicitly
     if dependencies is None:
         dependencies = []
-        if supabase is not None:
+        from app.db import get_repo_analysis
+        analysis = get_repo_analysis(repo_id)
+        if analysis and analysis.get("dependencies"):
+            dependencies = analysis["dependencies"]
+        elif supabase is not None:
             try:
                 res = supabase.table("repo_analyses")\
                     .select("dependencies")\
@@ -36,6 +40,7 @@ def compute_blast_radius(repo_id: str, file_path: str, max_depth: int = 3, depen
                     dependencies = res.data[0]["dependencies"]
             except Exception as e:
                 print(f"[DevLens AI Warning] Failed to query dependencies for blast radius: {str(e)}")
+
 
     if not dependencies:
         return {
@@ -54,6 +59,18 @@ def compute_blast_radius(repo_id: str, file_path: str, max_depth: int = 3, depen
         if src and tgt and src != tgt:
             reverse_adj[tgt].append(src)
 
+    def get_dependents_for(node: str) -> list[str]:
+        """Finds dependents with exact, prefix, or suffix path matching."""
+        if node in reverse_adj:
+            return reverse_adj[node]
+        res = []
+        for k, v in reverse_adj.items():
+            if k == node or k.endswith(f"/{node}") or node.endswith(f"/{k}"):
+                for dep in v:
+                    if dep not in res:
+                        res.append(dep)
+        return res
+
     # 3. BFS Traversal with cycle prevention using a visited set
     visited = set([normalized_target])
     direct_dependents = []
@@ -62,7 +79,7 @@ def compute_blast_radius(repo_id: str, file_path: str, max_depth: int = 3, depen
     queue = deque()
 
     # Depth 1: Direct dependents
-    for direct_dep in reverse_adj.get(normalized_target, []):
+    for direct_dep in get_dependents_for(normalized_target):
         if direct_dep not in visited:
             visited.add(direct_dep)
             direct_dependents.append(direct_dep)
@@ -72,7 +89,7 @@ def compute_blast_radius(repo_id: str, file_path: str, max_depth: int = 3, depen
     while queue:
         curr_node, curr_path, curr_depth = queue.popleft()
         if curr_depth < max_depth:
-            for neighbor in reverse_adj.get(curr_node, []):
+            for neighbor in get_dependents_for(curr_node):
                 if neighbor not in visited:
                     visited.add(neighbor)
                     next_depth = curr_depth + 1
@@ -83,6 +100,7 @@ def compute_blast_radius(repo_id: str, file_path: str, max_depth: int = 3, depen
                         "path": next_path
                     })
                     queue.append((neighbor, next_path, next_depth))
+
 
     total_affected_count = len(direct_dependents) + len(transitive_dependents)
 

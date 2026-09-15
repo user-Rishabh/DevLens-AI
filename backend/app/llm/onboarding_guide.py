@@ -45,28 +45,30 @@ def generate_onboarding_guide(repo_id: str) -> dict:
             "summary": "This is a mock onboarding guide for development. Set up SUPABASE_URL, SUPABASE_KEY, and GROQ_API_KEY to generate live AI codebase analyses."
         }
 
-    # 2. Fetch repo analysis metadata from database
-    try:
-        analysis_query = supabase.table("repo_analyses")\
-            .select("*")\
-            .eq("repo_id", repo_id)\
-            .execute()
-    except Exception as e:
-        raise HTTPException(
-            status_code=500,
-            detail=f"Database query failed when fetching repo analysis: {str(e)}"
-        )
+    # 2. Fetch repo analysis metadata (from memory, disk cache, or Supabase)
+    from app.db import get_repo_analysis
+    analysis_data = get_repo_analysis(repo_id)
+    if not analysis_data and supabase is not None:
+        try:
+            analysis_query = supabase.table("repo_analyses")\
+                .select("*")\
+                .eq("repo_id", repo_id)\
+                .execute()
+            if analysis_query.data and len(analysis_query.data) > 0:
+                analysis_data = analysis_query.data[0]
+        except Exception as e:
+            print(f"[DevLens AI Warning] Could not fetch repo analysis from Supabase: {str(e)}")
 
-    if not analysis_query.data or len(analysis_query.data) == 0:
+    if not analysis_data:
         raise HTTPException(
             status_code=404,
             detail=f"Analysis metadata not found for repository ID: {repo_id}. Please ingest it first."
         )
 
-    analysis_data = analysis_query.data[0]
     file_tree = analysis_data.get("file_tree") or {}
     dependencies = analysis_data.get("dependencies") or []
     hotspots = analysis_data.get("hotspots") or []
+
 
     # 3. Identify candidate files
     project_files = get_all_project_files(file_tree)

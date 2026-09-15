@@ -43,22 +43,27 @@ export default function QualityScoreCard({ summary, loading, onSelectFile, onRec
 
   if (!summary) {
     return (
-      <div className="bg-white border border-[#E5E1DA] rounded-2xl p-5 shadow-xs">
+      <div className="bg-white border border-[#E5E1DA] border-t-[4px] border-t-[#059669] rounded-2xl p-6 shadow-xs">
         <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <Activity className="w-5 h-5 text-[#E85D2C]" />
-            <h3 className="font-semibold text-[#1A1D29] text-sm">Code Quality Score</h3>
+          <div className="flex items-center gap-3">
+            <div className="w-9 h-9 rounded-lg bg-emerald-100 border border-emerald-300 flex items-center justify-center text-emerald-700 shadow-2xs">
+              <Activity className="w-5 h-5 text-emerald-600" />
+            </div>
+            <div>
+              <h3 className="font-bold text-[#1A1D29] text-sm">Code Quality & Health Score</h3>
+              <p className="text-xs text-[#6B7280] font-mono mt-0.5">Automated cyclomatic complexity and coupling metrics</p>
+            </div>
           </div>
           {onRecompute && (
             <button 
               onClick={onRecompute}
-              className="px-2.5 py-1 text-xs bg-[#E85D2C] hover:bg-[#D44E1F] text-white rounded-lg transition-all cursor-pointer shadow-xs"
+              className="px-3 py-1.5 text-xs font-mono font-semibold bg-[#059669] hover:bg-[#047857] text-white rounded-lg transition-all cursor-pointer shadow-xs active:scale-95"
             >
               Analyze Quality
             </button>
           )}
         </div>
-        <p className="text-xs text-[#6B7280] mt-2">No code quality metrics calculated yet.</p>
+        <p className="text-xs text-[#6B7280] font-mono mt-3">No code quality metrics calculated yet.</p>
       </div>
     );
   }
@@ -68,10 +73,10 @@ export default function QualityScoreCard({ summary, loading, onSelectFile, onRec
   const isModerate = avgScore >= 50 && avgScore < 80;
 
   const statusColorClass = isHealthy 
-    ? 'text-emerald-700 bg-emerald-50 border-emerald-200' 
+    ? 'text-emerald-800 bg-emerald-100 border-emerald-300' 
     : isModerate 
-      ? 'text-amber-700 bg-amber-50 border-amber-200' 
-      : 'text-rose-700 bg-rose-50 border-rose-200';
+      ? 'text-amber-800 bg-amber-100 border-amber-300' 
+      : 'text-rose-800 bg-rose-100 border-rose-300';
 
   const statusText = isHealthy 
     ? 'Healthy Codebase' 
@@ -80,16 +85,18 @@ export default function QualityScoreCard({ summary, loading, onSelectFile, onRec
       : 'High Risk Area Detected';
 
   return (
-    <div className="bg-white border border-[#E5E1DA] rounded-2xl p-5 shadow-xs">
+    <div className="bg-white border border-[#E5E1DA] border-t-[4px] border-t-[#059669] rounded-2xl p-5 shadow-xs">
       {/* Header */}
       <div className="flex items-center justify-between mb-3">
-        <div className="flex items-center gap-2">
-          {isHealthy ? (
-            <ShieldCheck className="w-5 h-5 text-emerald-600" />
-          ) : (
-            <AlertTriangle className="w-5 h-5 text-amber-600" />
-          )}
-          <h3 className="font-semibold text-[#1A1D29] text-sm">Code Health & Quality Score</h3>
+        <div className="flex items-center gap-2.5">
+          <div className="w-8 h-8 rounded-lg bg-emerald-100 border border-emerald-300 flex items-center justify-center shadow-2xs">
+            {isHealthy ? (
+              <ShieldCheck className="w-5 h-5 text-emerald-700" />
+            ) : (
+              <AlertTriangle className="w-5 h-5 text-amber-700" />
+            )}
+          </div>
+          <h3 className="font-bold text-[#1A1D29] text-sm">Code Health & Quality Score</h3>
         </div>
         
         <div className="flex items-center gap-2">

@@ -1,7 +1,7 @@
 import os
 import hashlib
 import time
-from typing import Optional
+from typing import Optional, Union
 from fastapi import APIRouter, HTTPException, Query
 from pydantic import BaseModel
 
@@ -10,7 +10,15 @@ from app.ingestion.filter import build_file_tree
 from app.ingestion.cleanup import cleanup_repo
 from app.analysis.dependency_graph import extract_dependencies, get_all_project_files
 from app.analysis.git_hotspots import get_hotspots
-from app.db import supabase, save_file_contents, save_repo_analysis
+from app.db import (
+    supabase,
+    save_file_contents,
+    save_repo_analysis,
+    get_file_content,
+    get_cached_file_summary,
+    save_file_summary,
+    get_repo_analysis,
+)
 from app.llm.summarizer import summarize_file
 from app.llm.rag_answer import generate_rag_answer
 from app.search.chunker import process_repo_chunks, is_excluded_file
@@ -65,6 +73,9 @@ class IngestResponse(BaseModel):
 
 class ExplainResponse(BaseModel):
     summary: str
+    purpose: Optional[str] = None
+    key_parts: Optional[Union[list[str], str]] = None
+    connections: Optional[str] = None
     model_used: str
     cached: bool
     secrets_redacted: bool = False
@@ -165,47 +176,58 @@ def explain_file(
     if is_excluded_file(file_path, None):
         return ExplainResponse(
             summary="AI explanation is skipped for lockfiles, minified files, or files larger than 200KB.",
+            purpose="This file has been excluded from detailed AI explanation because it is either an automated lockfile, a minified asset, or exceeds the 200KB size limit.",
+            key_parts=["Excluded from deep analysis due to file type or size threshold."],
+            connections="Standalone or generated file; no deep semantic analysis needed.",
             model_used="skipped",
             cached=False
         )
 
-    # If Supabase is offline/unconfigured, return a mock summary for local-only developers
-    if supabase is None:
-        return ExplainResponse(
-            summary=(
-                f"This is a fallback description for `{file_path}`. "
-                "Supabase is not configured (SUPABASE_URL and SUPABASE_KEY are missing). "
-                "Set these variables in your environment to enable live AI summaries and database caching."
-            ),
-            model_used="mock-model",
-            cached=False
-        )
+    # 1. Check cache first (in-memory, disk, or Supabase) unless force regenerating
+    if not force_regenerate:
+        cached_data = get_cached_file_summary(repo_id, file_path)
+        if cached_data:
+            summary_text = cached_data.get("summary_text") or cached_data.get("summary", "")
+            purpose = cached_data.get("purpose")
+            key_parts = cached_data.get("key_parts")
+            connections = cached_data.get("connections")
 
-    # 1. Retrieve raw file content from database
-    try:
-        content_query = supabase.table("file_contents")\
-            .select("content")\
-            .eq("repo_id", repo_id)\
-            .eq("file_path", file_path)\
-            .execute()
-    except Exception as e:
-        raise HTTPException(
-            status_code=500,
-            detail=f"Database query failed when fetching file content: {str(e)}"
-        )
+            # Fallback parsing if old cache entry only has combined summary_text
+            if not purpose and "What this file does" in summary_text:
+                try:
+                    parts = summary_text.split("Key parts inside")
+                    purpose = parts[0].replace("What this file does", "").strip()
+                    if len(parts) > 1:
+                        subparts = parts[1].split("How it connects")
+                        kp_raw = subparts[0].strip()
+                        key_parts = [p.lstrip("•-* ").strip() for p in kp_raw.split("\n") if p.strip()]
+                        if len(subparts) > 1:
+                            connections = subparts[1].strip()
+                except Exception:
+                    pass
 
-    if not content_query.data or len(content_query.data) == 0:
-        raise HTTPException(
-            status_code=404,
-            detail=f"File content not found for '{file_path}' in repository ID: {repo_id}. Verify the path is correct and exists."
-        )
+            return ExplainResponse(
+                summary=summary_text,
+                purpose=purpose,
+                key_parts=key_parts,
+                connections=connections,
+                model_used=cached_data.get("model_used", "cached"),
+                cached=True,
+                secrets_redacted=False
+            )
 
-    raw_content = content_query.data[0]["content"] or ""
+    # 2. Retrieve raw file content (from in-memory, disk cache, workspace paths, temp dirs, or Supabase)
+    raw_content = get_file_content(repo_id, file_path)
+    if raw_content is None:
+        raw_content = ""
 
     # Slow-path check: exclude by content size (> 200KB)
     if is_excluded_file(file_path, raw_content):
         return ExplainResponse(
             summary="AI explanation is skipped for lockfiles, minified files, or files larger than 200KB.",
+            purpose="This file has been excluded from detailed AI explanation because it exceeds the 200KB size limit.",
+            key_parts=["Excluded from deep analysis due to size threshold."],
+            connections="Omitted from deep AI analysis due to size.",
             model_used="skipped",
             cached=False,
             secrets_redacted=False
@@ -220,48 +242,34 @@ def explain_file(
     if secrets_redacted:
         print(f"[SECURITY REDACTION] Redacted {redaction_res['secrets_found']} potential secrets in explain_file for {file_path}")
 
-    # 2. Check cache first (unless force regenerating)
-    if not force_regenerate:
-        try:
-            cache_check = supabase.table("file_summaries")\
-                .select("summary_text, model_used")\
-                .eq("repo_id", repo_id)\
-                .eq("file_path", file_path)\
-                .execute()
-            
-            if cache_check.data and len(cache_check.data) > 0:
-                cached_data = cache_check.data[0]
-                return ExplainResponse(
-                    summary=cached_data["summary_text"],
-                    model_used=cached_data["model_used"],
-                    cached=True,
-                    secrets_redacted=secrets_redacted
-                )
-        except Exception as e:
-            print(f"[DevLens AI Database Error] Failed to query file_summaries cache: {str(e)}")
+    # 3. Generate explanation using Groq LLM (or intelligent contextual fallback)
+    summary_result = summarize_file(file_path, redacted_content)
 
-    # 3. Generate explanation using OpenRouter LLM with redacted content
-    summary_text = summarize_file(file_path, redacted_content)
+    if isinstance(summary_result, dict):
+        purpose = summary_result.get("purpose")
+        key_parts = summary_result.get("key_parts")
+        connections = summary_result.get("connections")
+        summary_text = summary_result.get("summary", "")
+    else:
+        purpose = None
+        key_parts = None
+        connections = None
+        summary_text = str(summary_result)
 
-    # 4. Cache the explanation in the database
-    try:
-        summary_record = {
-            "repo_id": repo_id,
-            "file_path": file_path,
-            "summary_text": summary_text,
-            "model_used": model_name
-        }
-        supabase.table("file_summaries").upsert(summary_record).execute()
-    except Exception as e:
-        # Log error but return the summary since it was generated successfully
-        print(f"[DevLens AI Database Error] Failed to cache generated summary: {str(e)}")
+    # 4. Cache the explanation in memory, disk, and Supabase
+    save_file_summary(repo_id, file_path, summary_result, model_name)
 
     return ExplainResponse(
         summary=summary_text,
+        purpose=purpose,
+        key_parts=key_parts,
+        connections=connections,
         model_used=model_name,
         cached=False,
         secrets_redacted=secrets_redacted
     )
+
+
 
 class TransitiveDependent(BaseModel):
     file_path: str

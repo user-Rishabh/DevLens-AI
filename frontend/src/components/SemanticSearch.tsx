@@ -118,19 +118,19 @@ export default function SemanticSearch({
   }, [answer, citedChunks]);
 
   return (
-    <div className="bg-white border border-[#E5E1DA] p-6 rounded-2xl shadow-xs relative overflow-hidden group sm:col-span-2">
+    <div className="bg-white border border-[#E5E1DA] border-t-[4px] border-t-[#E85D2C] p-6 rounded-2xl shadow-xs relative overflow-hidden group sm:col-span-2">
       {/* Background visual element */}
       <div className="absolute top-0 right-0 p-8 opacity-[0.03] text-[#E85D2C] pointer-events-none">
         <Search className="w-48 h-48" />
       </div>
 
       <div className="flex items-start gap-3 mb-4 pb-3 border-b border-[#E5E1DA] pr-8">
-        <div className="p-2 bg-[#E85D2C]/10 border border-[#E85D2C]/20 rounded-xl text-[#E85D2C] shrink-0">
+        <div className="p-2.5 bg-[#E85D2C]/20 border border-[#E85D2C]/35 rounded-xl text-[#E85D2C] shrink-0 shadow-2xs">
           <Search className="w-4.5 h-4.5 text-[#E85D2C]" />
         </div>
         <div>
-          <span className="text-[10px] text-[#E85D2C] font-mono font-semibold uppercase tracking-wider">Semantic Search Engine</span>
-          <h3 className="text-[#1A1D29] font-bold text-sm mt-0.5">Codebase Query (RAG)</h3>
+          <span className="text-[10px] text-[#E85D2C] bg-[#E85D2C]/10 border border-[#E85D2C]/25 px-2 py-0.5 rounded font-mono font-bold uppercase tracking-wider inline-block">Semantic Search Engine</span>
+          <h3 className="text-[#1A1D29] font-bold text-sm mt-1">Codebase Query (RAG)</h3>
         </div>
       </div>
 

@@ -63,85 +63,85 @@ const QUICK_NAV_ACCENTS: Record<Exclude<Section, 'overview'>, {
   description: string;
 }> = {
   files: {
-    badgeBg: 'bg-[#4F46E5]/10',
-    badgeHoverBg: 'group-hover:bg-[#4F46E5]/18',
-    badgeBorder: 'border-[#4F46E5]/20',
-    badgeHoverBorder: 'group-hover:border-[#4F46E5]/35',
+    badgeBg: 'bg-[#4F46E5]/20',
+    badgeHoverBg: 'group-hover:bg-[#4F46E5]/30',
+    badgeBorder: 'border-[#4F46E5]/35',
+    badgeHoverBorder: 'group-hover:border-[#4F46E5]/50',
     iconColor: 'text-[#4F46E5]',
     accentBar: 'bg-[#4F46E5]',
-    borderHover: 'hover:border-[#4F46E5]/35',
-    shadowHover: 'hover:shadow-[0_8px_20px_-4px_rgba(79,70,229,0.14),0_2px_6px_-1px_rgba(79,70,229,0.06)]',
-    gradientWash: 'bg-[radial-gradient(circle_at_top_left,rgba(79,70,229,0.06)_0%,transparent_70%)]',
+    borderHover: 'hover:border-[#4F46E5]/40',
+    shadowHover: 'hover:shadow-[0_8px_20px_-4px_rgba(79,70,229,0.16),0_2px_6px_-1px_rgba(79,70,229,0.08)]',
+    gradientWash: 'bg-[radial-gradient(circle_at_top_left,rgba(79,70,229,0.08)_0%,transparent_70%)]',
     cardClass: 'nav-card-files',
     iconClass: 'nav-icon-files',
     description: 'Browse structure & AI summaries',
   },
   hotspots: {
-    badgeBg: 'bg-[#EA580C]/10',
-    badgeHoverBg: 'group-hover:bg-[#EA580C]/18',
-    badgeBorder: 'border-[#EA580C]/20',
-    badgeHoverBorder: 'group-hover:border-[#EA580C]/35',
+    badgeBg: 'bg-[#EA580C]/20',
+    badgeHoverBg: 'group-hover:bg-[#EA580C]/30',
+    badgeBorder: 'border-[#EA580C]/35',
+    badgeHoverBorder: 'group-hover:border-[#EA580C]/50',
     iconColor: 'text-[#EA580C]',
     accentBar: 'bg-[#EA580C]',
-    borderHover: 'hover:border-[#EA580C]/35',
-    shadowHover: 'hover:shadow-[0_8px_20px_-4px_rgba(234,88,12,0.14),0_2px_6px_-1px_rgba(234,88,12,0.06)]',
-    gradientWash: 'bg-[radial-gradient(circle_at_top_left,rgba(234,88,12,0.06)_0%,transparent_70%)]',
+    borderHover: 'hover:border-[#EA580C]/40',
+    shadowHover: 'hover:shadow-[0_8px_20px_-4px_rgba(234,88,12,0.16),0_2px_6px_-1px_rgba(234,88,12,0.08)]',
+    gradientWash: 'bg-[radial-gradient(circle_at_top_left,rgba(234,88,12,0.08)_0%,transparent_70%)]',
     cardClass: 'nav-card-hotspots',
     iconClass: 'nav-icon-hotspots',
     description: 'Most frequently changed files',
   },
   search: {
-    badgeBg: 'bg-[#E85D2C]/10',
-    badgeHoverBg: 'group-hover:bg-[#E85D2C]/18',
-    badgeBorder: 'border-[#E85D2C]/20',
-    badgeHoverBorder: 'group-hover:border-[#E85D2C]/35',
+    badgeBg: 'bg-[#E85D2C]/20',
+    badgeHoverBg: 'group-hover:bg-[#E85D2C]/30',
+    badgeBorder: 'border-[#E85D2C]/35',
+    badgeHoverBorder: 'group-hover:border-[#E85D2C]/50',
     iconColor: 'text-[#E85D2C]',
     accentBar: 'bg-[#E85D2C]',
-    borderHover: 'hover:border-[#E85D2C]/40',
-    shadowHover: 'hover:shadow-[0_8px_20px_-4px_rgba(232,93,44,0.16),0_2px_6px_-1px_rgba(232,93,44,0.06)]',
-    gradientWash: 'bg-[radial-gradient(circle_at_top_left,rgba(232,93,44,0.07)_0%,transparent_70%)]',
+    borderHover: 'hover:border-[#E85D2C]/45',
+    shadowHover: 'hover:shadow-[0_8px_20px_-4px_rgba(232,93,44,0.18),0_2px_6px_-1px_rgba(232,93,44,0.08)]',
+    gradientWash: 'bg-[radial-gradient(circle_at_top_left,rgba(232,93,44,0.09)_0%,transparent_70%)]',
     cardClass: 'nav-card-search',
     iconClass: 'nav-icon-search',
     description: 'Ask questions in plain English',
   },
   architecture: {
-    badgeBg: 'bg-[#7C3AED]/10',
-    badgeHoverBg: 'group-hover:bg-[#7C3AED]/18',
-    badgeBorder: 'border-[#7C3AED]/20',
-    badgeHoverBorder: 'group-hover:border-[#7C3AED]/35',
+    badgeBg: 'bg-[#7C3AED]/20',
+    badgeHoverBg: 'group-hover:bg-[#7C3AED]/30',
+    badgeBorder: 'border-[#7C3AED]/35',
+    badgeHoverBorder: 'group-hover:border-[#7C3AED]/50',
     iconColor: 'text-[#7C3AED]',
     accentBar: 'bg-[#7C3AED]',
-    borderHover: 'hover:border-[#7C3AED]/35',
-    shadowHover: 'hover:shadow-[0_8px_20px_-4px_rgba(124,58,237,0.14),0_2px_6px_-1px_rgba(124,58,237,0.06)]',
-    gradientWash: 'bg-[radial-gradient(circle_at_top_left,rgba(124,58,237,0.06)_0%,transparent_70%)]',
+    borderHover: 'hover:border-[#7C3AED]/40',
+    shadowHover: 'hover:shadow-[0_8px_20px_-4px_rgba(124,58,237,0.16),0_2px_6px_-1px_rgba(124,58,237,0.08)]',
+    gradientWash: 'bg-[radial-gradient(circle_at_top_left,rgba(124,58,237,0.08)_0%,transparent_70%)]',
     cardClass: 'nav-card-architecture',
     iconClass: 'nav-icon-architecture',
     description: 'Visualize file dependencies',
   },
   onboarding: {
-    badgeBg: 'bg-[#D97706]/10',
-    badgeHoverBg: 'group-hover:bg-[#D97706]/18',
-    badgeBorder: 'border-[#D97706]/20',
-    badgeHoverBorder: 'group-hover:border-[#D97706]/35',
+    badgeBg: 'bg-[#D97706]/20',
+    badgeHoverBg: 'group-hover:bg-[#D97706]/30',
+    badgeBorder: 'border-[#D97706]/35',
+    badgeHoverBorder: 'group-hover:border-[#D97706]/50',
     iconColor: 'text-[#D97706]',
     accentBar: 'bg-[#D97706]',
-    borderHover: 'hover:border-[#D97706]/35',
-    shadowHover: 'hover:shadow-[0_8px_20px_-4px_rgba(217,119,6,0.14),0_2px_6px_-1px_rgba(217,119,6,0.06)]',
-    gradientWash: 'bg-[radial-gradient(circle_at_top_left,rgba(217,119,6,0.06)_0%,transparent_70%)]',
+    borderHover: 'hover:border-[#D97706]/40',
+    shadowHover: 'hover:shadow-[0_8px_20px_-4px_rgba(217,119,6,0.16),0_2px_6px_-1px_rgba(217,119,6,0.08)]',
+    gradientWash: 'bg-[radial-gradient(circle_at_top_left,rgba(217,119,6,0.08)_0%,transparent_70%)]',
     cardClass: 'nav-card-onboarding',
     iconClass: 'nav-icon-onboarding',
     description: 'Suggested reading order',
   },
   quality: {
-    badgeBg: 'bg-[#059669]/10',
-    badgeHoverBg: 'group-hover:bg-[#059669]/18',
-    badgeBorder: 'border-[#059669]/20',
-    badgeHoverBorder: 'group-hover:border-[#059669]/35',
+    badgeBg: 'bg-[#059669]/20',
+    badgeHoverBg: 'group-hover:bg-[#059669]/30',
+    badgeBorder: 'border-[#059669]/35',
+    badgeHoverBorder: 'group-hover:border-[#059669]/50',
     iconColor: 'text-[#059669]',
     accentBar: 'bg-[#059669]',
-    borderHover: 'hover:border-[#059669]/35',
-    shadowHover: 'hover:shadow-[0_8px_20px_-4px_rgba(5,150,105,0.14),0_2px_6px_-1px_rgba(5,150,105,0.06)]',
-    gradientWash: 'bg-[radial-gradient(circle_at_top_left,rgba(5,150,105,0.06)_0%,transparent_70%)]',
+    borderHover: 'hover:border-[#059669]/40',
+    shadowHover: 'hover:shadow-[0_8px_20px_-4px_rgba(5,150,105,0.16),0_2px_6px_-1px_rgba(5,150,105,0.08)]',
+    gradientWash: 'bg-[radial-gradient(circle_at_top_left,rgba(5,150,105,0.08)_0%,transparent_70%)]',
     cardClass: 'nav-card-quality',
     iconClass: 'nav-icon-quality',
     description: 'Risk & health scoring',
@@ -563,52 +563,63 @@ export default function Home() {
     <div className="pt-2 sm:pt-3 px-6 pb-8 md:px-8 max-w-7xl mx-auto w-full">
       {/* Repo Title Intro */}
       <div className="mb-8 animate-fade-in-stagger" style={{ animationDelay: '0ms' }}>
-        <div className="flex items-center gap-2 mb-1 flex-wrap">
-          <span className="text-xs font-mono text-[#E85D2C] uppercase tracking-wider font-semibold">Repository</span>
+        <div className="flex items-center gap-2.5 mb-1.5 flex-wrap">
+          <span className="text-[11px] font-mono text-[#E85D2C] bg-[#E85D2C]/15 border border-[#E85D2C]/30 px-2.5 py-0.5 rounded-md uppercase tracking-wider font-bold shadow-2xs">
+            Repository
+          </span>
           {indexingStatus === 'success' && (
-            <span className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-700 text-[10px] font-mono">
-              <Check className="w-2.5 h-2.5" />{chunksIndexed !== null ? `${chunksIndexed} files ready to search` : 'Indexed'}
+            <span className="flex items-center gap-1.5 px-3 py-0.5 rounded-full bg-emerald-100 border border-emerald-300 text-emerald-800 text-[10px] font-mono font-semibold shadow-2xs">
+              <Check className="w-3 h-3 text-emerald-700 stroke-[2.5]" />{chunksIndexed !== null ? `${chunksIndexed} files ready to search` : 'Indexed'}
             </span>
           )}
           {indexingStatus === 'indexing' && (
-            <span className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-amber-50 border border-amber-200 text-amber-700 text-[10px] font-mono animate-pulse">
-              <Loader2 className="w-2.5 h-2.5 animate-spin" /> Indexing...
+            <span className="flex items-center gap-1.5 px-3 py-0.5 rounded-full bg-amber-100 border border-amber-300 text-amber-900 text-[10px] font-mono font-semibold animate-pulse shadow-2xs">
+              <Loader2 className="w-3 h-3 animate-spin text-amber-800" /> Indexing...
             </span>
           )}
           {indexingStatus === 'error' && (
-            <span className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-rose-50 border border-rose-200 text-rose-700 text-[10px] font-mono">
-              <AlertTriangle className="w-2.5 h-2.5" /> Indexing failed
-              <button onClick={() => handleIndex(repoId, true)} className="ml-1 underline hover:no-underline cursor-pointer">retry</button>
+            <span className="flex items-center gap-1.5 px-3 py-0.5 rounded-full bg-rose-100 border border-rose-300 text-rose-900 text-[10px] font-mono font-semibold shadow-2xs">
+              <AlertTriangle className="w-3 h-3 text-rose-700" /> Indexing failed
+              <button onClick={() => handleIndex(repoId, true)} className="ml-1 underline hover:no-underline cursor-pointer font-bold">retry</button>
             </span>
           )}
         </div>
         <h1 className="text-3xl font-extrabold text-[#1A1D29] mb-2 tracking-tight" style={{ fontFamily: '"Space Grotesk", sans-serif' }}>{repoName}</h1>
         <p className="text-sm text-[#6B7280] leading-relaxed max-w-2xl font-mono">
-          Analyzed <span className="text-[#1A1D29] font-semibold">{fileCount}</span> files across <span className="text-[#1A1D29] font-semibold">{folderCount}</span> directories. Mapped <span className="text-[#E85D2C] font-semibold">{dependencies.length}</span> import relationships and identified <span className="text-[#E85D2C] font-semibold">{hotspots.length}</span> files with significant change history. All content is successfully indexed for semantic search.
+          Analyzed <span className="text-[#1A1D29] font-bold bg-[#E5E1DA]/40 px-1.5 py-0.5 rounded">{fileCount}</span> files across <span className="text-[#1A1D29] font-bold bg-[#E5E1DA]/40 px-1.5 py-0.5 rounded">{folderCount}</span> directories. Mapped <span className="text-[#E85D2C] font-bold bg-[#E85D2C]/10 border border-[#E85D2C]/20 px-1.5 py-0.5 rounded">{dependencies.length}</span> import relationships and identified <span className="text-[#EA580C] font-bold bg-[#EA580C]/10 border border-[#EA580C]/20 px-1.5 py-0.5 rounded">{hotspots.length}</span> files with significant change history. All content is successfully indexed for semantic search.
         </p>
       </div>
 
-      {/* Expanded Stat Cards */}
+      {/* Expanded Stat Cards with Bold 4px Top Borders and 20-25% Saturated Badges */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
         {[
-          { label: 'Source Files',     value: fileCount,           icon: <Files className="w-4 h-4" />,      color: '#0D9488', tooltip: 'The total number of source code and asset files parsed in the repository.' },
-          { label: 'Directories',      value: folderCount,         icon: <FolderTree className="w-4 h-4" />, color: '#7C3AED', tooltip: 'The count of unique folder directories within the parsed structure.' },
-          { label: 'File Links',       value: dependencies.length, icon: <GitBranch className="w-4 h-4" />,  color: '#4F46E5', tooltip: 'Total direct file-to-file connections (import relationships) detected.' },
-          { label: 'Frequently Changed', value: hotspots.length,   icon: <Flame className="w-4 h-4" />,      color: '#D97706', tooltip: 'Number of files that change often — prime candidates for refactoring.' },
+          { label: 'Source Files',     value: fileCount,           icon: <Files className="w-4 h-4" />,      color: '#0D9488', borderTop: 'border-t-[#0D9488]', tooltip: 'The total number of source code and asset files parsed in the repository.' },
+          { label: 'Directories',      value: folderCount,         icon: <FolderTree className="w-4 h-4" />, color: '#7C3AED', borderTop: 'border-t-[#7C3AED]', tooltip: 'The count of unique folder directories within the parsed structure.' },
+          { label: 'File Links',       value: dependencies.length, icon: <GitBranch className="w-4 h-4" />,  color: '#4F46E5', borderTop: 'border-t-[#4F46E5]', tooltip: 'Total direct file-to-file connections (import relationships) detected.' },
+          { label: 'Frequently Changed', value: hotspots.length,   icon: <Flame className="w-4 h-4" />,      color: '#D97706', borderTop: 'border-t-[#D97706]', tooltip: 'Number of files that change often — prime candidates for refactoring.' },
         ].map((stat, idx) => (
           <div
             key={stat.label}
-            className="p-5 rounded-2xl bg-white border border-[#E5E1DA] shadow-xs hover:border-[#E85D2C]/40 hover:-translate-y-1 hover:shadow-md transition-all duration-150 ease-out flex flex-col gap-2 animate-fade-in-stagger cursor-default group motion-reduce:transform-none motion-reduce:transition-none"
+            className={`p-5 rounded-2xl bg-white border border-[#E5E1DA] border-t-[4px] ${stat.borderTop} shadow-xs hover:border-[#E85D2C]/40 hover:-translate-y-1 hover:shadow-md transition-all duration-150 ease-out flex flex-col gap-2 animate-fade-in-stagger cursor-default group motion-reduce:transform-none motion-reduce:transition-none`}
             style={{ animationDelay: `${(idx + 1) * 80}ms` }}
           >
             <div className="flex justify-between items-start">
-              <div style={{ color: stat.color }} className="group-hover:scale-110 transition-transform duration-150 motion-reduce:transform-none">{stat.icon}</div>
+              <div
+                style={{
+                  backgroundColor: `${stat.color}26`,
+                  borderColor: `${stat.color}4D`,
+                  color: stat.color,
+                }}
+                className="w-8 h-8 rounded-lg border flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform duration-150 motion-reduce:transform-none shadow-2xs"
+              >
+                {stat.icon}
+              </div>
               <StatTooltip text={stat.tooltip} />
             </div>
             <div className="text-2xl font-bold text-[#1A1D29] font-mono mt-1">
               <AnimatedNumber value={stat.value} />
             </div>
-            <div className="text-[11px] text-[#6B7280] font-mono">{stat.label}</div>
+            <div className="text-[11px] text-[#6B7280] font-mono font-medium">{stat.label}</div>
             {/* context lines */}
             <div className="text-[10px] text-[#6B7280] font-mono mt-1.5 border-t border-[#E5E1DA] pt-1.5">
               {idx === 0 && `Organized in ${folderCount} directories`}
@@ -622,63 +633,85 @@ export default function Home() {
 
       {/* Health & Quick Navigation */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {/* Expanded Repository Health Card */}
-        <div className="p-5 rounded-2xl bg-white border border-[#E5E1DA] shadow-xs flex flex-col justify-between animate-fade-in-stagger" style={{ animationDelay: '400ms' }}>
+        {/* Expanded Repository Health Card with Solid 4px Purple Top Border */}
+        <div className="p-5 rounded-2xl bg-white border border-[#E5E1DA] border-t-[4px] border-t-[#7C3AED] shadow-xs flex flex-col justify-between animate-fade-in-stagger" style={{ animationDelay: '400ms' }}>
           <div>
             <div className="flex items-center justify-between mb-3">
               <div className="flex items-center gap-2">
-                <ShieldCheck className="w-4 h-4 text-[#7C3AED]" />
-                <span className="text-xs font-mono text-[#6B7280] uppercase tracking-wider">Repository Health</span>
+                <div className="w-6 h-6 rounded-md bg-[#7C3AED]/20 border border-[#7C3AED]/35 flex items-center justify-center text-[#7C3AED] shadow-2xs">
+                  <ShieldCheck className="w-3.5 h-3.5 text-[#7C3AED]" />
+                </div>
+                <span className="text-xs font-mono text-[#7C3AED] bg-[#7C3AED]/12 border border-[#7C3AED]/30 px-2.5 py-0.5 rounded-md uppercase tracking-wider font-bold">
+                  Repository Health
+                </span>
               </div>
               <StatTooltip text="Overall maintainability rating computed from static analysis of file size, cyclomatic complexity, and import coupling." />
             </div>
             {loadingQuality ? (
-              <div className="flex items-center gap-2 text-[#6B7280] text-xs font-mono py-4"><Loader2 className="w-3.5 h-3.5 animate-spin text-[#E85D2C]" /> Computing health metrics...</div>
+              <div className="flex items-center gap-2.5 text-[#E85D2C] text-xs font-mono py-4 px-3 rounded-xl bg-[#E85D2C]/10 border border-[#E85D2C]/25 my-2">
+                <Loader2 className="w-4 h-4 animate-spin text-[#E85D2C]" /> Computing health metrics...
+              </div>
             ) : avgQuality !== null ? (
               <>
                 <div className="flex items-baseline gap-2 mb-2">
                   <div className="text-3xl font-bold text-[#1A1D29] font-mono">{avgQuality.toFixed(0)}</div>
                   <div className="text-xs text-[#6B7280] font-mono">/ 100 average score</div>
                 </div>
-                <div className="w-full h-1.5 rounded-full bg-[#E5E1DA] overflow-hidden mb-4">
+                <div className="w-full h-2 rounded-full bg-[#E5E1DA] overflow-hidden mb-4">
                   <div className="h-full rounded-full transition-all duration-700" style={{ width: `${avgQuality}%`, background: avgQuality >= 70 ? '#059669' : avgQuality >= 45 ? '#D97706' : '#DC2626' }} />
                 </div>
                 {/* Health breakdown bands */}
                 <div className="grid grid-cols-3 gap-2 mt-3 pt-3 border-t border-[#E5E1DA] text-[10px] font-mono">
-                  <div className="flex items-center gap-1.5">
-                    <span className="w-1.5 h-1.5 rounded-full bg-[#059669] shrink-0" />
+                  <div className="flex items-center gap-1.5 px-2 py-1 rounded-md bg-emerald-50 border border-emerald-200">
+                    <span className="w-2 h-2 rounded-full bg-[#059669] shrink-0" />
                     <span className="text-[#1A1D29] font-bold">{healthyCount}</span>
-                    <span className="text-[#6B7280]">healthy</span>
+                    <span className="text-[#059669] font-semibold">healthy</span>
                   </div>
-                  <div className="flex items-center gap-1.5">
-                    <span className="w-1.5 h-1.5 rounded-full bg-[#D97706] shrink-0" />
+                  <div className="flex items-center gap-1.5 px-2 py-1 rounded-md bg-amber-50 border border-amber-200">
+                    <span className="w-2 h-2 rounded-full bg-[#D97706] shrink-0" />
                     <span className="text-[#1A1D29] font-bold">{worthReviewingCount}</span>
-                    <span className="text-[#6B7280]">review</span>
+                    <span className="text-[#D97706] font-semibold">review</span>
                   </div>
-                  <div className="flex items-center gap-1.5">
-                    <span className="w-1.5 h-1.5 rounded-full bg-[#DC2626] shrink-0" />
+                  <div className="flex items-center gap-1.5 px-2 py-1 rounded-md bg-rose-50 border border-rose-200">
+                    <span className="w-2 h-2 rounded-full bg-[#DC2626] shrink-0" />
                     <span className="text-[#1A1D29] font-bold">{highRiskCount}</span>
-                    <span className="text-[#6B7280]">risk</span>
+                    <span className="text-[#DC2626] font-semibold">risk</span>
                   </div>
                 </div>
               </>
             ) : (
-              <div className="text-xs text-[#6B7280] font-mono py-4">Not yet computed</div>
+              <div className="my-3 p-3.5 rounded-xl bg-[#7C3AED]/8 border border-[#7C3AED]/20 flex flex-col gap-2.5">
+                <div className="flex items-center gap-2 text-xs text-[#7C3AED] font-mono font-medium">
+                  <ShieldCheck className="w-4 h-4 text-[#7C3AED] shrink-0" />
+                  <span>Health analysis pending</span>
+                </div>
+                <button
+                  onClick={() => fetchQualityScores(repoId, true)}
+                  className="text-xs font-mono text-[#7C3AED] hover:text-white bg-[#7C3AED]/15 hover:bg-[#7C3AED] border border-[#7C3AED]/30 px-3 py-1.5 rounded-lg flex items-center gap-1.5 cursor-pointer transition-all duration-150 w-fit font-semibold shadow-2xs active:scale-95"
+                >
+                  <Sparkles className="w-3.5 h-3.5" /> Compute Health Scores
+                </button>
+              </div>
             )}
           </div>
           {avgQuality !== null && (
-            <button onClick={() => setActiveSection('quality')} className="mt-4 text-[11px] font-mono text-[#E85D2C] hover:text-[#C4461B] flex items-center gap-1 cursor-pointer transition-colors w-fit font-medium">
+            <button onClick={() => setActiveSection('quality')} className="mt-4 text-xs font-mono text-[#E85D2C] bg-[#E85D2C]/10 hover:bg-[#E85D2C] hover:text-white border border-[#E85D2C]/30 px-3 py-1.5 rounded-lg flex items-center gap-1.5 cursor-pointer transition-all duration-150 w-fit font-semibold shadow-2xs active:scale-95">
               View breakdown <ChevronRight className="w-3 h-3" />
             </button>
           )}
         </div>
 
-        {/* Quick Navigation Card */}
-        <div className="p-5 rounded-2xl bg-white border border-[#E5E1DA] shadow-xs animate-fade-in-stagger flex flex-col justify-between" style={{ animationDelay: '480ms' }}>
+        {/* Quick Navigation Card with Solid 4px Orange Top Border */}
+        <div className="p-5 rounded-2xl bg-white border border-[#E5E1DA] border-t-[4px] border-t-[#E85D2C] shadow-xs animate-fade-in-stagger flex flex-col justify-between" style={{ animationDelay: '480ms' }}>
           <div>
             <div className="flex items-center justify-between mb-3">
-              <span className="text-xs font-mono text-[#6B7280] uppercase tracking-wider font-semibold">Quick Navigation</span>
-              <span className="text-[10px] font-mono text-[#6B7280] bg-[#FAFAF7] border border-[#E5E1DA] px-2 py-0.5 rounded-md font-medium">6 sections</span>
+              <div className="flex items-center gap-2">
+                <div className="w-2 h-2 rounded-full bg-[#E85D2C]" />
+                <span className="text-xs font-mono text-[#E85D2C] bg-[#E85D2C]/12 border border-[#E85D2C]/30 px-2.5 py-0.5 rounded-md uppercase tracking-wider font-bold">
+                  Quick Navigation
+                </span>
+              </div>
+              <span className="text-[10px] font-mono text-[#1A1D29] bg-[#FAFAF7] border border-[#E5E1DA] px-2.5 py-0.5 rounded-md font-semibold">6 sections</span>
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               {NAV_ITEMS.filter(n => n.id !== 'overview').map((item, idx) => {
@@ -702,15 +735,15 @@ export default function Home() {
                       className="absolute inset-0 -translate-x-full group-hover:translate-x-full bg-gradient-to-r from-transparent via-white/60 to-transparent transition-transform duration-500 ease-out pointer-events-none"
                     />
 
-                    {/* Left vertical accent indicator (2.5px in section's accent color, animates in on hover) */}
+                    {/* Left vertical accent indicator (3px in section's accent color, visible at rest & solid on hover) */}
                     <span
                       aria-hidden="true"
-                      className={`absolute left-0 top-0 bottom-0 w-[2.5px] ${accent.accentBar} opacity-0 group-hover:opacity-100 transition-all duration-200`}
+                      className={`absolute left-0 top-0 bottom-0 w-[3px] ${accent.accentBar} opacity-40 group-hover:opacity-100 transition-all duration-200`}
                     />
 
-                    {/* Colored icon badge (soft-tinted bg + full accent icon) */}
+                    {/* Colored icon badge (20% saturated bg + full accent icon) */}
                     <span
-                      className={`relative z-10 w-9 h-9 rounded-lg border flex items-center justify-center shrink-0 ${accent.badgeBg} ${accent.badgeHoverBg} ${accent.badgeBorder} ${accent.badgeHoverBorder} ${accent.iconColor} shadow-[0_1px_2px_rgba(0,0,0,0.02)] transition-all duration-200 [&>svg]:w-4.5 [&>svg]:h-4.5`}
+                      className={`relative z-10 w-9 h-9 rounded-lg border flex items-center justify-center shrink-0 ${accent.badgeBg} ${accent.badgeHoverBg} ${accent.badgeBorder} ${accent.badgeHoverBorder} ${accent.iconColor} shadow-2xs transition-all duration-200 [&>svg]:w-4.5 [&>svg]:h-4.5`}
                     >
                       <span className={`inline-flex items-center justify-center ${accent.iconClass}`}>
                         {item.icon}
@@ -735,32 +768,36 @@ export default function Home() {
             </div>
           </div>
           <div className="mt-3 pt-2.5 border-t border-[#E5E1DA] text-[10px] font-mono text-[#6B7280] flex items-center justify-between">
-            <span>Direct codebase jumps</span>
-            <span className="text-[#6B7280]">Instant switch</span>
+            <span className="font-medium text-[#1A1D29]">Direct codebase jumps</span>
+            <span className="text-[#E85D2C] font-semibold">Instant switch</span>
           </div>
         </div>
       </div>
 
-      {/* What We Found Section */}
-      <div className="mt-6 p-5 rounded-2xl bg-white border border-[#E5E1DA] shadow-xs animate-fade-in-stagger" style={{ animationDelay: '560ms' }}>
+      {/* What We Found Section with Solid 4px Orange Top Border */}
+      <div className="mt-6 p-5 rounded-2xl bg-white border border-[#E5E1DA] border-t-[4px] border-t-[#E85D2C] shadow-xs animate-fade-in-stagger" style={{ animationDelay: '560ms' }}>
         <div className="flex items-center gap-2 mb-3">
-          <Sparkles className="w-4 h-4 text-[#E85D2C]" />
-          <span className="text-xs font-mono text-[#6B7280] uppercase tracking-wider">What We Found</span>
+          <div className="w-6 h-6 rounded-md bg-[#E85D2C]/20 border border-[#E85D2C]/35 flex items-center justify-center text-[#E85D2C] shadow-2xs">
+            <Sparkles className="w-3.5 h-3.5 text-[#E85D2C]" />
+          </div>
+          <span className="text-xs font-mono text-[#E85D2C] bg-[#E85D2C]/12 border border-[#E85D2C]/30 px-2.5 py-0.5 rounded-md uppercase tracking-wider font-bold">
+            What We Found
+          </span>
         </div>
         <ul className="flex flex-col gap-3 text-xs font-mono text-[#6B7280] leading-relaxed">
           {mostImportedFile && (
             <li className="flex items-start gap-2.5">
               <span className="text-[#E85D2C] shrink-0 font-bold">→</span>
               <span>
-                This repository's most central file is <span className="text-[#1A1D29] font-semibold bg-[#FAFAF7] px-1 py-0.5 rounded border border-[#E5E1DA]">`{mostImportedFileName}`</span>, which is imported or referenced by <span className="text-[#E85D2C] font-semibold">{maxImports}</span> other files.
+                This repository's most central file is <span className="text-[#1A1D29] font-bold bg-[#E85D2C]/10 px-1.5 py-0.5 rounded border border-[#E85D2C]/30 text-[#E85D2C]">`{mostImportedFileName}`</span>, which is imported or referenced by <span className="text-[#E85D2C] font-bold">{maxImports}</span> other files.
               </span>
             </li>
           )}
           {topHotspot && (
             <li className="flex items-start gap-2.5">
-              <span className="text-[#E85D2C] shrink-0 font-bold">→</span>
+              <span className="text-[#EA580C] shrink-0 font-bold">→</span>
               <span>
-                The file <span className="text-[#1A1D29] font-semibold bg-[#FAFAF7] px-1 py-0.5 rounded border border-[#E5E1DA]">`{topHotspotName}`</span> has changed <span className="text-[#E85D2C] font-semibold">{topHotspotCommits}</span> times in its history, making it the most active and frequently modified file.
+                The file <span className="text-[#1A1D29] font-bold bg-[#EA580C]/10 px-1.5 py-0.5 rounded border border-[#EA580C]/30 text-[#EA580C]">`{topHotspotName}`</span> has changed <span className="text-[#EA580C] font-bold">{topHotspotCommits}</span> times in its history, making it the most active and frequently modified file.
               </span>
             </li>
           )}
@@ -768,7 +805,7 @@ export default function Home() {
             <li className="flex items-start gap-2.5">
               <span className="text-[#4F46E5] shrink-0 font-bold">→</span>
               <span>
-                Mapped <span className="text-[#1A1D29] font-semibold">{dependencies.length}</span> import connections across <span className="text-[#1A1D29] font-semibold">{fileCount}</span> files, indicating a <span className="text-[#4F46E5] font-semibold">{dependencies.length > fileCount * 1.5 ? 'highly coupled' : 'modular'}</span> codebase architecture.
+                Mapped <span className="text-[#1A1D29] font-bold">{dependencies.length}</span> import connections across <span className="text-[#1A1D29] font-bold">{fileCount}</span> files, indicating a <span className="text-[#4F46E5] font-bold bg-[#4F46E5]/10 px-1.5 py-0.5 rounded border border-[#4F46E5]/30">{dependencies.length > fileCount * 1.5 ? 'highly coupled' : 'modular'}</span> codebase architecture.
               </span>
             </li>
           )}
@@ -782,29 +819,29 @@ export default function Home() {
       <div className="flex flex-1 min-h-0 overflow-hidden rounded-2xl border border-[#E5E1DA] bg-white shadow-xs">
         <div className="w-80 flex-shrink-0 border-r border-[#E5E1DA] bg-white flex flex-col overflow-hidden">
           <div className="p-4 border-b border-[#E5E1DA] flex-shrink-0">
-            <h2 className="text-xs font-mono text-[#6B7280] uppercase tracking-wider font-semibold">Workspace Files</h2>
-            <p className="text-[10px] text-[#6B7280] font-mono mt-1 leading-normal">
+            <span className="text-xs font-mono text-[#4F46E5] bg-[#4F46E5]/12 border border-[#4F46E5]/30 px-2.5 py-0.5 rounded-md uppercase tracking-wider font-bold inline-block">Workspace Files</span>
+            <p className="text-[10px] text-[#6B7280] font-mono mt-1.5 leading-normal">
               Browse codebase folders. Select any file to generate its AI-powered description and blast radius impact analysis.
             </p>
           </div>
           <div className="flex-1 overflow-hidden relative min-h-0">
             <FileTree tree={fileTree!} onSelectFile={setSelectedFilePath} selectedFilePath={selectedFilePath} disabled={isExplainerLoading} qualityScores={qualityScoresMap} />
             {isExplainerLoading && (
-              <div className="absolute bottom-2 left-2 right-2 bg-[#E85D2C]/10 border border-[#E85D2C]/20 text-[10px] text-[#E85D2C] font-mono py-1 px-2.5 rounded-lg flex items-center justify-center gap-1.5 backdrop-blur-sm shadow-xs">
+              <div className="absolute bottom-2 left-2 right-2 bg-[#E85D2C]/15 border border-[#E85D2C]/30 text-[10px] text-[#E85D2C] font-mono font-semibold py-1 px-2.5 rounded-lg flex items-center justify-center gap-1.5 backdrop-blur-sm shadow-xs">
                 <Loader2 className="w-3 h-3 animate-spin shrink-0 text-[#E85D2C]" /> Loading explanation...
               </div>
             )}
           </div>
           <div className="p-3 border-t border-[#E5E1DA] flex justify-between text-[10px] text-[#6B7280] font-mono flex-shrink-0 bg-[#FAFAF7]/50">
-            <span className="flex items-center gap-1"><Files className="w-3 h-3 text-[#6B7280]" />{fileCount} files</span>
-            <span>{folderCount} dirs</span>
+            <span className="flex items-center gap-1 font-semibold text-[#1A1D29]"><Files className="w-3 h-3 text-[#4F46E5]" />{fileCount} files</span>
+            <span className="font-semibold text-[#1A1D29]">{folderCount} dirs</span>
           </div>
         </div>
         <div className="flex-1 overflow-y-auto min-w-0 p-6 bg-[#FAFAF7]">
           {selectedFilePath ? (
             <FileExplainer repoId={repoId} filePath={selectedFilePath} onClose={() => !isExplainerLoading && setSelectedFilePath('')} onLoadingStateChange={setIsExplainerLoading} onSelectFile={setSelectedFilePath} />
           ) : (
-            <NotReadyState icon={<FolderTree className="w-8 h-8 text-[#6B7280]" />} title="Select a file to inspect" detail="Click any file in the tree on the left to view its AI summary, blast radius, and dependency analysis." />
+            <NotReadyState icon={<FolderTree className="w-8 h-8 text-[#4F46E5]" />} title="Select a file to inspect" detail="Click any file in the tree on the left to view its AI summary, blast radius, and dependency analysis." />
           )}
         </div>
       </div>
@@ -814,21 +851,21 @@ export default function Home() {
   const renderHotspots = () => (
     <div className="pt-2 sm:pt-3 px-6 pb-8 md:px-8 max-w-6xl mx-auto w-full">
       <div className="mb-6">
-        <span className="text-xs font-mono text-[#E85D2C] uppercase tracking-wider font-semibold">Git Telemetry</span>
-        <h2 className="text-2xl font-bold text-[#1A1D29] mt-1" style={{ fontFamily: '"Space Grotesk", sans-serif' }}>Frequently Changed Files</h2>
+        <span className="text-xs font-mono text-[#EA580C] bg-[#EA580C]/12 border border-[#EA580C]/30 px-2.5 py-0.5 rounded-md uppercase tracking-wider font-bold inline-block">Git Telemetry</span>
+        <h2 className="text-2xl font-bold text-[#1A1D29] mt-1.5" style={{ fontFamily: '"Space Grotesk", sans-serif' }}>Frequently Changed Files</h2>
         <p className="text-xs text-[#6B7280] mt-2 font-mono leading-relaxed">
           Files that change most often in your git history. These are prime candidates for refactoring to prevent regressions and improve maintainability.
         </p>
       </div>
-      {hotspots.length > 0 ? <HotspotList hotspots={hotspots} /> : <NotReadyState icon={<Flame className="w-8 h-8 text-[#E85D2C]" />} title="No hotspots detected" detail="No significant git churn signals were found in this repository's commit history." />}
+      {hotspots.length > 0 ? <HotspotList hotspots={hotspots} /> : <NotReadyState icon={<Flame className="w-8 h-8 text-[#EA580C]" />} title="No hotspots detected" detail="No significant git churn signals were found in this repository's commit history." />}
     </div>
   );
 
   const renderSearch = () => (
     <div className="pt-2 sm:pt-3 px-6 pb-8 md:px-8 max-w-6xl mx-auto w-full">
       <div className="mb-6">
-        <span className="text-xs font-mono text-[#E85D2C] uppercase tracking-wider font-semibold">Smart Search</span>
-        <h2 className="text-2xl font-bold text-[#1A1D29] mt-1" style={{ fontFamily: '"Space Grotesk", sans-serif' }}>Semantic Search</h2>
+        <span className="text-xs font-mono text-[#E85D2C] bg-[#E85D2C]/12 border border-[#E85D2C]/30 px-2.5 py-0.5 rounded-md uppercase tracking-wider font-bold inline-block">Smart Search</span>
+        <h2 className="text-2xl font-bold text-[#1A1D29] mt-1.5" style={{ fontFamily: '"Space Grotesk", sans-serif' }}>Semantic Search</h2>
         <p className="text-xs text-[#6B7280] mt-2 font-mono leading-relaxed">
           Ask architectural or behavioral questions in plain English. We scan both BM25 text keyword index and vector embeddings to extract relevant code blocks and explain them.
         </p>
@@ -840,8 +877,8 @@ export default function Home() {
   const renderArchitecture = () => (
     <div className="pt-1 px-4 sm:px-6 pb-4 sm:pb-6 w-full h-full flex flex-col min-h-0 bg-[#FAFAF7]">
       <div className="mb-4 flex-shrink-0">
-        <span className="text-xs font-mono text-[#E85D2C] uppercase tracking-wider font-semibold">Dependency Graph</span>
-        <h2 className="text-2xl font-bold text-[#1A1D29] mt-1" style={{ fontFamily: '"Space Grotesk", sans-serif' }}>Architecture Map</h2>
+        <span className="text-xs font-mono text-[#7C3AED] bg-[#7C3AED]/12 border border-[#7C3AED]/30 px-2.5 py-0.5 rounded-md uppercase tracking-wider font-bold inline-block">Dependency Graph</span>
+        <h2 className="text-2xl font-bold text-[#1A1D29] mt-1.5" style={{ fontFamily: '"Space Grotesk", sans-serif' }}>Architecture Map</h2>
         <p className="text-xs text-[#6B7280] mt-2 font-mono leading-relaxed">
           Visual representation of file-to-file import relationships. Click any node to highlight its connections. Larger nodes Sit more centrally and have higher references.
         </p>
@@ -855,8 +892,8 @@ export default function Home() {
   const renderOnboarding = () => (
     <div className="pt-2 sm:pt-3 px-6 pb-8 md:px-8 max-w-6xl mx-auto w-full">
       <div className="mb-6">
-        <span className="text-xs font-mono text-[#E85D2C] uppercase tracking-wider font-semibold">Navigation Guide</span>
-        <h2 className="text-2xl font-bold text-[#1A1D29] mt-1" style={{ fontFamily: '"Space Grotesk", sans-serif' }}>Onboarding Guide</h2>
+        <span className="text-xs font-mono text-[#D97706] bg-[#D97706]/12 border border-[#D97706]/30 px-2.5 py-0.5 rounded-md uppercase tracking-wider font-bold inline-block">Navigation Guide</span>
+        <h2 className="text-2xl font-bold text-[#1A1D29] mt-1.5" style={{ fontFamily: '"Space Grotesk", sans-serif' }}>Onboarding Guide</h2>
         <p className="text-xs text-[#6B7280] mt-2 font-mono leading-relaxed">
           Sequenced reading list generated by analyzing entry points, high-coupling helper files, and hotspots to onboard new developers into the codebase.
         </p>
@@ -868,8 +905,8 @@ export default function Home() {
   const renderQuality = () => (
     <div className="pt-2 sm:pt-3 px-6 pb-8 md:px-8 max-w-6xl mx-auto w-full">
       <div className="mb-6">
-        <span className="text-xs font-mono text-[#E85D2C] uppercase tracking-wider font-semibold">Code Health</span>
-        <h2 className="text-2xl font-bold text-[#1A1D29] mt-1" style={{ fontFamily: '"Space Grotesk", sans-serif' }}>Quality Scores</h2>
+        <span className="text-xs font-mono text-[#059669] bg-[#059669]/12 border border-[#059669]/30 px-2.5 py-0.5 rounded-md uppercase tracking-wider font-bold inline-block">Code Health</span>
+        <h2 className="text-2xl font-bold text-[#1A1D29] mt-1.5" style={{ fontFamily: '"Space Grotesk", sans-serif' }}>Quality Scores</h2>
         <p className="text-xs text-[#6B7280] mt-2 font-mono leading-relaxed">
           Maintainability ratings calculated from static analysis. Lower scores indicate high complexity, excessive line count, or deep dependency coupling.
         </p>
@@ -1006,8 +1043,12 @@ export default function Home() {
 
         {/* Right: Action Controls */}
         <div className={`flex items-center gap-2.5 shrink-0 transition-opacity duration-250 ${isNavOpen ? 'opacity-30 pointer-events-none' : 'opacity-100'}`}>
-          <button onClick={handleReset} className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-[#E5E1DA] hover:border-[#E85D2C]/40 bg-white hover:bg-[#FAFAF7] text-[#6B7280] hover:text-[#1A1D29] text-xs font-mono transition-all cursor-pointer shadow-2xs">
-            <ArrowLeft className="w-3 h-3" /><span className="hidden sm:inline">Load another</span>
+          <button
+            onClick={handleReset}
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-[#E85D2C]/50 bg-[#E85D2C]/10 hover:bg-[#E85D2C] text-[#E85D2C] hover:text-white text-xs font-mono font-semibold transition-all duration-150 cursor-pointer shadow-xs active:scale-95"
+          >
+            <ArrowLeft className="w-3.5 h-3.5 stroke-[2.2]" />
+            <span className="hidden sm:inline">Load another</span>
           </button>
           <a href="https://github.com/user-Rishabh/DevLens-AI" target="_blank" rel="noreferrer" className="p-1.5 text-[#6B7280] hover:text-[#1A1D29] transition-colors" title="GitHub Repository">
             <Github className="w-4 h-4" />
@@ -1021,8 +1062,8 @@ export default function Home() {
         <div className="fixed top-12 left-0 w-[40vw] h-[40vh] rounded-full bg-[#E85D2C]/[0.02] blur-[120px] pointer-events-none z-0" />
         <div className="fixed bottom-0 right-0 w-[30vw] h-[30vh] rounded-full bg-[#F4A688]/[0.02] blur-[100px] pointer-events-none z-0" />
 
-        {/* ── Topographic Contour & Dot-Marker Background Layer (Shared across all dashboard views) ── */}
-        <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden select-none opacity-40">
+        {/* ── Topographic Contour & Dot-Marker Background Layer (Shared foundation across all dashboard views) ── */}
+        <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden select-none">
           <svg
             className="w-full h-full object-cover animate-topo-drift"
             xmlns="http://www.w3.org/2000/svg"
@@ -1031,53 +1072,105 @@ export default function Home() {
           >
             <defs>
               <pattern id="dashboard-dot-grid" x="0" y="0" width="36" height="36" patternUnits="userSpaceOnUse">
-                <circle cx="2" cy="2" r="1" fill="#E5E1DA" fillOpacity="0.5" />
+                <circle cx="2" cy="2" r="1.2" fill="#D8D3CB" fillOpacity="0.35" />
               </pattern>
-              <linearGradient id="dashOrangeTrace" x1="0%" y1="0%" x2="100%" y2="100%">
-                <stop offset="0%" stopColor="#E85D2C" stopOpacity="0.18" />
-                <stop offset="50%" stopColor="#F4A688" stopOpacity="0.08" />
-                <stop offset="100%" stopColor="#E85D2C" stopOpacity="0.14" />
+
+              {/* Trailing Radar Sweep Gradient */}
+              <linearGradient id="radarSweepGradient" x1="100%" y1="0%" x2="0%" y2="0%">
+                <stop offset="0%" stopColor="#E85D2C" stopOpacity="0.4" />
+                <stop offset="45%" stopColor="#E85D2C" stopOpacity="0.18" />
+                <stop offset="85%" stopColor="#E85D2C" stopOpacity="0.04" />
+                <stop offset="100%" stopColor="#E85D2C" stopOpacity="0" />
               </linearGradient>
+
+              {/* Shared Topographic Contour Paths (used by Base Map & Concept 1 Traffic Flow) */}
+              <path id="contour-path-1" d="M -80,160 C 200,80 400,240 700,180 C 1000,120 1200,260 1680,190" />
+              <path id="contour-path-2" d="M -80,290 C 180,220 380,380 720,310 C 1020,240 1250,400 1680,330" />
+              <path id="contour-path-3" d="M -80,440 C 220,360 420,520 750,450 C 1050,380 1300,530 1680,460" />
+              <path id="contour-path-4" d="M -80,600 C 250,520 480,680 800,600 C 1100,520 1350,670 1680,610" />
+              <path id="contour-path-5" d="M -80,760 C 280,680 520,830 850,750 C 1150,670 1400,810 1680,750" />
+              <path id="contour-path-6" d="M -60,120 Q 380,460 840,320 T 1680,680" />
             </defs>
 
-            {/* Subtle Dot Grid */}
+            {/* BASE LAYER: Subtle Dot Grid */}
             <rect width="100%" height="100%" fill="url(#dashboard-dot-grid)" />
 
-            {/* Topographic Elevation Curves (Warm Gray Contour Lines) */}
-            <g fill="none" stroke="#E5E1DA" strokeWidth="1" strokeOpacity="0.55">
-              <path d="M -100,160 C 200,80 400,240 700,180 C 1000,120 1200,260 1700,190" />
-              <path d="M -100,290 C 180,220 380,380 720,310 C 1020,240 1250,400 1700,330" strokeOpacity="0.4" />
-              <path d="M -100,440 C 220,360 420,520 750,450 C 1050,380 1300,530 1700,460" strokeOpacity="0.45" />
-              <path d="M -100,600 C 250,520 480,680 800,600 C 1100,520 1350,670 1700,610" strokeOpacity="0.35" />
-              <path d="M -100,760 C 280,680 520,830 850,750 C 1150,670 1400,810 1700,750" strokeOpacity="0.4" />
+            {/* BASE LAYER: Topographic Elevation Curves (Crisp Warm Gray Foundation) */}
+            <g fill="none" stroke="#D5CFCA" strokeWidth="1.2">
+              <use href="#contour-path-1" strokeOpacity="0.42" />
+              <use href="#contour-path-2" strokeOpacity="0.38" />
+              <use href="#contour-path-3" strokeOpacity="0.40" />
+              <use href="#contour-path-4" strokeOpacity="0.36" />
+              <use href="#contour-path-5" strokeOpacity="0.38" />
+              <use href="#contour-path-6" strokeOpacity="0.32" strokeDasharray="6 6" />
             </g>
 
-            {/* Soft Primary Map Trajectory (Topographic Route) */}
-            <path
-              d="M -50,220 Q 320,140 600,320 T 1150,500 T 1650,660"
-              fill="none"
-              stroke="url(#dashOrangeTrace)"
-              strokeWidth="2"
-              strokeDasharray="8 6"
-            />
+            {/* BASE LAYER: Waypoint Coordinates & Soft Nodes */}
+            <circle cx="600" cy="320" r="4" fill="#E85D2C" fillOpacity="0.3" />
+            <circle cx="600" cy="320" r="9" stroke="#E85D2C" strokeWidth="1" strokeOpacity="0.2" fill="none" />
+            <circle cx="1150" cy="500" r="3.5" fill="#E85D2C" fillOpacity="0.25" />
+            <circle cx="850" cy="540" r="3.5" fill="#3B5FE0" fillOpacity="0.22" />
+            <circle cx="320" cy="480" r="3" fill="#E85D2C" fillOpacity="0.22" />
+            <circle cx="1380" cy="380" r="3" fill="#3B5FE0" fillOpacity="0.2" />
 
-            {/* Secondary Light Cross-vein */}
-            <path
-              d="M 150,850 C 400,760 550,580 850,540 S 1300,320 1650,210"
-              fill="none"
-              stroke="#3B5FE0"
-              strokeWidth="1.5"
-              strokeDasharray="6 6"
-              strokeOpacity="0.08"
-            />
+            {/* ============================================================ */}
+            {/* RADAR SWEEP THEME: Rotating radar scan beam, rings & blips  */}
+            {/* ============================================================ */}
+            <g className="concept-radar-layer" transform="translate(1260, 260)">
+              {/* Concentric Radar Range Rings */}
+              <circle r="90" fill="none" stroke="#E85D2C" strokeWidth="1" strokeOpacity="0.28" strokeDasharray="3 3" />
+              <circle r="190" fill="none" stroke="#E85D2C" strokeWidth="1.2" strokeOpacity="0.28" />
+              <circle r="310" fill="none" stroke="#E85D2C" strokeWidth="1" strokeOpacity="0.24" strokeDasharray="4 4" />
+              <circle r="450" fill="none" stroke="#E85D2C" strokeWidth="1.2" strokeOpacity="0.22" />
+              <circle r="600" fill="none" stroke="#E85D2C" strokeWidth="1" strokeOpacity="0.18" strokeDasharray="6 6" />
 
-            {/* Soft Node Markers & Coordinate Rings */}
-            <circle cx="600" cy="320" r="3.5" fill="#E85D2C" fillOpacity="0.22" />
-            <circle cx="600" cy="320" r="8" stroke="#E85D2C" strokeWidth="0.75" strokeOpacity="0.12" fill="none" />
-            <circle cx="1150" cy="500" r="3" fill="#E85D2C" fillOpacity="0.2" />
-            <circle cx="850" cy="540" r="3" fill="#3B5FE0" fillOpacity="0.18" />
-            <circle cx="320" cy="480" r="2.5" fill="#E85D2C" fillOpacity="0.18" />
-            <circle cx="1380" cy="380" r="2.5" fill="#3B5FE0" fillOpacity="0.16" />
+              {/* Radar Grid Crosshairs */}
+              <line x1="-600" y1="0" x2="600" y2="0" stroke="#E85D2C" strokeWidth="0.8" strokeOpacity="0.18" strokeDasharray="3 6" />
+              <line x1="0" y1="-600" x2="0" y2="600" stroke="#E85D2C" strokeWidth="0.8" strokeOpacity="0.18" strokeDasharray="3 6" />
+
+              {/* Rotating Radar Sweep Beam */}
+              <g className="radar-sweep-beam">
+                {/* Trailing Wedge / Pie Sector with fading gradient */}
+                <path
+                  d="M 0 0 L 590 0 A 590 590 0 0 0 510 -295 Z"
+                  fill="url(#radarSweepGradient)"
+                />
+                {/* Crisp leading sweep line */}
+                <line x1="0" y1="0" x2="590" y2="0" stroke="#E85D2C" strokeWidth="2.8" strokeLinecap="round" opacity="0.95" />
+                <line x1="0" y1="0" x2="590" y2="0" stroke="#FFFFFF" strokeWidth="1.2" strokeLinecap="round" opacity="0.85" />
+              </g>
+
+              {/* Origin Radar Station Marker */}
+              <circle r="8" fill="#E85D2C" fillOpacity="0.3" />
+              <circle r="4.5" fill="#E85D2C" />
+              <circle r="2" fill="#FFFFFF" />
+
+              {/* Radar Target Blips (timed to flare as the sweep beam passes) */}
+              {/* Blip 1 at ~28° (x=160, y=85) */}
+              <g transform="translate(160, 85)" className="radar-blip-pulse-1">
+                <circle r="14" fill="none" stroke="#E85D2C" strokeWidth="1.2" strokeOpacity="0.6" />
+                <circle r="4.5" fill="#E85D2C" />
+                <circle r="1.8" fill="#FFFFFF" />
+              </g>
+              {/* Blip 2 at ~120° (x=-130, y=225) */}
+              <g transform="translate(-130, 225)" className="radar-blip-pulse-2">
+                <circle r="14" fill="none" stroke="#E85D2C" strokeWidth="1.2" strokeOpacity="0.6" />
+                <circle r="4.5" fill="#E85D2C" />
+                <circle r="1.8" fill="#FFFFFF" />
+              </g>
+              {/* Blip 3 at ~210° (x=-310, y=-180) */}
+              <g transform="translate(-310, -180)" className="radar-blip-pulse-3">
+                <circle r="14" fill="none" stroke="#E85D2C" strokeWidth="1.2" strokeOpacity="0.6" />
+                <circle r="5" fill="#E85D2C" />
+                <circle r="2" fill="#FFFFFF" />
+              </g>
+              {/* Blip 4 at ~290° (x=140, y=-380) */}
+              <g transform="translate(140, -380)" className="radar-blip-pulse-4">
+                <circle r="14" fill="none" stroke="#E85D2C" strokeWidth="1.2" strokeOpacity="0.6" />
+                <circle r="4.5" fill="#E85D2C" />
+                <circle r="1.8" fill="#FFFFFF" />
+              </g>
+            </g>
           </svg>
         </div>
 

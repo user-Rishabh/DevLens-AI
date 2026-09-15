@@ -38,11 +38,11 @@ export default function HotspotList({ hotspots }: HotspotListProps) {
           // Leaderboard ranks get custom styling
           let rankBadgeClass = "bg-[#FAFAF7] border-[#E5E1DA] text-[#6B7280]";
           if (idx === 0) {
-            rankBadgeClass = "bg-rose-50 border-rose-200 text-rose-700 font-bold";
+            rankBadgeClass = "bg-rose-100 border-rose-300 text-rose-800 font-bold shadow-2xs";
           } else if (idx === 1) {
-            rankBadgeClass = "bg-orange-50 border-orange-200 text-orange-700 font-bold";
+            rankBadgeClass = "bg-orange-100 border-orange-300 text-orange-800 font-bold shadow-2xs";
           } else if (idx === 2) {
-            rankBadgeClass = "bg-amber-50 border-amber-200 text-amber-700 font-bold";
+            rankBadgeClass = "bg-amber-100 border-amber-300 text-amber-800 font-bold shadow-2xs";
           }
 
           const fileName = hotspot.path.split('/').pop() || hotspot.path;
@@ -51,7 +51,7 @@ export default function HotspotList({ hotspots }: HotspotListProps) {
           return (
             <div 
               key={hotspot.path}
-              className="bg-white border border-[#E5E1DA] p-3.5 rounded-xl hover:border-[#E85D2C]/40 shadow-xs transition-all duration-200 flex flex-col gap-2 relative overflow-hidden group"
+              className="bg-white border border-[#E5E1DA] border-l-[3.5px] border-l-[#EA580C] p-3.5 rounded-xl hover:border-[#EA580C]/50 hover:shadow-sm shadow-xs transition-all duration-200 flex flex-col gap-2 relative overflow-hidden group"
             >
               {/* Soft background glow based on commit weight */}
               <div 

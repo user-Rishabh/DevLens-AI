@@ -787,10 +787,17 @@ body {
   .nav-icon-onboarding,
   .nav-icon-quality,
   .nav-icon-architecture rect,
-  .nav-icon-quality path {
+  .nav-icon-quality path,
+  .radar-sweep-beam,
+  .radar-blip-pulse-1,
+  .radar-blip-pulse-2,
+  .radar-blip-pulse-3,
+  .radar-blip-pulse-4 {
     animation: none !important;
     transform: none !important;
     filter: none !important;
+    opacity: 0 !important;
+    display: none !important;
   }
 
   *,
@@ -803,3 +810,65 @@ body {
     transition-duration: 0s !important;
   }
 }
+
+/* ------------------- DASHBOARD MAP BACKGROUND: RADAR SWEEP THEME ------------------- */
+@keyframes radarSweepRotate {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.radar-sweep-beam {
+  transform-origin: 0px 0px;
+  animation: radarSweepRotate 18s linear infinite;
+  will-change: transform;
+}
+
+@keyframes radarBlipFlare {
+  0%, 72%, 100% {
+    opacity: 0.22;
+    transform: scale(0.8);
+  }
+  76% {
+    opacity: 1;
+    transform: scale(1.45);
+  }
+  86% {
+    opacity: 0.6;
+    transform: scale(1.1);
+  }
+}
+
+.radar-blip-pulse-1 {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: radarBlipFlare 18s ease-out 1.2s infinite;
+  will-change: transform, opacity;
+}
+
+.radar-blip-pulse-2 {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: radarBlipFlare 18s ease-out 5.8s infinite;
+  will-change: transform, opacity;
+}
+
+.radar-blip-pulse-3 {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: radarBlipFlare 18s ease-out 10.4s infinite;
+  will-change: transform, opacity;
+}
+
+.radar-blip-pulse-4 {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: radarBlipFlare 18s ease-out 14.2s infinite;
+  will-change: transform, opacity;
+}
+
+
+

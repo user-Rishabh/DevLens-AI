@@ -48,6 +48,9 @@ export default function FileExplainer({
   // AI Summary states
   const [loadingSummary, setLoadingSummary] = useState(false);
   const [summary, setSummary] = useState('');
+  const [purpose, setPurpose] = useState<string | null>(null);
+  const [keyParts, setKeyParts] = useState<string[] | string | null>(null);
+  const [connections, setConnections] = useState<string | null>(null);
   const [modelUsed, setModelUsed] = useState('');
   const [cached, setCached] = useState(false);
   const [summaryError, setSummaryError] = useState<string | null>(null);
@@ -78,6 +81,9 @@ export default function FileExplainer({
       setSummaryError(null);
       setBlastError(null);
       setSummary('');
+      setPurpose(null);
+      setKeyParts(null);
+      setConnections(null);
       setBlastData(null);
       setSecretsRedacted(false);
       
@@ -92,7 +98,10 @@ export default function FileExplainer({
 
         if (summaryRes.ok) {
           const sumData = await summaryRes.json();
-          setSummary(sumData.summary);
+          setSummary(sumData.summary || '');
+          setPurpose(sumData.purpose || null);
+          setKeyParts(sumData.key_parts || null);
+          setConnections(sumData.connections || null);
           setModelUsed(sumData.model_used);
           setCached(sumData.cached);
           setSecretsRedacted(sumData.secrets_redacted || false);
@@ -127,6 +136,9 @@ export default function FileExplainer({
     setLoadingSummary(true);
     setSummaryError(null);
     setSummary('');
+    setPurpose(null);
+    setKeyParts(null);
+    setConnections(null);
     if (onLoadingStateChange) onLoadingStateChange(true);
     
     const encodedPath = encodeURIComponent(filePath);
@@ -134,7 +146,10 @@ export default function FileExplainer({
       const res = await fetch(`${API_BASE_URL}/api/files/explain?repo_id=${repoId}&file_path=${encodedPath}&force_regenerate=true`);
       if (res.ok) {
         const sumData = await res.json();
-        setSummary(sumData.summary);
+        setSummary(sumData.summary || '');
+        setPurpose(sumData.purpose || null);
+        setKeyParts(sumData.key_parts || null);
+        setConnections(sumData.connections || null);
         setModelUsed(sumData.model_used);
         setCached(sumData.cached);
         setSecretsRedacted(sumData.secrets_redacted || false);
@@ -154,7 +169,38 @@ export default function FileExplainer({
   const fileName = filePath.split('/').pop() || filePath;
   const directory = filePath.substring(0, filePath.lastIndexOf('/'));
 
+  // Resolve structured sections with fallback parsing if needed
+  let displayPurpose = purpose;
+  let displayKeyParts = keyParts;
+  let displayConnections = connections;
+
+  if (!displayPurpose && summary && summary.includes('What this file does')) {
+    try {
+      const parts = summary.split('Key parts inside');
+      displayPurpose = parts[0].replace(/What this file does\s*/i, '').trim();
+      if (parts.length > 1) {
+        const subparts = parts[1].split('How it connects');
+        const rawKp = subparts[0].trim();
+        displayKeyParts = rawKp.split('\n')
+          .map(l => l.replace(/^[•\-\*]\s*/, '').trim())
+          .filter(Boolean);
+        if (subparts.length > 1) {
+          displayConnections = subparts[1].replace(/How it connects\s*/i, '').trim();
+        }
+      }
+    } catch {
+      // ignore
+    }
+  }
+
+  const isStructured = Boolean(
+    displayPurpose || 
+    (displayKeyParts && (Array.isArray(displayKeyParts) ? displayKeyParts.length > 0 : Boolean(displayKeyParts))) || 
+    displayConnections
+  );
+
   return (
+
     <div className="bg-white border border-[#E5E1DA] p-6 rounded-2xl flex flex-col h-full relative overflow-hidden shadow-xs">
       {/* Close button */}
       {onClose && (
@@ -251,7 +297,7 @@ export default function FileExplainer({
               </div>
             )}
 
-            {!loadingSummary && !summaryError && summary && (
+            {!loadingSummary && !summaryError && (summary || displayPurpose) && (
               <div className="flex-1 flex flex-col gap-4">
                 <div className="flex flex-wrap gap-3 select-none">
                   <div className="flex items-center gap-1.5 px-2.5 py-1 bg-[#FAFAF7] border border-[#E5E1DA] rounded-lg text-[#6B7280] text-[10px] font-mono">
@@ -282,11 +328,79 @@ export default function FileExplainer({
                   </button>
                 </div>
 
-                <div className="text-[#1A1D29] text-sm leading-relaxed font-sans bg-[#FAFAF7] p-4 rounded-xl border border-[#E5E1DA] whitespace-pre-wrap">
-                  {summary}
-                </div>
+                {/* Structured Sections */}
+                {isStructured ? (
+                  <div className="flex flex-col gap-4 bg-[#FAFAF7] p-4 sm:p-5 rounded-xl border border-[#E5E1DA]">
+                    {/* Section 1: What this file does */}
+                    {displayPurpose && (
+                      <div className="flex flex-col">
+                        <div className="flex items-center gap-2 mb-2">
+                          <span className="w-2 h-2 rounded-full bg-[#E85D2C]" />
+                          <span className="text-[11px] font-mono font-bold tracking-wider uppercase text-[#E85D2C]">
+                            What this file does
+                          </span>
+                        </div>
+                        <p className="text-[#1A1D29] text-sm leading-relaxed font-sans">
+                          {displayPurpose}
+                        </p>
+                      </div>
+                    )}
+
+                    {/* Section 2: Key parts inside */}
+                    {displayKeyParts && (
+                      <>
+                        {displayPurpose && <div className="h-px bg-[#E5E1DA]/80 w-full" />}
+                        <div className="flex flex-col">
+                          <div className="flex items-center gap-2 mb-2">
+                            <span className="w-2 h-2 rounded-full bg-indigo-500" />
+                            <span className="text-[11px] font-mono font-bold tracking-wider uppercase text-indigo-600">
+                              Key parts inside
+                            </span>
+                          </div>
+                          {Array.isArray(displayKeyParts) ? (
+                            <ul className="space-y-2.5 mt-0.5">
+                              {displayKeyParts.map((item, idx) => (
+                                <li key={idx} className="flex items-start gap-2.5 text-sm text-[#1A1D29] leading-relaxed">
+                                  <span className="w-1.5 h-1.5 rounded-full bg-indigo-400 mt-2 shrink-0" />
+                                  <span>{item}</span>
+                                </li>
+                              ))}
+                            </ul>
+                          ) : (
+                            <p className="text-[#1A1D29] text-sm leading-relaxed font-sans whitespace-pre-wrap">
+                              {displayKeyParts}
+                            </p>
+                          )}
+                        </div>
+                      </>
+                    )}
+
+                    {/* Section 3: How it connects */}
+                    {displayConnections && (
+                      <>
+                        {(displayPurpose || displayKeyParts) && <div className="h-px bg-[#E5E1DA]/80 w-full" />}
+                        <div className="flex flex-col">
+                          <div className="flex items-center gap-2 mb-2">
+                            <span className="w-2 h-2 rounded-full bg-emerald-500" />
+                            <span className="text-[11px] font-mono font-bold tracking-wider uppercase text-emerald-600">
+                              How it connects
+                            </span>
+                          </div>
+                          <p className="text-[#1A1D29] text-sm leading-relaxed font-sans">
+                            {displayConnections}
+                          </p>
+                        </div>
+                      </>
+                    )}
+                  </div>
+                ) : (
+                  <div className="text-[#1A1D29] text-sm leading-relaxed font-sans bg-[#FAFAF7] p-4 rounded-xl border border-[#E5E1DA] whitespace-pre-wrap">
+                    {summary}
+                  </div>
+                )}
               </div>
             )}
+
           </div>
         )}
 
