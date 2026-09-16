@@ -1,7 +1,12 @@
+import os
+import json
 import re
 from datetime import datetime, timezone
-from app.db import supabase
+from app.db import supabase, LOCAL_FILE_CONTENTS_CACHE, CACHE_DIR, get_repo_analysis, get_file_content
 from app.search.chunker import is_excluded_file, detect_language
+
+# Local cache for calculated quality scores across requests
+LOCAL_QUALITY_SCORES_CACHE: dict[str, dict] = {}
 
 # Lightweight complexity proxy keyword & operator regex
 # Note: This is a simplified heuristic proxy for complexity (counting branching keywords/operators),
@@ -119,50 +124,118 @@ def compute_quality_score(churn_count: int, loc: int, complexity: int, repo_stat
     }
 
 
+def _get_repo_files_for_analysis(repo_id: str) -> list[dict]:
+    raw_files = []
+
+    # 1. First, check in-memory cache (populated immediately after ingest)
+    try:
+        for (r_id, f_path), content in list(LOCAL_FILE_CONTENTS_CACHE.items()):
+            if r_id == repo_id and content:
+                raw_files.append({"file_path": f_path, "content": content})
+    except Exception as e:
+        print(f"[DevLens AI Warning] Failed to inspect LOCAL_FILE_CONTENTS_CACHE: {e}")
+
+    # 2. If memory cache was empty, check local disk cache
+    if not raw_files:
+        try:
+            repo_cache_dir = os.path.join(CACHE_DIR, repo_id)
+            if os.path.exists(repo_cache_dir) and os.path.isdir(repo_cache_dir):
+                for root, _, files in os.walk(repo_cache_dir):
+                    for file_name in files:
+                        full_path = os.path.join(root, file_name)
+                        rel_path = os.path.relpath(full_path, repo_cache_dir).replace("\\", "/")
+                        if rel_path.startswith("summaries"):
+                            continue
+                        try:
+                            with open(full_path, "r", encoding="utf-8", errors="ignore") as f:
+                                content = f.read()
+                                if content:
+                                    raw_files.append({"file_path": rel_path, "content": content})
+                        except Exception:
+                            pass
+        except Exception as e:
+            print(f"[DevLens AI Warning] Failed to inspect disk cache: {e}")
+
+    # 3. If still empty, attempt Supabase file_contents table
+    if not raw_files and supabase is not None:
+        try:
+            files_res = supabase.table("file_contents").select("file_path, content").eq("repo_id", repo_id).execute()
+            if files_res.data:
+                raw_files = files_res.data
+        except Exception as e:
+            print(f"[DevLens AI Warning] Could not fetch file_contents from Supabase: {e}")
+
+    # 4. Fallback: retrieve from repo analysis file tree if available
+    if not raw_files:
+        try:
+            analysis = get_repo_analysis(repo_id)
+            if analysis and analysis.get("file_tree"):
+                from app.ingestion.filter import get_all_project_files
+                project_files = get_all_project_files(analysis["file_tree"])
+                for f_path in project_files:
+                    c = get_file_content(repo_id, f_path)
+                    if c:
+                        raw_files.append({"file_path": f_path, "content": c})
+        except Exception as e:
+            print(f"[DevLens AI Warning] Failed fallback workspace file retrieval: {e}")
+
+    return raw_files
+
+
 def compute_repo_quality_scores(repo_id: str, force_recompute: bool = False) -> dict:
     """
     Computes code quality scores for all non-excluded files in a repository.
-    Stores and caches the results in Supabase table `quality_scores`.
+    Resiliently uses in-memory cache, disk cache, and Supabase for caching and file retrieval.
+    Guarantees returning a complete valid schema.
     """
-    if supabase is None:
-        return {
-            "error": "Supabase client is not initialized",
-            "scores": [],
-            "average_composite_score": 0,
-            "needs_attention_count": 0
-        }
-
     # 1. Check existing cached quality scores if not force_recompute
     if not force_recompute:
-        try:
-            cached_res = supabase.table("quality_scores").select("*").eq("repo_id", repo_id).execute()
-            if cached_res.data and len(cached_res.data) > 0:
-                scores = cached_res.data
-                avg_composite = round(sum(s["composite_score"] for s in scores) / len(scores), 1)
-                needs_attention = sum(1 for s in scores if s["composite_score"] < 60)
-                sorted_scores = sorted(scores, key=lambda x: x["composite_score"])
-                return {
-                    "repo_id": repo_id,
-                    "file_count": len(scores),
-                    "average_composite_score": avg_composite,
-                    "needs_attention_count": needs_attention,
-                    "riskiest_files": sorted_scores[:5],
-                    "scores": scores,
-                    "cached": True
-                }
-        except Exception as e:
-            print(f"[DevLens AI Warning] Could not fetch cached quality_scores: {str(e)}")
+        # A. Memory cache
+        if repo_id in LOCAL_QUALITY_SCORES_CACHE:
+            cached_data = dict(LOCAL_QUALITY_SCORES_CACHE[repo_id])
+            cached_data["cached"] = True
+            return cached_data
 
-    # 2. Fetch raw file contents from `file_contents` table
-    try:
-        files_res = supabase.table("file_contents").select("file_path, content").eq("repo_id", repo_id).execute()
-        raw_files = files_res.data or []
-    except Exception as e:
-        print(f"[DevLens AI Error] Failed to fetch file_contents for repo {repo_id}: {str(e)}")
-        return {"error": f"Failed to fetch files from DB: {str(e)}", "scores": []}
+        # B. Disk cache
+        try:
+            disk_cache_path = os.path.join(CACHE_DIR, f"{repo_id}_quality.json")
+            if os.path.exists(disk_cache_path):
+                with open(disk_cache_path, "r", encoding="utf-8") as f:
+                    disk_data = json.load(f)
+                    LOCAL_QUALITY_SCORES_CACHE[repo_id] = disk_data
+                    disk_data["cached"] = True
+                    return disk_data
+        except Exception as e:
+            print(f"[DevLens AI Warning] Could not read disk quality score cache: {e}")
+
+        # C. Supabase cache
+        if supabase is not None:
+            try:
+                cached_res = supabase.table("quality_scores").select("*").eq("repo_id", repo_id).execute()
+                if cached_res.data and len(cached_res.data) > 0:
+                    scores = cached_res.data
+                    avg_composite = round(sum(s["composite_score"] for s in scores) / len(scores), 1)
+                    needs_attention = sum(1 for s in scores if s["composite_score"] < 60)
+                    sorted_scores = sorted(scores, key=lambda x: x["composite_score"])
+                    result = {
+                        "repo_id": repo_id,
+                        "file_count": len(scores),
+                        "average_composite_score": avg_composite,
+                        "needs_attention_count": needs_attention,
+                        "riskiest_files": sorted_scores[:5],
+                        "scores": scores,
+                        "cached": True
+                    }
+                    LOCAL_QUALITY_SCORES_CACHE[repo_id] = result
+                    return result
+            except Exception as e:
+                print(f"[DevLens AI Warning] Could not fetch cached quality_scores from Supabase: {e}")
+
+    # 2. Fetch raw file contents resiliently
+    raw_files = _get_repo_files_for_analysis(repo_id)
 
     if not raw_files:
-        return {
+        empty_res = {
             "repo_id": repo_id,
             "file_count": 0,
             "average_composite_score": 100,
@@ -171,18 +244,19 @@ def compute_repo_quality_scores(repo_id: str, force_recompute: bool = False) -> 
             "scores": [],
             "cached": False
         }
+        LOCAL_QUALITY_SCORES_CACHE[repo_id] = empty_res
+        return empty_res
 
-    # 3. Fetch hotspots churn data from `repo_analyses` table
+    # 3. Fetch hotspots churn data from get_repo_analysis
     hotspot_churn_map = {}
     try:
-        analysis_res = supabase.table("repo_analyses").select("hotspots").eq("repo_id", repo_id).execute()
-        if analysis_res.data and len(analysis_res.data) > 0:
-            hotspots_list = analysis_res.data[0].get("hotspots") or []
-            for h in hotspots_list:
-                if isinstance(h, dict) and "path" in h:
-                    hotspot_churn_map[h["path"]] = h.get("commit_count", 0)
+        analysis_data = get_repo_analysis(repo_id)
+        hotspots_list = analysis_data.get("hotspots", []) if analysis_data else []
+        for h in hotspots_list:
+            if isinstance(h, dict) and "path" in h:
+                hotspot_churn_map[h["path"]] = h.get("commit_count", 0)
     except Exception as e:
-        print(f"[DevLens AI Warning] Could not fetch repo_analyses hotspots: {str(e)}")
+        print(f"[DevLens AI Warning] Could not fetch repo analysis hotspots: {e}")
 
     # 4. Filter files and compute raw LOC and complexity
     file_data_list = []
@@ -207,7 +281,7 @@ def compute_repo_quality_scores(repo_id: str, force_recompute: bool = False) -> 
         })
 
     if not file_data_list:
-        return {
+        empty_res = {
             "repo_id": repo_id,
             "file_count": 0,
             "average_composite_score": 100,
@@ -216,39 +290,17 @@ def compute_repo_quality_scores(repo_id: str, force_recompute: bool = False) -> 
             "scores": [],
             "cached": False
         }
+        LOCAL_QUALITY_SCORES_CACHE[repo_id] = empty_res
+        return empty_res
 
     # 5. Normalize scores relative to repository distribution
     scored_files = _compute_percentile_health_scores(file_data_list)
-
-    # 6. Save results to `quality_scores` table
-    records_to_upsert = []
-    timestamp = datetime.now(timezone.utc).isoformat()
-    for item in scored_files:
-        records_to_upsert.append({
-            "repo_id": repo_id,
-            "file_path": item["file_path"],
-            "churn_score": item["churn_score"],
-            "size_score": item["size_score"],
-            "complexity_score": item["complexity_score"],
-            "composite_score": item["composite_score"],
-            "computed_at": timestamp
-        })
-
-    try:
-        # Upsert in chunks of 100
-        chunk_size = 100
-        for i in range(0, len(records_to_upsert), chunk_size):
-            chunk = records_to_upsert[i:i + chunk_size]
-            supabase.table("quality_scores").upsert(chunk).execute()
-        print(f"[DevLens AI] Successfully saved quality scores for {len(records_to_upsert)} files (repo_id={repo_id})")
-    except Exception as e:
-        print(f"[DevLens AI Error] Failed to upsert quality_scores: {str(e)}")
 
     avg_composite = round(sum(s["composite_score"] for s in scored_files) / len(scored_files), 1)
     needs_attention = sum(1 for s in scored_files if s["composite_score"] < 60)
     sorted_scores = sorted(scored_files, key=lambda x: x["composite_score"])
 
-    return {
+    final_result = {
         "repo_id": repo_id,
         "file_count": len(scored_files),
         "average_composite_score": avg_composite,
@@ -257,3 +309,38 @@ def compute_repo_quality_scores(repo_id: str, force_recompute: bool = False) -> 
         "scores": scored_files,
         "cached": False
     }
+
+    # 6. Save results into local memory cache & disk cache
+    LOCAL_QUALITY_SCORES_CACHE[repo_id] = final_result
+    try:
+        disk_cache_path = os.path.join(CACHE_DIR, f"{repo_id}_quality.json")
+        with open(disk_cache_path, "w", encoding="utf-8") as f:
+            json.dump(final_result, f)
+    except Exception as e:
+        print(f"[DevLens AI Warning] Failed to write quality scores to disk cache: {e}")
+
+    # 7. Optionally save to Supabase `quality_scores` table if available
+    if supabase is not None:
+        records_to_upsert = []
+        timestamp = datetime.now(timezone.utc).isoformat()
+        for item in scored_files:
+            records_to_upsert.append({
+                "repo_id": repo_id,
+                "file_path": item["file_path"],
+                "churn_score": item["churn_score"],
+                "size_score": item["size_score"],
+                "complexity_score": item["complexity_score"],
+                "composite_score": item["composite_score"],
+                "computed_at": timestamp
+            })
+
+        try:
+            chunk_size = 100
+            for i in range(0, len(records_to_upsert), chunk_size):
+                chunk = records_to_upsert[i:i + chunk_size]
+                supabase.table("quality_scores").upsert(chunk).execute()
+            print(f"[DevLens AI] Successfully saved quality scores for {len(records_to_upsert)} files to Supabase (repo_id={repo_id})")
+        except Exception as e:
+            print(f"[DevLens AI Warning] Failed to upsert quality_scores to Supabase (cached locally): {e}")
+
+    return final_result
