@@ -777,11 +777,11 @@ export default function LandingPage({
             <div>
               <div className="flex items-center justify-between mb-3">
                 <span className="text-[10px] font-mono font-bold text-[#3B5FE0] uppercase tracking-wider block">
-                  LEGEND — SMART SEARCH
+                  LEGEND — ASK DEVLENS
                 </span>
-                <Search className="w-4 h-4 text-[#3B5FE0] group-hover:scale-110 transition-transform" />
+                <Sparkles className="w-4 h-4 text-[#3B5FE0] group-hover:scale-110 transition-transform" />
               </div>
-              <h3 className="font-display text-base font-bold text-[#1A1D29] mb-2">Vector & Keyword Hybrid Search</h3>
+              <h3 className="font-display text-base font-bold text-[#1A1D29] mb-2">Ask DevLens (Semantic & RAG Search)</h3>
               <p className="text-xs text-[#6B7280] leading-relaxed">
                 Combines sparse keyword matching with dense sentence-transformer vector embeddings using Reciprocal Rank Fusion (RRF). Finds code whether searching by exact function name or by describing conceptual intent in natural language.
               </p>
@@ -793,18 +793,18 @@ export default function LandingPage({
             </div>
           </div>
 
-          {/* Feature 4: Git Hotspots */}
-          <div className="p-6 rounded-2xl bg-white border border-[#E5E1DA] hover:border-[#E85D2C]/50 hover:shadow-md transition-all flex flex-col justify-between reveal-on-scroll stagger-4 feature-card-hotspot group shadow-xs">
+          {/* Feature 4: AI Code Summaries */}
+          <div className="p-6 rounded-2xl bg-white border border-[#E5E1DA] hover:border-[#E85D2C]/50 hover:shadow-md transition-all flex flex-col justify-between reveal-on-scroll stagger-4 group shadow-xs">
             <div>
               <div className="flex items-center justify-between mb-3">
                 <span className="text-[10px] font-mono font-bold text-[#E85D2C] uppercase tracking-wider block">
-                  LEGEND — FILES TO WATCH
+                  LEGEND — AI SUMMARIES
                 </span>
-                <Flame className="w-4 h-4 text-[#E85D2C] hotspot-icon transition-all" />
+                <FileCode2 className="w-4 h-4 text-[#E85D2C] group-hover:scale-110 transition-transform" />
               </div>
-              <h3 className="font-display text-base font-bold text-[#1A1D29] mb-2">Commit Edit Velocity Logs</h3>
+              <h3 className="font-display text-base font-bold text-[#1A1D29] mb-2">AI Code & File Explainer</h3>
               <p className="text-xs text-[#6B7280] leading-relaxed">
-                Mines historical git commit logs to calculate edit frequencies and co-change churn rates. Highlights high-velocity codebase risk zones that undergo frequent modification and require rigorous test coverage.
+                Generates concise, context-aware architectural explanations for every file. Breaks down key symbols, exported functions, and dependencies with direct syntax-highlighted source inspection.
               </p>
             </div>
           </div>
@@ -830,11 +830,11 @@ export default function LandingPage({
             <div>
               <div className="flex items-center justify-between mb-3">
                 <span className="text-[10px] font-mono font-bold text-[#3B5FE0] uppercase tracking-wider block">
-                  LEGEND — QUALITY SCORE
+                  LEGEND — CODE HEALTH
                 </span>
                 <BarChart3 className="w-4 h-4 text-[#3B5FE0] group-hover:scale-110 transition-transform" />
               </div>
-              <h3 className="font-display text-base font-bold text-[#1A1D29] mb-2">Maintainability Metrics</h3>
+              <h3 className="font-display text-base font-bold text-[#1A1D29] mb-2">Health & Maintainability Metrics</h3>
               <p className="text-xs text-[#6B7280] leading-relaxed">
                 Evaluates cyclomatic complexity, coupling density, and file size to calculate composite health ratings (0-100) across every file in the repository, surfacing technical debt before refactoring cycles begin.
               </p>

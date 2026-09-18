@@ -8,6 +8,7 @@ import {
   Database,
   Layers,
   ArrowLeft,
+  ArrowRight,
   AlertTriangle,
   FolderTree,
   Files,
@@ -23,7 +24,7 @@ import {
   Sparkles,
 } from 'lucide-react';
 import FileTree, { FileTreeNodeType } from '../components/FileTree';
-import HotspotList, { HotspotType } from '../components/HotspotList';
+import { HotspotType } from '../components/HotspotList';
 import FileExplainer from '../components/FileExplainer';
 import SemanticSearch from '../components/SemanticSearch';
 import OnboardingGuide from '../components/OnboardingGuide';
@@ -34,21 +35,19 @@ import LoadingScreen from '../components/LoadingScreen';
 import { API_BASE_URL } from '../lib/apiClient';
 
 // ── Navigation section type ────────────────────────────────────────────────
-type Section = 'overview' | 'files' | 'hotspots' | 'search' | 'architecture' | 'onboarding' | 'quality';
+type Section = 'overview' | 'files' | 'search' | 'architecture' | 'health' | 'onboarding';
 
-interface NavItem { id: Section; label: string; icon: React.ReactNode; }
+interface NavItem { id: Exclude<Section, 'onboarding'>; label: string; icon: React.ReactNode; }
 
 const NAV_ITEMS: NavItem[] = [
   { id: 'overview',     label: 'Overview',    icon: <LayoutDashboard className="w-4 h-4" /> },
-  { id: 'files',        label: 'Files',        icon: <FolderTree className="w-4 h-4" /> },
-  { id: 'hotspots',     label: 'Files to Watch', icon: <Flame className="w-4 h-4" /> },
-  { id: 'search',       label: 'Search',      icon: <Search className="w-4 h-4" /> },
+  { id: 'files',        label: 'Files',       icon: <FolderTree className="w-4 h-4" /> },
+  { id: 'search',       label: 'Ask DevLens', icon: <Sparkles className="w-4 h-4" /> },
   { id: 'architecture', label: 'Architecture',icon: <Network className="w-4 h-4" /> },
-  { id: 'onboarding',   label: 'Onboarding',  icon: <Compass className="w-4 h-4" /> },
-  { id: 'quality',      label: 'Quality',     icon: <ShieldCheck className="w-4 h-4" /> },
+  { id: 'health',       label: 'Health',      icon: <ShieldCheck className="w-4 h-4" /> },
 ];
 
-const QUICK_NAV_ACCENTS: Record<Exclude<Section, 'overview'>, {
+const QUICK_NAV_ACCENTS: Record<Exclude<Section, 'overview' | 'onboarding'>, {
   badgeBg: string;
   badgeHoverBg: string;
   badgeBorder: string;
@@ -74,21 +73,7 @@ const QUICK_NAV_ACCENTS: Record<Exclude<Section, 'overview'>, {
     gradientWash: 'bg-[radial-gradient(circle_at_top_left,rgba(79,70,229,0.08)_0%,transparent_70%)]',
     cardClass: 'nav-card-files',
     iconClass: 'nav-icon-files',
-    description: 'Browse structure & AI summaries',
-  },
-  hotspots: {
-    badgeBg: 'bg-[#EA580C]/20',
-    badgeHoverBg: 'group-hover:bg-[#EA580C]/30',
-    badgeBorder: 'border-[#EA580C]/35',
-    badgeHoverBorder: 'group-hover:border-[#EA580C]/50',
-    iconColor: 'text-[#EA580C]',
-    accentBar: 'bg-[#EA580C]',
-    borderHover: 'hover:border-[#EA580C]/40',
-    shadowHover: 'hover:shadow-[0_8px_20px_-4px_rgba(234,88,12,0.16),0_2px_6px_-1px_rgba(234,88,12,0.08)]',
-    gradientWash: 'bg-[radial-gradient(circle_at_top_left,rgba(234,88,12,0.08)_0%,transparent_70%)]',
-    cardClass: 'nav-card-hotspots',
-    iconClass: 'nav-icon-hotspots',
-    description: 'Most frequently changed files',
+    description: 'Explore and understand individual files.',
   },
   search: {
     badgeBg: 'bg-[#E85D2C]/20',
@@ -102,7 +87,7 @@ const QUICK_NAV_ACCENTS: Record<Exclude<Section, 'overview'>, {
     gradientWash: 'bg-[radial-gradient(circle_at_top_left,rgba(232,93,44,0.09)_0%,transparent_70%)]',
     cardClass: 'nav-card-search',
     iconClass: 'nav-icon-search',
-    description: 'Ask questions in plain English',
+    description: 'Semantic/RAG codebase search and questions.',
   },
   architecture: {
     badgeBg: 'bg-[#7C3AED]/20',
@@ -116,23 +101,9 @@ const QUICK_NAV_ACCENTS: Record<Exclude<Section, 'overview'>, {
     gradientWash: 'bg-[radial-gradient(circle_at_top_left,rgba(124,58,237,0.08)_0%,transparent_70%)]',
     cardClass: 'nav-card-architecture',
     iconClass: 'nav-icon-architecture',
-    description: 'Visualize file dependencies',
+    description: 'Dependencies, imports, blast radius.',
   },
-  onboarding: {
-    badgeBg: 'bg-[#D97706]/20',
-    badgeHoverBg: 'group-hover:bg-[#D97706]/30',
-    badgeBorder: 'border-[#D97706]/35',
-    badgeHoverBorder: 'group-hover:border-[#D97706]/50',
-    iconColor: 'text-[#D97706]',
-    accentBar: 'bg-[#D97706]',
-    borderHover: 'hover:border-[#D97706]/40',
-    shadowHover: 'hover:shadow-[0_8px_20px_-4px_rgba(217,119,6,0.16),0_2px_6px_-1px_rgba(217,119,6,0.08)]',
-    gradientWash: 'bg-[radial-gradient(circle_at_top_left,rgba(217,119,6,0.08)_0%,transparent_70%)]',
-    cardClass: 'nav-card-onboarding',
-    iconClass: 'nav-icon-onboarding',
-    description: 'Suggested reading order',
-  },
-  quality: {
+  health: {
     badgeBg: 'bg-[#059669]/20',
     badgeHoverBg: 'group-hover:bg-[#059669]/30',
     badgeBorder: 'border-[#059669]/35',
@@ -144,7 +115,7 @@ const QUICK_NAV_ACCENTS: Record<Exclude<Section, 'overview'>, {
     gradientWash: 'bg-[radial-gradient(circle_at_top_left,rgba(5,150,105,0.08)_0%,transparent_70%)]',
     cardClass: 'nav-card-quality',
     iconClass: 'nav-icon-quality',
-    description: 'Risk & health scoring',
+    description: 'Quality, maintainability, hotspots, risks.',
   },
 };
 
@@ -190,11 +161,10 @@ export default function Home() {
   const tabRefs = useRef<Record<Section, HTMLButtonElement | null>>({
     overview: null,
     files: null,
-    hotspots: null,
     search: null,
     architecture: null,
+    health: null,
     onboarding: null,
-    quality: null,
   });
 
   const isNavOpen = isHovered || isNavPinned;
@@ -695,7 +665,7 @@ export default function Home() {
             )}
           </div>
           {avgQuality !== null && (
-            <button onClick={() => setActiveSection('quality')} className="mt-4 text-xs font-mono text-[#E85D2C] bg-[#E85D2C]/10 hover:bg-[#E85D2C] hover:text-white border border-[#E85D2C]/30 px-3 py-1.5 rounded-lg flex items-center gap-1.5 cursor-pointer transition-all duration-150 w-fit font-semibold shadow-2xs active:scale-95">
+            <button onClick={() => setActiveSection('health')} className="mt-4 text-xs font-mono text-[#E85D2C] bg-[#E85D2C]/10 hover:bg-[#E85D2C] hover:text-white border border-[#E85D2C]/30 px-3 py-1.5 rounded-lg flex items-center gap-1.5 cursor-pointer transition-all duration-150 w-fit font-semibold shadow-2xs active:scale-95">
               View breakdown <ChevronRight className="w-3 h-3" />
             </button>
           )}
@@ -711,11 +681,11 @@ export default function Home() {
                   Quick Navigation
                 </span>
               </div>
-              <span className="text-[10px] font-mono text-[#1A1D29] bg-[#FAFAF7] border border-[#E5E1DA] px-2.5 py-0.5 rounded-md font-semibold">6 sections</span>
+              <span className="text-[10px] font-mono text-[#1A1D29] bg-[#FAFAF7] border border-[#E5E1DA] px-2.5 py-0.5 rounded-md font-semibold">{NAV_ITEMS.filter(n => n.id !== 'overview').length} sections</span>
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               {NAV_ITEMS.filter(n => n.id !== 'overview').map((item, idx) => {
-                const accent = QUICK_NAV_ACCENTS[item.id as Exclude<Section, 'overview'>];
+                const accent = QUICK_NAV_ACCENTS[item.id as Exclude<Section, 'overview' | 'onboarding'>];
                 return (
                   <button
                     key={item.id}
@@ -774,6 +744,32 @@ export default function Home() {
         </div>
       </div>
 
+      {/* Onboarding Guide Access Banner on Overview */}
+      <div className="mt-5 p-5 rounded-2xl bg-white border border-[#E5E1DA] border-l-[4px] border-l-[#D97706] shadow-xs flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 animate-fade-in-stagger" style={{ animationDelay: '520ms' }}>
+        <div className="flex items-center gap-3.5">
+          <div className="w-10 h-10 rounded-xl bg-[#D97706]/15 border border-[#D97706]/30 flex items-center justify-center text-[#D97706] shrink-0 shadow-2xs">
+            <Compass className="w-5 h-5" />
+          </div>
+          <div>
+            <div className="flex items-center gap-2 flex-wrap">
+              <h3 className="font-bold text-sm text-[#1A1D29]">Developer Onboarding Guide</h3>
+              <span className="text-[10px] font-mono text-[#D97706] bg-[#D97706]/12 border border-[#D97706]/30 px-2 py-0.5 rounded-md font-semibold">
+                Suggested Reading Order
+              </span>
+            </div>
+            <p className="text-xs text-[#6B7280] font-mono mt-0.5">
+              Sequenced walkthrough analyzing entry points, helper modules, and git churn to onboard into {repoName}.
+            </p>
+          </div>
+        </div>
+        <button
+          onClick={() => setActiveSection('onboarding')}
+          className="px-4 py-2 bg-[#D97706] hover:bg-[#B45309] text-white rounded-xl text-xs font-mono font-semibold flex items-center gap-1.5 transition-all shadow-xs cursor-pointer shrink-0 active:scale-95"
+        >
+          Start Reading Order <ArrowRight className="w-3.5 h-3.5" />
+        </button>
+      </div>
+
       {/* What We Found Section with Solid 4px Orange Top Border */}
       <div className="mt-6 p-5 rounded-2xl bg-white border border-[#E5E1DA] border-t-[4px] border-t-[#E85D2C] shadow-xs animate-fade-in-stagger" style={{ animationDelay: '560ms' }}>
         <div className="flex items-center gap-2 mb-3">
@@ -819,7 +815,16 @@ export default function Home() {
       <div className="flex flex-1 min-h-0 overflow-hidden rounded-2xl border border-[#E5E1DA] bg-white shadow-xs">
         <div className="w-80 flex-shrink-0 border-r border-[#E5E1DA] bg-white flex flex-col overflow-hidden">
           <div className="p-4 border-b border-[#E5E1DA] flex-shrink-0">
-            <span className="text-xs font-mono text-[#4F46E5] bg-[#4F46E5]/12 border border-[#4F46E5]/30 px-2.5 py-0.5 rounded-md uppercase tracking-wider font-bold inline-block">Workspace Files</span>
+            <div className="flex items-center justify-between gap-2">
+              <span className="text-xs font-mono text-[#4F46E5] bg-[#4F46E5]/12 border border-[#4F46E5]/30 px-2.5 py-0.5 rounded-md uppercase tracking-wider font-bold inline-block">Workspace Files</span>
+              <button
+                onClick={() => setActiveSection('onboarding')}
+                className="flex items-center gap-1 text-[10px] font-mono text-[#D97706] hover:text-[#B45309] bg-[#D97706]/10 hover:bg-[#D97706]/20 border border-[#D97706]/25 px-2 py-0.5 rounded-md transition-colors cursor-pointer font-semibold shadow-2xs"
+                title="View onboarding reading order"
+              >
+                <Compass className="w-3 h-3" /> Reading Order
+              </button>
+            </div>
             <p className="text-[10px] text-[#6B7280] font-mono mt-1.5 leading-normal">
               Browse codebase folders. Select any file to generate its AI-powered description and blast radius impact analysis.
             </p>
@@ -848,26 +853,13 @@ export default function Home() {
     </div>
   );
 
-  const renderHotspots = () => (
-    <div className="pt-2 sm:pt-3 px-6 pb-8 md:px-8 max-w-6xl mx-auto w-full">
-      <div className="mb-6">
-        <span className="text-xs font-mono text-[#EA580C] bg-[#EA580C]/12 border border-[#EA580C]/30 px-2.5 py-0.5 rounded-md uppercase tracking-wider font-bold inline-block">Git Telemetry</span>
-        <h2 className="text-2xl font-bold text-[#1A1D29] mt-1.5" style={{ fontFamily: '"Space Grotesk", sans-serif' }}>Frequently Changed Files</h2>
-        <p className="text-xs text-[#6B7280] mt-2 font-mono leading-relaxed">
-          Files that change most often in your git history. These are prime candidates for refactoring to prevent regressions and improve maintainability.
-        </p>
-      </div>
-      {hotspots.length > 0 ? <HotspotList hotspots={hotspots} /> : <NotReadyState icon={<Flame className="w-8 h-8 text-[#EA580C]" />} title="No hotspots detected" detail="No significant git churn signals were found in this repository's commit history." />}
-    </div>
-  );
-
   const renderSearch = () => (
     <div className="pt-2 sm:pt-3 px-6 pb-8 md:px-8 max-w-6xl mx-auto w-full">
       <div className="mb-6">
-        <span className="text-xs font-mono text-[#E85D2C] bg-[#E85D2C]/12 border border-[#E85D2C]/30 px-2.5 py-0.5 rounded-md uppercase tracking-wider font-bold inline-block">Smart Search</span>
-        <h2 className="text-2xl font-bold text-[#1A1D29] mt-1.5" style={{ fontFamily: '"Space Grotesk", sans-serif' }}>Semantic Search</h2>
+        <span className="text-xs font-mono text-[#E85D2C] bg-[#E85D2C]/12 border border-[#E85D2C]/30 px-2.5 py-0.5 rounded-md uppercase tracking-wider font-bold inline-block">Codebase Intelligence</span>
+        <h2 className="text-2xl font-bold text-[#1A1D29] mt-1.5" style={{ fontFamily: '"Space Grotesk", sans-serif' }}>Ask DevLens</h2>
         <p className="text-xs text-[#6B7280] mt-2 font-mono leading-relaxed">
-          Ask architectural or behavioral questions in plain English. We scan both BM25 text keyword index and vector embeddings to extract relevant code blocks and explain them.
+          Semantic/RAG codebase search and questions. Ask architectural or behavioral questions in plain English. We scan both BM25 text keyword index and vector embeddings to extract relevant code blocks and explain them.
         </p>
       </div>
       <SemanticSearch repoId={repoId} indexingStatus={indexingStatus} chunksIndexed={chunksIndexed} onSelectFile={(path) => { setSelectedFilePath(path); setActiveSection('files'); }} />
@@ -880,7 +872,7 @@ export default function Home() {
         <span className="text-xs font-mono text-[#7C3AED] bg-[#7C3AED]/12 border border-[#7C3AED]/30 px-2.5 py-0.5 rounded-md uppercase tracking-wider font-bold inline-block">Dependency Graph</span>
         <h2 className="text-2xl font-bold text-[#1A1D29] mt-1.5" style={{ fontFamily: '"Space Grotesk", sans-serif' }}>Architecture Map</h2>
         <p className="text-xs text-[#6B7280] mt-2 font-mono leading-relaxed">
-          Visual representation of file-to-file import relationships. Click any node to highlight its connections. Larger nodes Sit more centrally and have higher references.
+          Dependencies, imports, blast radius. Visual representation of file-to-file import relationships. Click any node to highlight its connections. Larger nodes Sit more centrally and have higher references.
         </p>
       </div>
       <div className="flex-1 min-h-0">
@@ -900,6 +892,12 @@ export default function Home() {
 
   const renderOnboarding = () => (
     <div className="pt-2 sm:pt-3 px-6 pb-8 md:px-8 max-w-6xl mx-auto w-full">
+      <button
+        onClick={() => setActiveSection('overview')}
+        className="mb-4 inline-flex items-center gap-1.5 text-xs font-mono text-[#6B7280] hover:text-[#1A1D29] bg-white border border-[#E5E1DA] hover:border-[#1A1D29]/30 px-3 py-1.5 rounded-lg transition-all cursor-pointer shadow-2xs"
+      >
+        <ArrowLeft className="w-3.5 h-3.5" /> Back to Overview
+      </button>
       <div className="mb-6">
         <span className="text-xs font-mono text-[#D97706] bg-[#D97706]/12 border border-[#D97706]/30 px-2.5 py-0.5 rounded-md uppercase tracking-wider font-bold inline-block">Navigation Guide</span>
         <h2 className="text-2xl font-bold text-[#1A1D29] mt-1.5" style={{ fontFamily: '"Space Grotesk", sans-serif' }}>Onboarding Guide</h2>
@@ -911,13 +909,13 @@ export default function Home() {
     </div>
   );
 
-  const renderQuality = () => (
+  const renderHealth = () => (
     <div className="pt-2 sm:pt-3 px-6 pb-8 md:px-8 max-w-6xl mx-auto w-full">
       <div className="mb-6">
         <span className="text-xs font-mono text-[#059669] bg-[#059669]/12 border border-[#059669]/30 px-2.5 py-0.5 rounded-md uppercase tracking-wider font-bold inline-block">Code Health</span>
-        <h2 className="text-2xl font-bold text-[#1A1D29] mt-1.5" style={{ fontFamily: '"Space Grotesk", sans-serif' }}>Quality Scores</h2>
+        <h2 className="text-2xl font-bold text-[#1A1D29] mt-1.5" style={{ fontFamily: '"Space Grotesk", sans-serif' }}>Codebase Health</h2>
         <p className="text-xs text-[#6B7280] mt-2 font-mono leading-relaxed">
-          Maintainability ratings calculated from static analysis. Lower scores indicate high complexity, excessive line count, or deep dependency coupling.
+          Quality, maintainability, hotspots, risks. Maintainability ratings calculated from static analysis.
         </p>
       </div>
       <QualityScoreCard summary={qualitySummary} loading={loadingQuality} onSelectFile={(path) => { setSelectedFilePath(path); setActiveSection('files'); }} onRecompute={() => fetchQualityScores(repoId, true)} />
@@ -927,11 +925,10 @@ export default function Home() {
   const sectionContent: Record<Section, React.ReactNode> = {
     overview:     renderOverview(),
     files:        renderFiles(),
-    hotspots:     renderHotspots(),
     search:       renderSearch(),
     architecture: renderArchitecture(),
+    health:       renderHealth(),
     onboarding:   renderOnboarding(),
-    quality:      renderQuality(),
   };
   const isFullHeightSection = activeSection === 'files' || activeSection === 'architecture';
 
@@ -987,7 +984,10 @@ export default function Home() {
               <span className="absolute bottom-1 left-1/2 -translate-x-1/2 w-4 h-0.5 rounded-full bg-[#E85D2C]" />
             </div>
 
-            {NAV_ITEMS.map((item, idx) => {
+            {(activeSection === 'onboarding'
+              ? [...NAV_ITEMS, { id: 'onboarding' as Section, label: 'Onboarding', icon: <Compass className="w-4 h-4" /> }]
+              : NAV_ITEMS
+            ).map((item, idx, list) => {
               const isActive = activeSection === item.id;
               const isExpanded = isNavOpen;
               const isShown = isActive || isExpanded;
@@ -996,7 +996,7 @@ export default function Home() {
               // Expand: 35ms per tab, progressive unfolding wave
               // Collapse: 20ms per tab in reverse, smooth inward sequence
               const expandDelay = `${idx * 35}ms`;
-              const collapseDelay = `${(NAV_ITEMS.length - 1 - idx) * 20}ms`;
+              const collapseDelay = `${(list.length - 1 - idx) * 20}ms`;
               const staggerDelay = isExpanded ? expandDelay : collapseDelay;
 
               return (

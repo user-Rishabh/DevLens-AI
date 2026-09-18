@@ -1885,3 +1885,480 @@ httpx.ConnectError: [Errno 11001] getaddrinfo failed
 [HYBRID SEARCH] repo_id: '4498b681836e0329', query: 'how auth is handled'
   Vector results raw count: 0
   Keyword results raw count: 0
+[VECTOR SEARCH] repo_id value: '5870b3d97abd0114', type: <class 'str'>, query: 'how is auth handeled'
+[DevLens AI Error] Vector similarity fallback lookup failed: [Errno 11001] getaddrinfo failed
+Traceback (most recent call last):
+  File "C:\Users\Anil\Desktop\Projects\DevLens-AI\DevLens-AI\backend\.venv\Lib\site-packages\httpx\_transports\default.py", line 101, in map_httpcore_exceptions
+    yield
+  File "C:\Users\Anil\Desktop\Projects\DevLens-AI\DevLens-AI\backend\.venv\Lib\site-packages\httpx\_transports\default.py", line 250, in handle_request
+    resp = self._pool.handle_request(req)
+  File "C:\Users\Anil\Desktop\Projects\DevLens-AI\DevLens-AI\backend\.venv\Lib\site-packages\httpcore\_sync\connection_pool.py", line 256, in handle_request
+    raise exc from None
+  File "C:\Users\Anil\Desktop\Projects\DevLens-AI\DevLens-AI\backend\.venv\Lib\site-packages\httpcore\_sync\connection_pool.py", line 236, in handle_request
+    response = connection.handle_request(
+        pool_request.request
+    )
+  File "C:\Users\Anil\Desktop\Projects\DevLens-AI\DevLens-AI\backend\.venv\Lib\site-packages\httpcore\_sync\connection.py", line 101, in handle_request
+    raise exc
+  File "C:\Users\Anil\Desktop\Projects\DevLens-AI\DevLens-AI\backend\.venv\Lib\site-packages\httpcore\_sync\connection.py", line 78, in handle_request
+    stream = self._connect(request)
+  File "C:\Users\Anil\Desktop\Projects\DevLens-AI\DevLens-AI\backend\.venv\Lib\site-packages\httpcore\_sync\connection.py", line 124, in _connect
+    stream = self._network_backend.connect_tcp(**kwargs)
+  File "C:\Users\Anil\Desktop\Projects\DevLens-AI\DevLens-AI\backend\.venv\Lib\site-packages\httpcore\_backends\sync.py", line 207, in connect_tcp
+    with map_exceptions(exc_map):
+         ~~~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\Anil\AppData\Local\Programs\Python\Python313\Lib\contextlib.py", line 162, in __exit__
+    self.gen.throw(value)
+    ~~~~~~~~~~~~~~^^^^^^^
+  File "C:\Users\Anil\Desktop\Projects\DevLens-AI\DevLens-AI\backend\.venv\Lib\site-packages\httpcore\_exceptions.py", line 14, in map_exceptions
+    raise to_exc(exc) from exc
+httpcore.ConnectError: [Errno 11001] getaddrinfo failed
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\Users\Anil\Desktop\Projects\DevLens-AI\DevLens-AI\backend\app\search\vector_search.py", line 30, in vector_search
+    .execute()
+     ~~~~~~~^^
+  File "C:\Users\Anil\Desktop\Projects\DevLens-AI\DevLens-AI\backend\.venv\Lib\site-packages\postgrest\_sync\request_builder.py", line 90, in execute
+    r = send_with_retry(self.request)
+  File "C:\Users\Anil\Desktop\Projects\DevLens-AI\DevLens-AI\backend\.venv\Lib\site-packages\postgrest\_sync\request_builder.py", line 51, in send_with_retry
+    resp = req.send(headers)
+  File "C:\Users\Anil\Desktop\Projects\DevLens-AI\DevLens-AI\backend\.venv\Lib\site-packages\postgrest\base_request_builder.py", line 90, in send
+    return self.session.request(
+           ~~~~~~~~~~~~~~~~~~~~^
+        self.http_method,
+        ^^^^^^^^^^^^^^^^^
+    ...<4 lines>...
+        auth=self.auth,
+        ^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\Anil\Desktop\Projects\DevLens-AI\DevLens-AI\backend\.venv\Lib\site-packages\httpx\_client.py", line 825, in request
+    return self.send(request, auth=auth, follow_redirects=follow_redirects)
+           ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Anil\Desktop\Projects\DevLens-AI\DevLens-AI\backend\.venv\Lib\site-packages\httpx\_client.py", line 914, in send
+    response = self._send_handling_auth(
+        request,
+    ...<2 lines>...
+        history=[],
+    )
+  File "C:\Users\Anil\Desktop\Projects\DevLens-AI\DevLens-AI\backend\.venv\Lib\site-packages\httpx\_client.py", line 942, in _send_handling_auth
+    response = self._send_handling_redirects(
+        request,
+        follow_redirects=follow_redirects,
+        history=history,
+    )
+  File "C:\Users\Anil\Desktop\Projects\DevLens-AI\DevLens-AI\backend\.venv\Lib\site-packages\httpx\_client.py", line 979, in _send_handling_redirects
+    response = self._send_single_request(request)
+  File "C:\Users\Anil\Desktop\Projects\DevLens-AI\DevLens-AI\backend\.venv\Lib\site-packages\httpx\_client.py", line 1014, in _send_single_request
+    response = transport.handle_request(request)
+  File "C:\Users\Anil\Desktop\Projects\DevLens-AI\DevLens-AI\backend\.venv\Lib\site-packages\httpx\_transports\default.py", line 249, in handle_request
+    with map_httpcore_exceptions():
+         ~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\Anil\AppData\Local\Programs\Python\Python313\Lib\contextlib.py", line 162, in __exit__
+    self.gen.throw(value)
+    ~~~~~~~~~~~~~~^^^^^^^
+  File "C:\Users\Anil\Desktop\Projects\DevLens-AI\DevLens-AI\backend\.venv\Lib\site-packages\httpx\_transports\default.py", line 118, in map_httpcore_exceptions
+    raise mapped_exc(message) from exc
+httpx.ConnectError: [Errno 11001] getaddrinfo failed
+
+[KEYWORD SEARCH] repo_id value: '5870b3d97abd0114', type: <class 'str'>, query: 'how is auth handeled'
+[DevLens AI Error] Keyword similarity fallback lookup failed: [Errno 11001] getaddrinfo failed
+Traceback (most recent call last):
+  File "C:\Users\Anil\Desktop\Projects\DevLens-AI\DevLens-AI\backend\.venv\Lib\site-packages\httpx\_transports\default.py", line 101, in map_httpcore_exceptions
+    yield
+  File "C:\Users\Anil\Desktop\Projects\DevLens-AI\DevLens-AI\backend\.venv\Lib\site-packages\httpx\_transports\default.py", line 250, in handle_request
+    resp = self._pool.handle_request(req)
+  File "C:\Users\Anil\Desktop\Projects\DevLens-AI\DevLens-AI\backend\.venv\Lib\site-packages\httpcore\_sync\connection_pool.py", line 256, in handle_request
+    raise exc from None
+  File "C:\Users\Anil\Desktop\Projects\DevLens-AI\DevLens-AI\backend\.venv\Lib\site-packages\httpcore\_sync\connection_pool.py", line 236, in handle_request
+    response = connection.handle_request(
+        pool_request.request
+    )
+  File "C:\Users\Anil\Desktop\Projects\DevLens-AI\DevLens-AI\backend\.venv\Lib\site-packages\httpcore\_sync\connection.py", line 101, in handle_request
+    raise exc
+  File "C:\Users\Anil\Desktop\Projects\DevLens-AI\DevLens-AI\backend\.venv\Lib\site-packages\httpcore\_sync\connection.py", line 78, in handle_request
+    stream = self._connect(request)
+  File "C:\Users\Anil\Desktop\Projects\DevLens-AI\DevLens-AI\backend\.venv\Lib\site-packages\httpcore\_sync\connection.py", line 124, in _connect
+    stream = self._network_backend.connect_tcp(**kwargs)
+  File "C:\Users\Anil\Desktop\Projects\DevLens-AI\DevLens-AI\backend\.venv\Lib\site-packages\httpcore\_backends\sync.py", line 207, in connect_tcp
+    with map_exceptions(exc_map):
+         ~~~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\Anil\AppData\Local\Programs\Python\Python313\Lib\contextlib.py", line 162, in __exit__
+    self.gen.throw(value)
+    ~~~~~~~~~~~~~~^^^^^^^
+  File "C:\Users\Anil\Desktop\Projects\DevLens-AI\DevLens-AI\backend\.venv\Lib\site-packages\httpcore\_exceptions.py", line 14, in map_exceptions
+    raise to_exc(exc) from exc
+httpcore.ConnectError: [Errno 11001] getaddrinfo failed
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\Users\Anil\Desktop\Projects\DevLens-AI\DevLens-AI\backend\app\search\keyword_search.py", line 19, in keyword_search
+    .execute()
+     ~~~~~~~^^
+  File "C:\Users\Anil\Desktop\Projects\DevLens-AI\DevLens-AI\backend\.venv\Lib\site-packages\postgrest\_sync\request_builder.py", line 90, in execute
+    r = send_with_retry(self.request)
+  File "C:\Users\Anil\Desktop\Projects\DevLens-AI\DevLens-AI\backend\.venv\Lib\site-packages\postgrest\_sync\request_builder.py", line 51, in send_with_retry
+    resp = req.send(headers)
+  File "C:\Users\Anil\Desktop\Projects\DevLens-AI\DevLens-AI\backend\.venv\Lib\site-packages\postgrest\base_request_builder.py", line 90, in send
+    return self.session.request(
+           ~~~~~~~~~~~~~~~~~~~~^
+        self.http_method,
+        ^^^^^^^^^^^^^^^^^
+    ...<4 lines>...
+        auth=self.auth,
+        ^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\Anil\Desktop\Projects\DevLens-AI\DevLens-AI\backend\.venv\Lib\site-packages\httpx\_client.py", line 825, in request
+    return self.send(request, auth=auth, follow_redirects=follow_redirects)
+           ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Anil\Desktop\Projects\DevLens-AI\DevLens-AI\backend\.venv\Lib\site-packages\httpx\_client.py", line 914, in send
+    response = self._send_handling_auth(
+        request,
+    ...<2 lines>...
+        history=[],
+    )
+  File "C:\Users\Anil\Desktop\Projects\DevLens-AI\DevLens-AI\backend\.venv\Lib\site-packages\httpx\_client.py", line 942, in _send_handling_auth
+    response = self._send_handling_redirects(
+        request,
+        follow_redirects=follow_redirects,
+        history=history,
+    )
+  File "C:\Users\Anil\Desktop\Projects\DevLens-AI\DevLens-AI\backend\.venv\Lib\site-packages\httpx\_client.py", line 979, in _send_handling_redirects
+    response = self._send_single_request(request)
+  File "C:\Users\Anil\Desktop\Projects\DevLens-AI\DevLens-AI\backend\.venv\Lib\site-packages\httpx\_client.py", line 1014, in _send_single_request
+    response = transport.handle_request(request)
+  File "C:\Users\Anil\Desktop\Projects\DevLens-AI\DevLens-AI\backend\.venv\Lib\site-packages\httpx\_transports\default.py", line 249, in handle_request
+    with map_httpcore_exceptions():
+         ~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\Anil\AppData\Local\Programs\Python\Python313\Lib\contextlib.py", line 162, in __exit__
+    self.gen.throw(value)
+    ~~~~~~~~~~~~~~^^^^^^^
+  File "C:\Users\Anil\Desktop\Projects\DevLens-AI\DevLens-AI\backend\.venv\Lib\site-packages\httpx\_transports\default.py", line 118, in map_httpcore_exceptions
+    raise mapped_exc(message) from exc
+httpx.ConnectError: [Errno 11001] getaddrinfo failed
+
+[HYBRID SEARCH] repo_id: '5870b3d97abd0114', query: 'how is auth handeled'
+  Vector results raw count: 0
+  Keyword results raw count: 0
+[VECTOR SEARCH] repo_id value: '5870b3d97abd0114', type: <class 'str'>, query: 'blast radius'
+[DevLens AI Error] Vector similarity fallback lookup failed: [Errno 11001] getaddrinfo failed
+Traceback (most recent call last):
+  File "C:\Users\Anil\Desktop\Projects\DevLens-AI\DevLens-AI\backend\.venv\Lib\site-packages\httpx\_transports\default.py", line 101, in map_httpcore_exceptions
+    yield
+  File "C:\Users\Anil\Desktop\Projects\DevLens-AI\DevLens-AI\backend\.venv\Lib\site-packages\httpx\_transports\default.py", line 250, in handle_request
+    resp = self._pool.handle_request(req)
+  File "C:\Users\Anil\Desktop\Projects\DevLens-AI\DevLens-AI\backend\.venv\Lib\site-packages\httpcore\_sync\connection_pool.py", line 256, in handle_request
+    raise exc from None
+  File "C:\Users\Anil\Desktop\Projects\DevLens-AI\DevLens-AI\backend\.venv\Lib\site-packages\httpcore\_sync\connection_pool.py", line 236, in handle_request
+    response = connection.handle_request(
+        pool_request.request
+    )
+  File "C:\Users\Anil\Desktop\Projects\DevLens-AI\DevLens-AI\backend\.venv\Lib\site-packages\httpcore\_sync\connection.py", line 101, in handle_request
+    raise exc
+  File "C:\Users\Anil\Desktop\Projects\DevLens-AI\DevLens-AI\backend\.venv\Lib\site-packages\httpcore\_sync\connection.py", line 78, in handle_request
+    stream = self._connect(request)
+  File "C:\Users\Anil\Desktop\Projects\DevLens-AI\DevLens-AI\backend\.venv\Lib\site-packages\httpcore\_sync\connection.py", line 124, in _connect
+    stream = self._network_backend.connect_tcp(**kwargs)
+  File "C:\Users\Anil\Desktop\Projects\DevLens-AI\DevLens-AI\backend\.venv\Lib\site-packages\httpcore\_backends\sync.py", line 207, in connect_tcp
+    with map_exceptions(exc_map):
+         ~~~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\Anil\AppData\Local\Programs\Python\Python313\Lib\contextlib.py", line 162, in __exit__
+    self.gen.throw(value)
+    ~~~~~~~~~~~~~~^^^^^^^
+  File "C:\Users\Anil\Desktop\Projects\DevLens-AI\DevLens-AI\backend\.venv\Lib\site-packages\httpcore\_exceptions.py", line 14, in map_exceptions
+    raise to_exc(exc) from exc
+httpcore.ConnectError: [Errno 11001] getaddrinfo failed
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\Users\Anil\Desktop\Projects\DevLens-AI\DevLens-AI\backend\app\search\vector_search.py", line 30, in vector_search
+    .execute()
+     ~~~~~~~^^
+  File "C:\Users\Anil\Desktop\Projects\DevLens-AI\DevLens-AI\backend\.venv\Lib\site-packages\postgrest\_sync\request_builder.py", line 90, in execute
+    r = send_with_retry(self.request)
+  File "C:\Users\Anil\Desktop\Projects\DevLens-AI\DevLens-AI\backend\.venv\Lib\site-packages\postgrest\_sync\request_builder.py", line 51, in send_with_retry
+    resp = req.send(headers)
+  File "C:\Users\Anil\Desktop\Projects\DevLens-AI\DevLens-AI\backend\.venv\Lib\site-packages\postgrest\base_request_builder.py", line 90, in send
+    return self.session.request(
+           ~~~~~~~~~~~~~~~~~~~~^
+        self.http_method,
+        ^^^^^^^^^^^^^^^^^
+    ...<4 lines>...
+        auth=self.auth,
+        ^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\Anil\Desktop\Projects\DevLens-AI\DevLens-AI\backend\.venv\Lib\site-packages\httpx\_client.py", line 825, in request
+    return self.send(request, auth=auth, follow_redirects=follow_redirects)
+           ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Anil\Desktop\Projects\DevLens-AI\DevLens-AI\backend\.venv\Lib\site-packages\httpx\_client.py", line 914, in send
+    response = self._send_handling_auth(
+        request,
+    ...<2 lines>...
+        history=[],
+    )
+  File "C:\Users\Anil\Desktop\Projects\DevLens-AI\DevLens-AI\backend\.venv\Lib\site-packages\httpx\_client.py", line 942, in _send_handling_auth
+    response = self._send_handling_redirects(
+        request,
+        follow_redirects=follow_redirects,
+        history=history,
+    )
+  File "C:\Users\Anil\Desktop\Projects\DevLens-AI\DevLens-AI\backend\.venv\Lib\site-packages\httpx\_client.py", line 979, in _send_handling_redirects
+    response = self._send_single_request(request)
+  File "C:\Users\Anil\Desktop\Projects\DevLens-AI\DevLens-AI\backend\.venv\Lib\site-packages\httpx\_client.py", line 1014, in _send_single_request
+    response = transport.handle_request(request)
+  File "C:\Users\Anil\Desktop\Projects\DevLens-AI\DevLens-AI\backend\.venv\Lib\site-packages\httpx\_transports\default.py", line 249, in handle_request
+    with map_httpcore_exceptions():
+         ~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\Anil\AppData\Local\Programs\Python\Python313\Lib\contextlib.py", line 162, in __exit__
+    self.gen.throw(value)
+    ~~~~~~~~~~~~~~^^^^^^^
+  File "C:\Users\Anil\Desktop\Projects\DevLens-AI\DevLens-AI\backend\.venv\Lib\site-packages\httpx\_transports\default.py", line 118, in map_httpcore_exceptions
+    raise mapped_exc(message) from exc
+httpx.ConnectError: [Errno 11001] getaddrinfo failed
+
+[KEYWORD SEARCH] repo_id value: '5870b3d97abd0114', type: <class 'str'>, query: 'blast radius'
+[DevLens AI Error] Keyword similarity fallback lookup failed: [Errno 11001] getaddrinfo failed
+Traceback (most recent call last):
+  File "C:\Users\Anil\Desktop\Projects\DevLens-AI\DevLens-AI\backend\.venv\Lib\site-packages\httpx\_transports\default.py", line 101, in map_httpcore_exceptions
+    yield
+  File "C:\Users\Anil\Desktop\Projects\DevLens-AI\DevLens-AI\backend\.venv\Lib\site-packages\httpx\_transports\default.py", line 250, in handle_request
+    resp = self._pool.handle_request(req)
+  File "C:\Users\Anil\Desktop\Projects\DevLens-AI\DevLens-AI\backend\.venv\Lib\site-packages\httpcore\_sync\connection_pool.py", line 256, in handle_request
+    raise exc from None
+  File "C:\Users\Anil\Desktop\Projects\DevLens-AI\DevLens-AI\backend\.venv\Lib\site-packages\httpcore\_sync\connection_pool.py", line 236, in handle_request
+    response = connection.handle_request(
+        pool_request.request
+    )
+  File "C:\Users\Anil\Desktop\Projects\DevLens-AI\DevLens-AI\backend\.venv\Lib\site-packages\httpcore\_sync\connection.py", line 101, in handle_request
+    raise exc
+  File "C:\Users\Anil\Desktop\Projects\DevLens-AI\DevLens-AI\backend\.venv\Lib\site-packages\httpcore\_sync\connection.py", line 78, in handle_request
+    stream = self._connect(request)
+  File "C:\Users\Anil\Desktop\Projects\DevLens-AI\DevLens-AI\backend\.venv\Lib\site-packages\httpcore\_sync\connection.py", line 124, in _connect
+    stream = self._network_backend.connect_tcp(**kwargs)
+  File "C:\Users\Anil\Desktop\Projects\DevLens-AI\DevLens-AI\backend\.venv\Lib\site-packages\httpcore\_backends\sync.py", line 207, in connect_tcp
+    with map_exceptions(exc_map):
+         ~~~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\Anil\AppData\Local\Programs\Python\Python313\Lib\contextlib.py", line 162, in __exit__
+    self.gen.throw(value)
+    ~~~~~~~~~~~~~~^^^^^^^
+  File "C:\Users\Anil\Desktop\Projects\DevLens-AI\DevLens-AI\backend\.venv\Lib\site-packages\httpcore\_exceptions.py", line 14, in map_exceptions
+    raise to_exc(exc) from exc
+httpcore.ConnectError: [Errno 11001] getaddrinfo failed
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\Users\Anil\Desktop\Projects\DevLens-AI\DevLens-AI\backend\app\search\keyword_search.py", line 19, in keyword_search
+    .execute()
+     ~~~~~~~^^
+  File "C:\Users\Anil\Desktop\Projects\DevLens-AI\DevLens-AI\backend\.venv\Lib\site-packages\postgrest\_sync\request_builder.py", line 90, in execute
+    r = send_with_retry(self.request)
+  File "C:\Users\Anil\Desktop\Projects\DevLens-AI\DevLens-AI\backend\.venv\Lib\site-packages\postgrest\_sync\request_builder.py", line 51, in send_with_retry
+    resp = req.send(headers)
+  File "C:\Users\Anil\Desktop\Projects\DevLens-AI\DevLens-AI\backend\.venv\Lib\site-packages\postgrest\base_request_builder.py", line 90, in send
+    return self.session.request(
+           ~~~~~~~~~~~~~~~~~~~~^
+        self.http_method,
+        ^^^^^^^^^^^^^^^^^
+    ...<4 lines>...
+        auth=self.auth,
+        ^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\Anil\Desktop\Projects\DevLens-AI\DevLens-AI\backend\.venv\Lib\site-packages\httpx\_client.py", line 825, in request
+    return self.send(request, auth=auth, follow_redirects=follow_redirects)
+           ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Anil\Desktop\Projects\DevLens-AI\DevLens-AI\backend\.venv\Lib\site-packages\httpx\_client.py", line 914, in send
+    response = self._send_handling_auth(
+        request,
+    ...<2 lines>...
+        history=[],
+    )
+  File "C:\Users\Anil\Desktop\Projects\DevLens-AI\DevLens-AI\backend\.venv\Lib\site-packages\httpx\_client.py", line 942, in _send_handling_auth
+    response = self._send_handling_redirects(
+        request,
+        follow_redirects=follow_redirects,
+        history=history,
+    )
+  File "C:\Users\Anil\Desktop\Projects\DevLens-AI\DevLens-AI\backend\.venv\Lib\site-packages\httpx\_client.py", line 979, in _send_handling_redirects
+    response = self._send_single_request(request)
+  File "C:\Users\Anil\Desktop\Projects\DevLens-AI\DevLens-AI\backend\.venv\Lib\site-packages\httpx\_client.py", line 1014, in _send_single_request
+    response = transport.handle_request(request)
+  File "C:\Users\Anil\Desktop\Projects\DevLens-AI\DevLens-AI\backend\.venv\Lib\site-packages\httpx\_transports\default.py", line 249, in handle_request
+    with map_httpcore_exceptions():
+         ~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\Anil\AppData\Local\Programs\Python\Python313\Lib\contextlib.py", line 162, in __exit__
+    self.gen.throw(value)
+    ~~~~~~~~~~~~~~^^^^^^^
+  File "C:\Users\Anil\Desktop\Projects\DevLens-AI\DevLens-AI\backend\.venv\Lib\site-packages\httpx\_transports\default.py", line 118, in map_httpcore_exceptions
+    raise mapped_exc(message) from exc
+httpx.ConnectError: [Errno 11001] getaddrinfo failed
+
+[HYBRID SEARCH] repo_id: '5870b3d97abd0114', query: 'blast radius'
+  Vector results raw count: 0
+  Keyword results raw count: 0
+[VECTOR SEARCH] repo_id value: '5870b3d97abd0114', type: <class 'str'>, query: 'chunks'
+[DevLens AI Error] Vector similarity fallback lookup failed: [Errno 11001] getaddrinfo failed
+Traceback (most recent call last):
+  File "C:\Users\Anil\Desktop\Projects\DevLens-AI\DevLens-AI\backend\.venv\Lib\site-packages\httpx\_transports\default.py", line 101, in map_httpcore_exceptions
+    yield
+  File "C:\Users\Anil\Desktop\Projects\DevLens-AI\DevLens-AI\backend\.venv\Lib\site-packages\httpx\_transports\default.py", line 250, in handle_request
+    resp = self._pool.handle_request(req)
+  File "C:\Users\Anil\Desktop\Projects\DevLens-AI\DevLens-AI\backend\.venv\Lib\site-packages\httpcore\_sync\connection_pool.py", line 256, in handle_request
+    raise exc from None
+  File "C:\Users\Anil\Desktop\Projects\DevLens-AI\DevLens-AI\backend\.venv\Lib\site-packages\httpcore\_sync\connection_pool.py", line 236, in handle_request
+    response = connection.handle_request(
+        pool_request.request
+    )
+  File "C:\Users\Anil\Desktop\Projects\DevLens-AI\DevLens-AI\backend\.venv\Lib\site-packages\httpcore\_sync\connection.py", line 101, in handle_request
+    raise exc
+  File "C:\Users\Anil\Desktop\Projects\DevLens-AI\DevLens-AI\backend\.venv\Lib\site-packages\httpcore\_sync\connection.py", line 78, in handle_request
+    stream = self._connect(request)
+  File "C:\Users\Anil\Desktop\Projects\DevLens-AI\DevLens-AI\backend\.venv\Lib\site-packages\httpcore\_sync\connection.py", line 124, in _connect
+    stream = self._network_backend.connect_tcp(**kwargs)
+  File "C:\Users\Anil\Desktop\Projects\DevLens-AI\DevLens-AI\backend\.venv\Lib\site-packages\httpcore\_backends\sync.py", line 207, in connect_tcp
+    with map_exceptions(exc_map):
+         ~~~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\Anil\AppData\Local\Programs\Python\Python313\Lib\contextlib.py", line 162, in __exit__
+    self.gen.throw(value)
+    ~~~~~~~~~~~~~~^^^^^^^
+  File "C:\Users\Anil\Desktop\Projects\DevLens-AI\DevLens-AI\backend\.venv\Lib\site-packages\httpcore\_exceptions.py", line 14, in map_exceptions
+    raise to_exc(exc) from exc
+httpcore.ConnectError: [Errno 11001] getaddrinfo failed
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\Users\Anil\Desktop\Projects\DevLens-AI\DevLens-AI\backend\app\search\vector_search.py", line 30, in vector_search
+    .execute()
+     ~~~~~~~^^
+  File "C:\Users\Anil\Desktop\Projects\DevLens-AI\DevLens-AI\backend\.venv\Lib\site-packages\postgrest\_sync\request_builder.py", line 90, in execute
+    r = send_with_retry(self.request)
+  File "C:\Users\Anil\Desktop\Projects\DevLens-AI\DevLens-AI\backend\.venv\Lib\site-packages\postgrest\_sync\request_builder.py", line 51, in send_with_retry
+    resp = req.send(headers)
+  File "C:\Users\Anil\Desktop\Projects\DevLens-AI\DevLens-AI\backend\.venv\Lib\site-packages\postgrest\base_request_builder.py", line 90, in send
+    return self.session.request(
+           ~~~~~~~~~~~~~~~~~~~~^
+        self.http_method,
+        ^^^^^^^^^^^^^^^^^
+    ...<4 lines>...
+        auth=self.auth,
+        ^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\Anil\Desktop\Projects\DevLens-AI\DevLens-AI\backend\.venv\Lib\site-packages\httpx\_client.py", line 825, in request
+    return self.send(request, auth=auth, follow_redirects=follow_redirects)
+           ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Anil\Desktop\Projects\DevLens-AI\DevLens-AI\backend\.venv\Lib\site-packages\httpx\_client.py", line 914, in send
+    response = self._send_handling_auth(
+        request,
+    ...<2 lines>...
+        history=[],
+    )
+  File "C:\Users\Anil\Desktop\Projects\DevLens-AI\DevLens-AI\backend\.venv\Lib\site-packages\httpx\_client.py", line 942, in _send_handling_auth
+    response = self._send_handling_redirects(
+        request,
+        follow_redirects=follow_redirects,
+        history=history,
+    )
+  File "C:\Users\Anil\Desktop\Projects\DevLens-AI\DevLens-AI\backend\.venv\Lib\site-packages\httpx\_client.py", line 979, in _send_handling_redirects
+    response = self._send_single_request(request)
+  File "C:\Users\Anil\Desktop\Projects\DevLens-AI\DevLens-AI\backend\.venv\Lib\site-packages\httpx\_client.py", line 1014, in _send_single_request
+    response = transport.handle_request(request)
+  File "C:\Users\Anil\Desktop\Projects\DevLens-AI\DevLens-AI\backend\.venv\Lib\site-packages\httpx\_transports\default.py", line 249, in handle_request
+    with map_httpcore_exceptions():
+         ~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\Anil\AppData\Local\Programs\Python\Python313\Lib\contextlib.py", line 162, in __exit__
+    self.gen.throw(value)
+    ~~~~~~~~~~~~~~^^^^^^^
+  File "C:\Users\Anil\Desktop\Projects\DevLens-AI\DevLens-AI\backend\.venv\Lib\site-packages\httpx\_transports\default.py", line 118, in map_httpcore_exceptions
+    raise mapped_exc(message) from exc
+httpx.ConnectError: [Errno 11001] getaddrinfo failed
+
+[KEYWORD SEARCH] repo_id value: '5870b3d97abd0114', type: <class 'str'>, query: 'chunks'
+[DevLens AI Error] Keyword similarity fallback lookup failed: [Errno 11001] getaddrinfo failed
+Traceback (most recent call last):
+  File "C:\Users\Anil\Desktop\Projects\DevLens-AI\DevLens-AI\backend\.venv\Lib\site-packages\httpx\_transports\default.py", line 101, in map_httpcore_exceptions
+    yield
+  File "C:\Users\Anil\Desktop\Projects\DevLens-AI\DevLens-AI\backend\.venv\Lib\site-packages\httpx\_transports\default.py", line 250, in handle_request
+    resp = self._pool.handle_request(req)
+  File "C:\Users\Anil\Desktop\Projects\DevLens-AI\DevLens-AI\backend\.venv\Lib\site-packages\httpcore\_sync\connection_pool.py", line 256, in handle_request
+    raise exc from None
+  File "C:\Users\Anil\Desktop\Projects\DevLens-AI\DevLens-AI\backend\.venv\Lib\site-packages\httpcore\_sync\connection_pool.py", line 236, in handle_request
+    response = connection.handle_request(
+        pool_request.request
+    )
+  File "C:\Users\Anil\Desktop\Projects\DevLens-AI\DevLens-AI\backend\.venv\Lib\site-packages\httpcore\_sync\connection.py", line 101, in handle_request
+    raise exc
+  File "C:\Users\Anil\Desktop\Projects\DevLens-AI\DevLens-AI\backend\.venv\Lib\site-packages\httpcore\_sync\connection.py", line 78, in handle_request
+    stream = self._connect(request)
+  File "C:\Users\Anil\Desktop\Projects\DevLens-AI\DevLens-AI\backend\.venv\Lib\site-packages\httpcore\_sync\connection.py", line 124, in _connect
+    stream = self._network_backend.connect_tcp(**kwargs)
+  File "C:\Users\Anil\Desktop\Projects\DevLens-AI\DevLens-AI\backend\.venv\Lib\site-packages\httpcore\_backends\sync.py", line 207, in connect_tcp
+    with map_exceptions(exc_map):
+         ~~~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\Anil\AppData\Local\Programs\Python\Python313\Lib\contextlib.py", line 162, in __exit__
+    self.gen.throw(value)
+    ~~~~~~~~~~~~~~^^^^^^^
+  File "C:\Users\Anil\Desktop\Projects\DevLens-AI\DevLens-AI\backend\.venv\Lib\site-packages\httpcore\_exceptions.py", line 14, in map_exceptions
+    raise to_exc(exc) from exc
+httpcore.ConnectError: [Errno 11001] getaddrinfo failed
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\Users\Anil\Desktop\Projects\DevLens-AI\DevLens-AI\backend\app\search\keyword_search.py", line 19, in keyword_search
+    .execute()
+     ~~~~~~~^^
+  File "C:\Users\Anil\Desktop\Projects\DevLens-AI\DevLens-AI\backend\.venv\Lib\site-packages\postgrest\_sync\request_builder.py", line 90, in execute
+    r = send_with_retry(self.request)
+  File "C:\Users\Anil\Desktop\Projects\DevLens-AI\DevLens-AI\backend\.venv\Lib\site-packages\postgrest\_sync\request_builder.py", line 51, in send_with_retry
+    resp = req.send(headers)
+  File "C:\Users\Anil\Desktop\Projects\DevLens-AI\DevLens-AI\backend\.venv\Lib\site-packages\postgrest\base_request_builder.py", line 90, in send
+    return self.session.request(
+           ~~~~~~~~~~~~~~~~~~~~^
+        self.http_method,
+        ^^^^^^^^^^^^^^^^^
+    ...<4 lines>...
+        auth=self.auth,
+        ^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\Anil\Desktop\Projects\DevLens-AI\DevLens-AI\backend\.venv\Lib\site-packages\httpx\_client.py", line 825, in request
+    return self.send(request, auth=auth, follow_redirects=follow_redirects)
+           ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Anil\Desktop\Projects\DevLens-AI\DevLens-AI\backend\.venv\Lib\site-packages\httpx\_client.py", line 914, in send
+    response = self._send_handling_auth(
+        request,
+    ...<2 lines>...
+        history=[],
+    )
+  File "C:\Users\Anil\Desktop\Projects\DevLens-AI\DevLens-AI\backend\.venv\Lib\site-packages\httpx\_client.py", line 942, in _send_handling_auth
+    response = self._send_handling_redirects(
+        request,
+        follow_redirects=follow_redirects,
+        history=history,
+    )
+  File "C:\Users\Anil\Desktop\Projects\DevLens-AI\DevLens-AI\backend\.venv\Lib\site-packages\httpx\_client.py", line 979, in _send_handling_redirects
+    response = self._send_single_request(request)
+  File "C:\Users\Anil\Desktop\Projects\DevLens-AI\DevLens-AI\backend\.venv\Lib\site-packages\httpx\_client.py", line 1014, in _send_single_request
+    response = transport.handle_request(request)
+  File "C:\Users\Anil\Desktop\Projects\DevLens-AI\DevLens-AI\backend\.venv\Lib\site-packages\httpx\_transports\default.py", line 249, in handle_request
+    with map_httpcore_exceptions():
+         ~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\Anil\AppData\Local\Programs\Python\Python313\Lib\contextlib.py", line 162, in __exit__
+    self.gen.throw(value)
+    ~~~~~~~~~~~~~~^^^^^^^
+  File "C:\Users\Anil\Desktop\Projects\DevLens-AI\DevLens-AI\backend\.venv\Lib\site-packages\httpx\_transports\default.py", line 118, in map_httpcore_exceptions
+    raise mapped_exc(message) from exc
+httpx.ConnectError: [Errno 11001] getaddrinfo failed
+
+[HYBRID SEARCH] repo_id: '5870b3d97abd0114', query: 'chunks'
+  Vector results raw count: 0
+  Keyword results raw count: 0
