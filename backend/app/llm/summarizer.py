@@ -3,6 +3,8 @@ import time
 from threading import Lock
 from fastapi import HTTPException
 
+from app.llm.groq_client import execute_groq_chat_completion
+
 # Attempt to load the Groq SDK client.
 try:
     from groq import Groq
@@ -249,82 +251,69 @@ def summarize_file(file_path: str, file_content: str) -> dict:
         f"Provide your response as a valid JSON object with the keys 'purpose', 'key_parts', and 'connections'."
     )
 
-    # Retry configurations for 429 errors from Groq
-    max_retries = 2
-    backoffs = [2.0, 5.0]
-
-    for attempt in range(max_retries + 1):
-        try:
-            record_and_check_volume()
-            
-            chat_completion = client.chat.completions.create(
-                messages=[
-                    {"role": "system", "content": system_prompt},
-                    {"role": "user", "content": user_prompt}
-                ],
-                model=os.getenv("GROQ_MODEL", "llama-3.3-70b-versatile"),
-                temperature=0.2,
-                max_tokens=1500,
-                response_format={"type": "json_object"}
-            )
-            
-            if not chat_completion.choices or len(chat_completion.choices) == 0:
-                return generate_fallback_summary(file_path, file_content)
-                
-            raw_response = chat_completion.choices[0].message.content.strip()
-            
-            # Parse JSON from LLM response
-            import json
-            import re
-            
-            parsed_data = None
-            try:
-                parsed_data = json.loads(raw_response)
-            except Exception:
-                # If wrapped in markdown code fences
-                json_match = re.search(r'\{.*\}', raw_response, re.DOTALL)
-                if json_match:
-                    try:
-                        parsed_data = json.loads(json_match.group(0))
-                    except Exception:
-                        pass
-
-            if parsed_data and isinstance(parsed_data, dict) and "purpose" in parsed_data:
-                purpose = str(parsed_data.get("purpose", "")).strip()
-                key_parts = parsed_data.get("key_parts", [])
-                connections = str(parsed_data.get("connections", "")).strip()
-
-                # Build combined human-readable text for backward compatibility
-                summary_text = f"What this file does\n{purpose}\n\nKey parts inside\n"
-                if isinstance(key_parts, list):
-                    summary_text += "\n".join(f"• {k}" for k in key_parts)
-                else:
-                    summary_text += str(key_parts)
-                summary_text += f"\n\nHow it connects\n{connections}"
-
-                return {
-                    "purpose": purpose,
-                    "key_parts": key_parts,
-                    "connections": connections,
-                    "summary": summary_text
-                }
-            else:
-                print(f"[DevLens AI Warning] LLM output did not contain expected JSON keys, falling back to structured fallback.")
-                return generate_fallback_summary(file_path, file_content)
-            
-        except RateLimitError as e:
-            if attempt < max_retries:
-                sleep_time = backoffs[attempt]
-                print(f"[DevLens AI] Rate limited by Groq API. Retrying in {sleep_time}s... (Attempt {attempt + 1}/{max_retries})")
-                time.sleep(sleep_time)
-            else:
-                print(f"[DevLens AI Warning] Groq rate limit reached (using fallback): {str(e)}")
-                return generate_fallback_summary(file_path, file_content)
-                
-        except Exception as e:
-            print(f"[DevLens AI Warning] Groq API call encountered issue (using fallback): {str(e)}")
+    try:
+        record_and_check_volume()
+        
+        chat_completion, model_used = execute_groq_chat_completion(
+            client=client,
+            messages=[
+                {"role": "system", "content": system_prompt},
+                {"role": "user", "content": user_prompt}
+            ],
+            temperature=0.2,
+            max_tokens=1500,
+            response_format={"type": "json_object"},
+            max_retries=2
+        )
+        
+        if not chat_completion.choices or len(chat_completion.choices) == 0:
             return generate_fallback_summary(file_path, file_content)
+            
+        raw_response = chat_completion.choices[0].message.content.strip()
+        
+        # Parse JSON from LLM response
+        import json
+        import re
+        
+        parsed_data = None
+        try:
+            parsed_data = json.loads(raw_response)
+        except Exception:
+            # If wrapped in markdown code fences
+            json_match = re.search(r'\{.*\}', raw_response, re.DOTALL)
+            if json_match:
+                try:
+                    parsed_data = json.loads(json_match.group(0))
+                except Exception:
+                    pass
 
-    return generate_fallback_summary(file_path, file_content)
+        if parsed_data and isinstance(parsed_data, dict) and "purpose" in parsed_data:
+            purpose = str(parsed_data.get("purpose", "")).strip()
+            key_parts = parsed_data.get("key_parts", [])
+            connections = str(parsed_data.get("connections", "")).strip()
 
+            # Build combined human-readable text for backward compatibility
+            summary_text = f"What this file does\n{purpose}\n\nKey parts inside\n"
+            if isinstance(key_parts, list):
+                summary_text += "\n".join(f"• {k}" for k in key_parts)
+            else:
+                summary_text += str(key_parts)
+            summary_text += f"\n\nHow it connects\n{connections}"
 
+            return {
+                "purpose": purpose,
+                "key_parts": key_parts,
+                "connections": connections,
+                "summary": summary_text
+            }
+        else:
+            print(f"[DevLens AI Warning] LLM output did not contain expected JSON keys, falling back to structured fallback.")
+            return generate_fallback_summary(file_path, file_content)
+        
+    except RateLimitError as e:
+        print(f"[DevLens AI Warning] Groq rate limit reached (using fallback): {str(e)}")
+        return generate_fallback_summary(file_path, file_content)
+            
+    except Exception as e:
+        print(f"[DevLens AI Warning] Groq API call encountered issue (using fallback): {str(e)}")
+        return generate_fallback_summary(file_path, file_content)

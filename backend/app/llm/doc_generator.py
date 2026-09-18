@@ -5,6 +5,8 @@ from fastapi import HTTPException
 from app.db import supabase
 from app.llm.summarizer import HAS_GROQ_SDK
 
+from app.llm.groq_client import execute_groq_chat_completion
+
 # Fallback import of Groq
 try:
     from groq import Groq
@@ -135,16 +137,17 @@ def generate_module_docs(repo_id: str) -> list[dict]:
             try:
                 # Add small delay to avoid rate-limits
                 time.sleep(0.5)
-                chat_completion = client.chat.completions.create(
+                chat_completion, model_used = execute_groq_chat_completion(
+                    client=client,
                     messages=[
                         {
                             "role": "user",
                             "content": prompt,
                         }
                     ],
-                    model=os.getenv("GROQ_MODEL", "llama-3.3-70b-versatile"),
                     temperature=0.2,
-                    max_tokens=800
+                    max_tokens=800,
+                    max_retries=2
                 )
                 if chat_completion.choices:
                     doc_content = chat_completion.choices[0].message.content.strip()

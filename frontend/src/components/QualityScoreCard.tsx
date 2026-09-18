@@ -10,11 +10,12 @@ export interface QualityScoreItem {
 }
 
 export interface QualityScoreSummary {
-  repo_id: string;
-  file_count: number;
-  average_composite_score: number;
-  needs_attention_count: number;
-  riskiest_files: QualityScoreItem[];
+  repo_id?: string;
+  file_count?: number;
+  average_composite_score?: number;
+  needs_attention_count?: number;
+  riskiest_files?: QualityScoreItem[];
+  error?: string;
 }
 
 interface QualityScoreCardProps {
@@ -68,21 +69,54 @@ export default function QualityScoreCard({ summary, loading, onSelectFile, onRec
     );
   }
 
-  const avgScore = summary.average_composite_score;
-  const isHealthy = avgScore >= 80;
-  const isModerate = avgScore >= 50 && avgScore < 80;
+  if (summary.error) {
+    return (
+      <div className="bg-white border border-rose-200 border-t-[4px] border-t-rose-500 rounded-2xl p-6 shadow-xs">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="w-9 h-9 rounded-lg bg-rose-100 border border-rose-300 flex items-center justify-center text-rose-700 shadow-2xs">
+              <AlertTriangle className="w-5 h-5 text-rose-600" />
+            </div>
+            <div>
+              <h3 className="font-bold text-[#1A1D29] text-sm">Quality Analysis Error</h3>
+              <p className="text-xs text-rose-600 font-mono mt-0.5">{summary.error}</p>
+            </div>
+          </div>
+          {onRecompute && (
+            <button 
+              onClick={onRecompute}
+              className="px-3 py-1.5 text-xs font-mono font-semibold bg-[#E85D2C] hover:bg-[#d44d1e] text-white rounded-lg transition-all cursor-pointer shadow-xs active:scale-95 flex items-center gap-1.5"
+            >
+              <RefreshCw className="w-3 h-3" /> Retry Analysis
+            </button>
+          )}
+        </div>
+      </div>
+    );
+  }
 
-  const statusColorClass = isHealthy 
-    ? 'text-emerald-800 bg-emerald-100 border-emerald-300' 
-    : isModerate 
-      ? 'text-amber-800 bg-amber-100 border-amber-300' 
-      : 'text-rose-800 bg-rose-100 border-rose-300';
+  const rawScore = summary.average_composite_score;
+  const hasValidScore = typeof rawScore === 'number' && !isNaN(rawScore);
+  const avgScore = hasValidScore ? Math.round(rawScore) : 100;
+  const needsAttention = summary.needs_attention_count ?? 0;
+  const isHealthy = hasValidScore ? avgScore >= 80 : true;
+  const isModerate = hasValidScore ? avgScore >= 50 && avgScore < 80 : false;
 
-  const statusText = isHealthy 
-    ? 'Healthy Codebase' 
-    : isModerate 
-      ? 'Moderate Risk' 
-      : 'High Risk Area Detected';
+  const statusColorClass = !hasValidScore
+    ? 'text-gray-700 bg-gray-100 border-gray-300'
+    : isHealthy 
+      ? 'text-emerald-800 bg-emerald-100 border-emerald-300' 
+      : isModerate 
+        ? 'text-amber-800 bg-amber-100 border-amber-300' 
+        : 'text-rose-800 bg-rose-100 border-rose-300';
+
+  const statusText = !hasValidScore
+    ? 'Analysis In Progress'
+    : isHealthy 
+      ? 'Healthy Codebase' 
+      : isModerate 
+        ? 'Moderate Risk' 
+        : 'High Risk Area Detected';
 
   return (
     <div className="bg-white border border-[#E5E1DA] border-t-[4px] border-t-[#059669] rounded-2xl p-5 shadow-xs">
@@ -110,7 +144,7 @@ export default function QualityScoreCard({ summary, loading, onSelectFile, onRec
             </button>
           )}
           <span className={`text-xs font-mono font-bold px-2.5 py-0.5 rounded-full border ${statusColorClass}`}>
-            {avgScore}/100
+            {hasValidScore ? `${avgScore}/100` : '--/100'}
           </span>
         </div>
       </div>
@@ -126,7 +160,7 @@ export default function QualityScoreCard({ summary, loading, onSelectFile, onRec
         <div className="text-right">
           <span className="text-[11px] text-[#6B7280] uppercase tracking-wider block">Attention Needed</span>
           <span className="text-xs font-mono font-semibold text-[#1A1D29]">
-            {summary.needs_attention_count} {summary.needs_attention_count === 1 ? 'file' : 'files'}
+            {needsAttention} {needsAttention === 1 ? 'file' : 'files'}
           </span>
         </div>
       </div>
@@ -138,7 +172,9 @@ export default function QualityScoreCard({ summary, loading, onSelectFile, onRec
           <span className="text-[10px] text-[#6B7280] font-mono">100 = Best</span>
         </div>
 
-        {(!summary.riskiest_files || summary.riskiest_files.length === 0) ? (
+        {(summary.file_count === 0) ? (
+          <p className="text-xs text-[#6B7280] italic py-2">No source code files available to analyze in this repository.</p>
+        ) : (!summary.riskiest_files || summary.riskiest_files.length === 0) ? (
           <p className="text-xs text-[#6B7280] italic py-2">No high-risk files identified.</p>
         ) : (
           <div className="space-y-1.5">

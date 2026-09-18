@@ -3,6 +3,8 @@ import time
 import json
 from fastapi import HTTPException
 
+from app.llm.groq_client import execute_groq_chat_completion
+
 # Attempt to load the Groq SDK client.
 try:
     from groq import Groq
@@ -87,55 +89,42 @@ def generate_rag_answer(query: str, chunks: list[dict]) -> dict:
             "cited_chunks": []
         }
 
-    # Retry configurations for rate limits
-    max_retries = 2
-    backoffs = [2.0, 5.0]
-
-    for attempt in range(max_retries + 1):
-        try:
-            chat_completion = client.chat.completions.create(
-                messages=[
-                    {"role": "system", "content": system_prompt},
-                    {"role": "user", "content": user_prompt}
-                ],
-                model=os.getenv("GROQ_MODEL", "llama-3.3-70b-versatile"),
-                temperature=0.1,
-                response_format={"type": "json_object"},
-                max_tokens=800
-            )
-            
-            raw_response = chat_completion.choices[0].message.content.strip()
-            parsed = json.loads(raw_response)
-            
-            # Formulate returning schema dictionary
-            return {
-                "answer": parsed.get("answer", ""),
-                "cited_chunks": parsed.get("cited_chunks", [])
-            }
-            
-        except RateLimitError as e:
-            if attempt < max_retries:
-                sleep_time = backoffs[attempt]
-                print(
-                    f"[DevLens AI] RAG Rate limited by Groq API. "
-                    f"Retrying in {sleep_time}s... (Attempt {attempt + 1}/{max_retries})"
-                )
-                time.sleep(sleep_time)
-            else:
-                print(f"[DevLens AI Error] Groq API rate limit reached after {max_retries} retries during RAG: {str(e)}")
-                return {
-                    "answer": "Groq API rate limit reached. Please wait a moment and try again.",
-                    "cited_chunks": []
-                }
-        except json.JSONDecodeError as e:
-            print(f"[DevLens AI Error] LLM returned invalid JSON payload: {str(e)}")
-            return {
-                "answer": f"Failed to parse model response as JSON: {raw_response}",
-                "cited_chunks": []
-            }
-        except Exception as e:
-            print(f"[DevLens AI Error] Unexpected error during RAG answer generation: {str(e)}")
-            return {
-                "answer": f"An error occurred while synthesizing the answer: {str(e)}",
-                "cited_chunks": []
-            }
+    try:
+        chat_completion, model_used = execute_groq_chat_completion(
+            client=client,
+            messages=[
+                {"role": "system", "content": system_prompt},
+                {"role": "user", "content": user_prompt}
+            ],
+            temperature=0.1,
+            response_format={"type": "json_object"},
+            max_tokens=800,
+            max_retries=2
+        )
+        
+        raw_response = chat_completion.choices[0].message.content.strip()
+        parsed = json.loads(raw_response)
+        
+        return {
+            "answer": parsed.get("answer", ""),
+            "cited_chunks": parsed.get("cited_chunks", [])
+        }
+        
+    except RateLimitError as e:
+        print(f"[DevLens AI Error] Groq API rate limit reached during RAG: {str(e)}")
+        return {
+            "answer": "Groq API rate limit reached. Please wait a moment and try again.",
+            "cited_chunks": []
+        }
+    except json.JSONDecodeError as e:
+        print(f"[DevLens AI Error] LLM returned invalid JSON payload: {str(e)}")
+        return {
+            "answer": "Failed to parse model response as JSON.",
+            "cited_chunks": []
+        }
+    except Exception as e:
+        print(f"[DevLens AI Error] Unexpected error during RAG answer generation: {str(e)}")
+        return {
+            "answer": f"An error occurred while synthesizing the answer: {str(e)}",
+            "cited_chunks": []
+        }

@@ -6,6 +6,8 @@ from app.db import supabase
 from app.analysis.entry_points import detect_entry_points
 from app.analysis.dependency_graph import get_all_project_files
 
+from app.llm.groq_client import execute_groq_chat_completion
+
 try:
     from groq import Groq
     from groq import RateLimitError, APIStatusError
@@ -200,53 +202,43 @@ def generate_onboarding_guide(repo_id: str) -> dict:
             detail=f"Failed to initialize Groq client: {str(e)}"
         )
 
-    # Call LLM with 2-attempt backoff retry for transient rate limits
-    max_retries = 2
-    backoffs = [2.0, 5.0]
-
-    for attempt in range(max_retries + 1):
-        try:
-            chat_completion = client.chat.completions.create(
-                messages=[
-                    {"role": "system", "content": system_prompt},
-                    {"role": "user", "content": user_prompt}
-                ],
-                model=os.getenv("GROQ_MODEL", "llama-3.3-70b-versatile"),
-                temperature=0.2,
-                response_format={"type": "json_object"},
-                max_tokens=800
-            )
+    try:
+        messages = [
+            {"role": "system", "content": system_prompt},
+            {"role": "user", "content": user_prompt}
+        ]
+        chat_completion, model_used = execute_groq_chat_completion(
+            client=client,
+            messages=messages,
+            temperature=0.2,
+            max_tokens=800,
+            response_format={"type": "json_object"},
+            max_retries=2
+        )
+        
+        raw_response = chat_completion.choices[0].message.content.strip()
+        parsed = json.loads(raw_response)
+        
+        # Sanity check keys
+        if "reading_order" not in parsed or "summary" not in parsed:
+            raise ValueError("Generated JSON is missing required fields.")
             
-            raw_response = chat_completion.choices[0].message.content.strip()
-            parsed = json.loads(raw_response)
-            
-            # Sanity check keys
-            if "reading_order" not in parsed or "summary" not in parsed:
-                raise ValueError("Generated JSON is missing required fields.")
-                
-            return parsed
-            
-        except RateLimitError as e:
-            if attempt < max_retries:
-                sleep_time = backoffs[attempt]
-                print(f"[DevLens AI] Onboarding Guide rate limited. Retrying in {sleep_time}s... ({attempt + 1}/{max_retries})")
-                time.sleep(sleep_time)
-            else:
-                raise HTTPException(
-                    status_code=429,
-                    detail="Groq API rate limit reached. Please wait a moment and try again."
-                )
-        except json.JSONDecodeError as e:
-            print(f"[DevLens AI Error] LLM returned invalid JSON: {raw_response}")
-            if attempt == max_retries:
-                raise HTTPException(
-                    status_code=502,
-                    detail=f"Groq API returned malformed response: {str(e)}"
-                )
-        except Exception as e:
-            print(f"[DevLens AI Error] Unexpected exception during guide generation: {str(e)}")
-            if attempt == max_retries:
-                raise HTTPException(
-                    status_code=500,
-                    detail=f"Failed to generate onboarding guide: {str(e)}"
-                )
+        return parsed
+        
+    except RateLimitError:
+        raise HTTPException(
+            status_code=429,
+            detail="Groq API rate limit reached. Please wait a moment and try again."
+        )
+    except json.JSONDecodeError as e:
+        print(f"[DevLens AI Error] LLM returned invalid JSON: {str(e)}")
+        raise HTTPException(
+            status_code=502,
+            detail=f"Groq API returned malformed response: {str(e)}"
+        )
+    except Exception as e:
+        print(f"[DevLens AI Error] Unexpected exception during guide generation: {str(e)}")
+        raise HTTPException(
+            status_code=500,
+            detail=f"Failed to generate onboarding guide: {str(e)}"
+        )

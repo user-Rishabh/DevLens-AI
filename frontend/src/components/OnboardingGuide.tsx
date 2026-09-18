@@ -7,7 +7,8 @@ import {
   Loader2, 
   AlertTriangle,
   ArrowRight,
-  BookOpen
+  BookOpen,
+  RefreshCw
 } from 'lucide-react';
 import { API_BASE_URL } from '../lib/apiClient';
 
@@ -31,6 +32,7 @@ export default function OnboardingGuide({ repoId, onSelectFile }: OnboardingGuid
   const [loading, setLoading] = useState(false);
   const [guideData, setGuideData] = useState<OnboardingGuideData | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [retryCount, setRetryCount] = useState(0);
   
   const loadingRef = useRef('');
 
@@ -38,10 +40,10 @@ export default function OnboardingGuide({ repoId, onSelectFile }: OnboardingGuid
     if (!repoId) return;
 
     // Guard: ignore if a request for this repo is already running
-    if (loadingRef.current === repoId) return;
+    if (loadingRef.current === `${repoId}-${retryCount}`) return;
 
     const fetchOnboardingGuide = async () => {
-      loadingRef.current = repoId;
+      loadingRef.current = `${repoId}-${retryCount}`;
       setLoading(true);
       setError(null);
       setGuideData(null);
@@ -66,7 +68,7 @@ export default function OnboardingGuide({ repoId, onSelectFile }: OnboardingGuid
     };
 
     fetchOnboardingGuide();
-  }, [repoId]);
+  }, [repoId, retryCount]);
 
   // Helper to render badge styles & icons
   const getCategoryMeta = (category: string) => {
@@ -118,12 +120,21 @@ export default function OnboardingGuide({ repoId, onSelectFile }: OnboardingGuid
 
       {/* Error State */}
       {error && !loading && (
-        <div className="bg-rose-50 border border-rose-200 p-8 rounded-2xl flex flex-col items-center justify-center text-center">
+        <div className="bg-rose-50 border border-rose-200 p-8 rounded-2xl flex flex-col items-center justify-center text-center shadow-xs">
           <div className="p-3 bg-rose-100 border border-rose-200 rounded-xl text-rose-600 mb-4">
             <AlertTriangle className="w-6 h-6" />
           </div>
           <h4 className="text-rose-800 font-semibold text-sm">Failed to Generate Guide</h4>
           <p className="text-rose-700 text-xs mt-2 max-w-sm leading-relaxed">{error}</p>
+          <button
+            onClick={() => {
+              loadingRef.current = '';
+              setRetryCount(c => c + 1);
+            }}
+            className="mt-4 px-4 py-2 text-xs font-mono font-semibold bg-[#E85D2C] hover:bg-[#d44d1e] text-white rounded-lg transition-all cursor-pointer shadow-xs active:scale-95 flex items-center gap-1.5"
+          >
+            <RefreshCw className="w-3.5 h-3.5" /> Retry Generating Guide
+          </button>
         </div>
       )}
 

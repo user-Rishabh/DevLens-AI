@@ -884,7 +884,16 @@ export default function Home() {
         </p>
       </div>
       <div className="flex-1 min-h-0">
-        <ArchitectureMap repoId={repoId} dependencies={dependencies} selectedFilePath={selectedFilePath} onSelectFile={(path) => { setSelectedFilePath(path); setActiveSection('files'); }} />
+        <ArchitectureMap 
+          repoId={repoId} 
+          dependencies={dependencies} 
+          selectedFilePath={selectedFilePath} 
+          onSelectFile={(path) => setSelectedFilePath(path)} 
+          onViewSummary={(path) => {
+            setSelectedFilePath(path);
+            setActiveSection('files');
+          }}
+        />
       </div>
     </div>
   );

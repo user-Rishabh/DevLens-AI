@@ -27,6 +27,7 @@ from app.search.hybrid_search import hybrid_search
 from app.analysis.quality_score import compute_repo_quality_scores
 from app.analysis.blast_radius import compute_blast_radius
 from app.llm.onboarding_guide import generate_onboarding_guide
+from app.llm.groq_client import get_preferred_groq_model
 
 router = APIRouter()
 
@@ -170,7 +171,7 @@ def explain_file(
     4. Triggers the AI summarization via OpenRouter.
     5. Saves the summary to file_summaries and returns it.
     """
-    model_name = os.getenv("GROQ_MODEL", "llama-3.3-70b-versatile")
+    model_name = get_preferred_groq_model()
 
     # Fast-path check: exclude by file name/pattern before DB or LLM call
     if is_excluded_file(file_path, None):

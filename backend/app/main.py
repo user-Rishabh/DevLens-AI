@@ -1,7 +1,7 @@
 import os
 import sys
 
-# Triggering uvicorn process reload manually by touching this file.
+# Triggering uvicorn process reload with updated Groq models and resilient client.
 
 # Add the parent directory of 'app' (i.e. 'backend') to sys.path to resolve package imports
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
