@@ -136,8 +136,7 @@ Most tools that attempt this stop at a thin wrapper around an embedding API. Dev
 - **Hybrid search** — keyword (full-text) + vector, combined via **Reciprocal Rank Fusion**
 - Explicit grounding — answers only from retrieved chunks, cites file + line
 - Clearly states when no relevant code was found, instead of hallucinating
-- Real git-history mining for risk signals, not guessed
-
+  
 </td>
 </tr>
 </table>
