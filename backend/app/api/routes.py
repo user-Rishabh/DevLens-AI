@@ -22,7 +22,6 @@ from app.db import (
 from app.llm.summarizer import summarize_file
 from app.llm.rag_answer import generate_rag_answer
 from app.search.chunker import process_repo_chunks, is_excluded_file
-from app.search.embeddings import embed_chunk
 from app.search.hybrid_search import hybrid_search
 from app.analysis.quality_score import compute_repo_quality_scores
 from app.analysis.blast_radius import compute_blast_radius

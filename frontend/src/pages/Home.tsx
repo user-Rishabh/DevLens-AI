@@ -1,12 +1,9 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import {
   GitBranch,
-  Search,
   Network,
   Flame,
   Github,
-  Database,
-  Layers,
   ArrowLeft,
   ArrowRight,
   AlertTriangle,
@@ -17,8 +14,6 @@ import {
   Compass,
   LayoutDashboard,
   ShieldCheck,
-  Menu,
-  X,
   ChevronRight,
   ChevronDown,
   Sparkles,
@@ -28,7 +23,7 @@ import { HotspotType } from '../components/HotspotList';
 import FileExplainer from '../components/FileExplainer';
 import SemanticSearch from '../components/SemanticSearch';
 import OnboardingGuide from '../components/OnboardingGuide';
-import QualityScoreCard, { QualityScoreSummary } from '../components/QualityScoreCard';
+import QualityScoreCard from '../components/QualityScoreCard';
 import ArchitectureMap from '../components/ArchitectureMap';
 import LandingPage from '../components/LandingPage';
 import LoadingScreen from '../components/LoadingScreen';
