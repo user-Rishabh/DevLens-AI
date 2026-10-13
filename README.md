@@ -33,7 +33,6 @@
 DevLens AI is a **codebase intelligence platform**. Paste any GitHub repository URL and instantly get:
 
 - 🗂️ A navigable **file structure** with noise (`node_modules`, lockfiles, build artifacts) filtered out
-- 🔥 **Git-history hotspot detection** — surfaces the files changed most often, statistically the riskiest to touch
 - 🤖 **AI-generated plain-English explanations** for any file, cached so they're instant on repeat views
 - 🔍 **Hybrid semantic search** — ask "where is authentication handled?" in plain English and get a grounded, cited answer synthesized from the actual code, not a hallucinated guess
 - 🗺️ An **interactive architecture map** showing how files depend on each other
@@ -137,8 +136,7 @@ Most tools that attempt this stop at a thin wrapper around an embedding API. Dev
 - **Hybrid search** — keyword (full-text) + vector, combined via **Reciprocal Rank Fusion**
 - Explicit grounding — answers only from retrieved chunks, cites file + line
 - Clearly states when no relevant code was found, instead of hallucinating
-- Real git-history mining for risk signals, not guessed
-
+  
 </td>
 </tr>
 </table>
