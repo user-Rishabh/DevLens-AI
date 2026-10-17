@@ -835,6 +835,145 @@ def export_repository_docs(repo_id: str, repo_name: str = Query(..., description
         )
 
 
+# ==============================================================================
+# STAGE 1 & STAGE 2 API ENDPOINTS
+# ==============================================================================
+
+class Stage1ExplainRequest(BaseModel):
+    problem_statement: str
+
+class Stage1ExploreRequest(BaseModel):
+    prompt: str
+
+class Stage1ChatRequest(BaseModel):
+    messages: list[dict]
+    context: str
+    mode: Optional[str] = "problem_statement"
+
+class Stage1DeliverableRequest(BaseModel):
+    deliverable_type: str
+    context: str
+    conversation_notes: Optional[str] = None
+
+class Stage2JudgeQuestionsRequest(BaseModel):
+    repo_name: Optional[str] = None
+
+class Stage2VerifyRequirementsRequest(BaseModel):
+    problem_statement: str
+
+class Stage2MockInterviewRequest(BaseModel):
+    question: str
+    user_answer: str
+    repo_name: Optional[str] = None
+
+
+@router.post("/stage1/explain-ps")
+def api_explain_problem_statement(req: Stage1ExplainRequest):
+    """
+    Stage 1: Explains a problem statement in structured, detailed bullet points.
+    """
+    if not req.problem_statement.strip():
+        raise HTTPException(status_code=400, detail="Problem statement text cannot be empty.")
+    from app.llm.stage_services import explain_problem_statement
+    try:
+        return explain_problem_statement(req.problem_statement)
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to explain problem statement: {str(e)}")
+
+
+@router.post("/stage1/explore-open-innovation")
+def api_explore_open_innovation(req: Stage1ExploreRequest):
+    """
+    Stage 1: Explores an open innovation idea, finding existing solutions, limitations, and USPs.
+    """
+    if not req.prompt.strip():
+        raise HTTPException(status_code=400, detail="Idea prompt cannot be empty.")
+    from app.llm.stage_services import explore_open_innovation
+    try:
+        return explore_open_innovation(req.prompt)
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to explore innovation topic: {str(e)}")
+
+
+@router.post("/stage1/chat")
+def api_chat_stage1(req: Stage1ChatRequest):
+    """
+    Stage 1: Conversational AI workspace for exploring solutions, technical choices, and feasibility.
+    """
+    from app.llm.stage_services import chat_stage1
+    try:
+        reply = chat_stage1(req.messages, req.context, req.mode or "problem_statement")
+        return {"reply": reply}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Chat failed: {str(e)}")
+
+
+@router.post("/stage1/generate-deliverable")
+def api_generate_stage1_deliverable(req: Stage1DeliverableRequest):
+    """
+    Stage 1: Contextual tools for architecture diagrams, workflows, tech-stack recommendations,
+    implementation plans, database/API design, and pitch deck content.
+    """
+    from app.llm.stage_services import generate_stage1_deliverable
+    try:
+        return generate_stage1_deliverable(req.deliverable_type, req.context, req.conversation_notes)
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Deliverable generation failed: {str(e)}")
+
+
+@router.post("/stage2/{repo_id}/judge-questions")
+def api_generate_judge_questions(repo_id: str, req: Optional[Stage2JudgeQuestionsRequest] = None):
+    """
+    Stage 2: Generates technical and project-specific judge questions and defense strategies.
+    """
+    from app.llm.stage_services import generate_judge_questions
+    repo_data = get_repo_analysis(repo_id) or {}
+    repo_name = (req and req.repo_name) or repo_data.get("repo_name") or repo_id
+    file_tree = repo_data.get("file_tree")
+    dependencies = repo_data.get("dependencies")
+    hotspots = repo_data.get("hotspots")
+    
+    try:
+        return generate_judge_questions(
+            repo_id=repo_id,
+            repo_name=repo_name,
+            file_tree=file_tree,
+            dependencies=dependencies,
+            hotspots=hotspots
+        )
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Judge questions generation failed: {str(e)}")
+
+
+@router.post("/stage2/{repo_id}/verify-requirements")
+def api_verify_requirements(repo_id: str, req: Stage2VerifyRequirementsRequest):
+    """
+    Stage 2: Compares original problem statement requirements with repository implementation evidence.
+    Identifies requirements as implemented, partially implemented, not found, or requiring manual verification.
+    """
+    if not req.problem_statement.strip():
+        raise HTTPException(status_code=400, detail="Problem statement text cannot be empty.")
+    from app.llm.stage_services import verify_requirements_against_codebase
+    try:
+        return verify_requirements_against_codebase(repo_id, req.problem_statement)
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Requirements verification failed: {str(e)}")
+
+
+@router.post("/stage2/{repo_id}/mock-interview")
+def api_mock_interview(repo_id: str, req: Stage2MockInterviewRequest):
+    """
+    Stage 2: Mock interview defense mode with scoring and actionable feedback on technical correctness.
+    """
+    from app.llm.stage_services import mock_defense_interview
+    repo_name = req.repo_name or repo_id
+    try:
+        return mock_defense_interview(req.question, req.user_answer, repo_name)
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Mock defense evaluation failed: {str(e)}")
+
+
+
 
 
 

@@ -37,6 +37,8 @@ interface LandingPageProps {
   isLoading: boolean;
   loadingPhase: string;
   error: string | null;
+  onBackToMain?: () => void;
+  onGoToStage1?: () => void;
 }
 
 // Hook for Animated Count-up Stats
@@ -70,7 +72,9 @@ export default function LandingPage({
   handleAnalyze,
   isLoading,
   loadingPhase,
-  error
+  error,
+  onBackToMain,
+  onGoToStage1,
 }: LandingPageProps) {
   // 1. Mouse Parallax State for Hero Graph Background
   const [mouseOffset, setMouseOffset] = useState({ x: 0, y: 0 });
@@ -141,32 +145,47 @@ export default function LandingPage({
     <div className="min-h-screen bg-[#FAFAF7] text-[#1A1D29] flex flex-col justify-between selection:bg-[#F4A688]/40 selection:text-[#1A1D29] font-sans relative overflow-hidden">
       
       {/* ------------------- HEADER / NAV BAR ------------------- */}
-      <header className="w-full max-w-7xl mx-auto px-6 py-6 flex items-center justify-between z-20">
+      <header className="w-full max-w-7xl mx-auto px-6 py-4 flex items-center justify-between z-20 border-b border-[#E5E1DA] bg-white/80 backdrop-blur-md rounded-2xl mt-4 shadow-2xs">
         <div className="flex items-center gap-3">
-          <div className="p-2.5 bg-[#E85D2C]/10 border border-[#E85D2C]/25 rounded-xl text-[#E85D2C] flex items-center justify-center shadow-xs">
-            <Navigation className="w-5 h-5 fill-[#E85D2C]/15" />
+          {onBackToMain && (
+            <button
+              onClick={onBackToMain}
+              className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg border border-[#E5E1DA] hover:border-[#1A1D29] bg-white text-xs font-mono text-[#6B7280] hover:text-[#1A1D29] transition-all cursor-pointer shadow-2xs mr-1"
+              title="Return to Main Workspace"
+            >
+              <ArrowRight className="w-3.5 h-3.5 rotate-180" />
+              <span>Workspace</span>
+            </button>
+          )}
+          <div className="p-2 bg-[#3B5FE0]/10 border border-[#3B5FE0]/25 rounded-xl text-[#3B5FE0] flex items-center justify-center shadow-xs">
+            <Navigation className="w-4 h-4 fill-[#3B5FE0]/15" />
           </div>
           <div>
             <div className="flex items-center gap-2">
-              <span className="font-display font-extrabold text-lg tracking-tight text-[#1A1D29]">DevLens <span className="text-[#E85D2C]">AI</span></span>
-              <span className="px-2 py-0.5 rounded-full text-[10px] font-mono font-semibold bg-[#E5E1DA]/70 border border-[#E5E1DA] text-[#6B7280]">
-                v0.3.0
+              <span className="font-display font-extrabold text-base tracking-tight text-[#1A1D29]">DevLens <span className="text-[#3B5FE0]">AI</span></span>
+              <span className="px-2 py-0.5 rounded-md text-[10px] font-mono font-bold bg-[#3B5FE0]/10 border border-[#3B5FE0]/25 text-[#3B5FE0]">
+                Stage 2
               </span>
             </div>
-            <p className="text-[11px] font-mono text-[#6B7280]">Google Maps for Codebases</p>
+            <p className="text-[11px] font-mono text-[#6B7280]">Analyze & Defend</p>
           </div>
         </div>
 
-        <div className="hidden sm:flex items-center gap-6 text-xs font-mono text-[#6B7280]">
-          <a href="#stats" className="hover:text-[#1A1D29] transition-colors">Telemetry</a>
-          <a href="#waypoints" className="hover:text-[#1A1D29] transition-colors">Waypoints</a>
-          <a href="#features" className="hover:text-[#1A1D29] transition-colors">Legend</a>
-          <a href="#underthehood" className="hover:text-[#1A1D29] transition-colors">Under The Hood</a>
+        <div className="flex items-center gap-3 text-xs font-mono text-[#6B7280]">
+          {onGoToStage1 && (
+            <button
+              onClick={onGoToStage1}
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-[#E85D2C]/40 bg-[#E85D2C]/10 hover:bg-[#E85D2C] text-[#E85D2C] hover:text-white transition-all duration-150 cursor-pointer shadow-2xs font-semibold"
+            >
+              <span>Stage 1 — Explore & Plan</span>
+              <ArrowRight className="w-3.5 h-3.5" />
+            </button>
+          )}
           <a 
             href="https://github.com/user-Rishabh/DevLens-AI" 
             target="_blank" 
             rel="noreferrer"
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white border border-[#E5E1DA] hover:border-[#E85D2C]/40 text-[#1A1D29] shadow-xs transition-all cursor-pointer"
+            className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white border border-[#E5E1DA] hover:border-[#1A1D29] text-[#1A1D29] shadow-xs transition-all cursor-pointer"
           >
             <Github className="w-3.5 h-3.5 text-[#1A1D29]" />
             GitHub
@@ -490,27 +509,27 @@ export default function LandingPage({
               </div>
             </div>
 
-            {/* Route Status Pill */}
-            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white border border-[#E5E1DA] text-[#E85D2C] text-xs font-mono shadow-xs">
+            {/* Stage 2 Status Pill */}
+            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white border border-[#E5E1DA] text-[#3B5FE0] text-xs font-mono shadow-xs">
               <span className="relative flex h-2 w-2">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#E85D2C] opacity-75"></span>
-                <span className="relative inline-flex rounded-full h-2 w-2 bg-[#E85D2C]"></span>
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#3B5FE0] opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-[#3B5FE0]"></span>
               </span>
-              <span className="font-semibold tracking-wider">NAVIGATION ROUTE CALCULATED</span>
+              <span className="font-semibold tracking-wider uppercase">Stage 2 — Analyze & Defend</span>
             </div>
           </div>
 
           {/* Headline (Display Face: Space Grotesk) */}
           <h1 className="font-display font-extrabold text-4xl sm:text-6xl lg:text-7xl tracking-tight text-[#1A1D29] leading-[1.08] mb-6">
-            Google Maps for <br />
-            <span className="text-[#E85D2C]">
-              your codebase.
+            Understand your code, <br />
+            <span className="text-[#3B5FE0]">
+              defend your project.
             </span>
           </h1>
 
           {/* Subheadline (Body Face: Inter) */}
           <p className="text-base sm:text-lg text-[#6B7280] max-w-2xl leading-relaxed mb-10 font-normal">
-            Calculate impact paths, trace dependency blast radius, and navigate unfamiliar repositories before touching a single line of code.
+            Understand your existing codebase, verify what your project implements, and prepare to explain your technical decisions with verifiable code evidence.
           </p>
 
           {/* Error Alert Box */}
@@ -546,11 +565,11 @@ export default function LandingPage({
                 {isLoading ? (
                   <>
                     <Loader2 className="w-4 h-4 animate-spin text-white" />
-                    Analyzing Route...
+                    Analyzing Codebase...
                   </>
                 ) : (
                   <>
-                    Calculate Route
+                    Analyze & Defend
                     <ArrowRight className="w-4 h-4" />
                   </>
                 )}

@@ -17,6 +17,7 @@ import {
   ChevronRight,
   ChevronDown,
   Sparkles,
+  Award,
 } from 'lucide-react';
 import FileTree, { FileTreeNodeType } from '../components/FileTree';
 import { HotspotType } from '../components/HotspotList';
@@ -27,19 +28,24 @@ import QualityScoreCard from '../components/QualityScoreCard';
 import ArchitectureMap from '../components/ArchitectureMap';
 import LandingPage from '../components/LandingPage';
 import LoadingScreen from '../components/LoadingScreen';
+import MainWorkspace from '../components/MainWorkspace';
+import Stage1Workspace from '../components/Stage1Workspace';
+import DefenseSuite from '../components/DefenseSuite';
 import { API_BASE_URL } from '../lib/apiClient';
 
 // ── Navigation section type ────────────────────────────────────────────────
-type Section = 'overview' | 'files' | 'search' | 'architecture' | 'health' | 'onboarding';
+export type WorkspaceMode = 'main' | 'stage1' | 'stage2';
+type Section = 'overview' | 'defense' | 'files' | 'search' | 'architecture' | 'health' | 'onboarding';
 
 interface NavItem { id: Exclude<Section, 'onboarding'>; label: string; icon: React.ReactNode; }
 
 const NAV_ITEMS: NavItem[] = [
-  { id: 'overview',     label: 'Overview',    icon: <LayoutDashboard className="w-4 h-4" /> },
-  { id: 'files',        label: 'Files',       icon: <FolderTree className="w-4 h-4" /> },
-  { id: 'search',       label: 'Ask DevLens', icon: <Sparkles className="w-4 h-4" /> },
-  { id: 'architecture', label: 'Architecture',icon: <Network className="w-4 h-4" /> },
-  { id: 'health',       label: 'Health',      icon: <ShieldCheck className="w-4 h-4" /> },
+  { id: 'overview',     label: 'Overview',        icon: <LayoutDashboard className="w-4 h-4" /> },
+  { id: 'defense',      label: 'Defense & Audit', icon: <Award className="w-4 h-4" /> },
+  { id: 'files',        label: 'Files',           icon: <FolderTree className="w-4 h-4" /> },
+  { id: 'search',       label: 'Ask DevLens',     icon: <Sparkles className="w-4 h-4" /> },
+  { id: 'architecture', label: 'Architecture',    icon: <Network className="w-4 h-4" /> },
+  { id: 'health',       label: 'Health',          icon: <ShieldCheck className="w-4 h-4" /> },
 ];
 
 const QUICK_NAV_ACCENTS: Record<Exclude<Section, 'overview' | 'onboarding'>, {
@@ -56,6 +62,20 @@ const QUICK_NAV_ACCENTS: Record<Exclude<Section, 'overview' | 'onboarding'>, {
   iconClass: string;
   description: string;
 }> = {
+  defense: {
+    badgeBg: 'bg-[#3B5FE0]/20',
+    badgeHoverBg: 'group-hover:bg-[#3B5FE0]/30',
+    badgeBorder: 'border-[#3B5FE0]/35',
+    badgeHoverBorder: 'group-hover:border-[#3B5FE0]/50',
+    iconColor: 'text-[#3B5FE0]',
+    accentBar: 'bg-[#3B5FE0]',
+    borderHover: 'hover:border-[#3B5FE0]/40',
+    shadowHover: 'hover:shadow-[0_8px_20px_-4px_rgba(59,95,224,0.16),0_2px_6px_-1px_rgba(59,95,224,0.08)]',
+    gradientWash: 'bg-[radial-gradient(circle_at_top_left,rgba(59,95,224,0.08)_0%,transparent_70%)]',
+    cardClass: 'nav-card-defense',
+    iconClass: 'nav-icon-defense',
+    description: 'Judge questions, requirements audit, and mock defense.',
+  },
   files: {
     badgeBg: 'bg-[#4F46E5]/20',
     badgeHoverBg: 'group-hover:bg-[#4F46E5]/30',
@@ -120,6 +140,9 @@ import StatTooltip from '../components/StatTooltip';
 import { useQualityScores } from '../hooks/useQualityScores';
 
 export default function Home() {
+  const [workspaceMode, setWorkspaceMode] = useState<WorkspaceMode>('main');
+  const [sharedProblemStatement, setSharedProblemStatement] = useState<string>('');
+
   const [repoUrl, setRepoUrl] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [loadingPhase, setLoadingPhase] = useState('');
@@ -155,6 +178,7 @@ export default function Home() {
   const capsuleNavRef = useRef<HTMLDivElement>(null);
   const tabRefs = useRef<Record<Section, HTMLButtonElement | null>>({
     overview: null,
+    defense: null,
     files: null,
     search: null,
     architecture: null,
@@ -498,6 +522,29 @@ export default function Home() {
   const highRiskCount = scores.filter(s => s < 45).length;
 
   // ── Render guards ─────────────────────────────────────────────────────────
+  if (workspaceMode === 'main') {
+    return (
+      <MainWorkspace
+        onSelectStage={(stage) => setWorkspaceMode(stage)}
+        hasProblemStatement={!!sharedProblemStatement.trim()}
+        isRepoAnalyzed={isAnalyzed}
+        repoName={repoName}
+      />
+    );
+  }
+
+  if (workspaceMode === 'stage1') {
+    return (
+      <Stage1Workspace
+        onBackToMain={() => setWorkspaceMode('main')}
+        onGoToStage2={() => setWorkspaceMode('stage2')}
+        sharedProblemStatement={sharedProblemStatement}
+        setSharedProblemStatement={setSharedProblemStatement}
+      />
+    );
+  }
+
+  // workspaceMode === 'stage2'
   if (isLoading) {
     return (
       <LoadingScreen
@@ -518,6 +565,8 @@ export default function Home() {
         isLoading={isLoading}
         loadingPhase={loadingPhase}
         error={error}
+        onBackToMain={() => setWorkspaceMode('main')}
+        onGoToStage1={() => setWorkspaceMode('stage1')}
       />
     );
   }
@@ -594,6 +643,33 @@ export default function Home() {
             </div>
           </div>
         ))}
+      </div>
+
+      {/* Stage 2 Defense & Verification Suite Banner */}
+      <div className="mb-6 p-5 rounded-2xl bg-gradient-to-r from-blue-50/80 via-indigo-50/70 to-purple-50/80 border border-indigo-200/90 shadow-2xs flex flex-col sm:flex-row sm:items-center justify-between gap-4 animate-fade-in-stagger" style={{ animationDelay: '350ms' }}>
+        <div className="flex items-start gap-3.5">
+          <div className="w-10 h-10 rounded-2xl bg-indigo-600 text-white flex items-center justify-center shrink-0 shadow-sm mt-0.5">
+            <Award className="w-5 h-5 text-white" />
+          </div>
+          <div>
+            <div className="flex items-center gap-2 mb-1">
+              <span className="text-[10px] font-mono uppercase font-bold text-indigo-700 bg-indigo-100/90 px-2 py-0.5 rounded">
+                Stage 2 Defense Suite
+              </span>
+              <span className="text-xs font-mono font-bold text-[#1A1D29]">Technical Judge Questions & Requirements Audit</span>
+            </div>
+            <p className="text-xs font-mono text-[#6B7280] leading-relaxed max-w-2xl">
+              Anticipate probing questions from technical judges, verify implementation evidence against stated requirements, and practice mock defense with real-time feedback.
+            </p>
+          </div>
+        </div>
+        <button
+          onClick={() => setActiveSection('defense')}
+          className="px-4 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-mono font-semibold transition-all shrink-0 flex items-center gap-2 cursor-pointer shadow-xs active:scale-95"
+        >
+          <span>Launch Defense Suite</span>
+          <ArrowRight className="w-4 h-4 stroke-[2.2]" />
+        </button>
       </div>
 
       {/* Health & Quick Navigation */}
@@ -919,6 +995,17 @@ export default function Home() {
 
   const sectionContent: Record<Section, React.ReactNode> = {
     overview:     renderOverview(),
+    defense: (
+      <DefenseSuite
+        repoId={repoId}
+        repoName={repoName}
+        sharedProblemStatement={sharedProblemStatement}
+        onSelectFilePath={(path) => {
+          setSelectedFilePath(path);
+          setActiveSection('files');
+        }}
+      />
+    ),
     files:        renderFiles(),
     search:       renderSearch(),
     architecture: renderArchitecture(),
@@ -934,14 +1021,22 @@ export default function Home() {
       {/* Floating Primary Header with Centered Expanding Capsule Navigation */}
       <header className="relative h-14 flex-shrink-0 flex items-center justify-between px-4 sm:px-6 mt-4 mx-4 sm:mx-6 mb-3 rounded-2xl border border-[#E5E1DA] bg-white/95 backdrop-blur-md shadow-[0_4px_20px_-4px_rgba(26,29,41,0.06),0_1px_3px_rgba(26,29,41,0.04)] select-none z-40 transition-shadow">
         
-        {/* Left: Breadcrumb (Clean & focused without tech stack clutter) */}
-        <div className={`flex items-center gap-2.5 min-w-0 transition-opacity duration-250 ${isNavOpen ? 'opacity-30 pointer-events-none' : 'opacity-100'}`}>
-          <div className="flex items-center gap-2 shrink-0">
-            <span className="font-extrabold text-sm tracking-tight text-[#1A1D29] hidden sm:block" style={{ fontFamily: '"Space Grotesk", sans-serif' }}>
-              DevLens <span className="text-[#E85D2C]">AI</span>
+        {/* Left: Breadcrumb */}
+        <div className={`flex items-center gap-2 min-w-0 transition-opacity duration-250 ${isNavOpen ? 'opacity-30 pointer-events-none' : 'opacity-100'}`}>
+          <button
+            onClick={() => setWorkspaceMode('main')}
+            className="flex items-center gap-1 px-2 py-1 rounded-lg border border-[#E5E1DA] hover:border-[#1A1D29] bg-white text-xs font-mono text-[#6B7280] hover:text-[#1A1D29] transition-all cursor-pointer shadow-2xs mr-0.5"
+            title="Return to Main Workspace"
+          >
+            <ArrowLeft className="w-3.5 h-3.5" />
+            <span className="hidden md:inline">Workspace</span>
+          </button>
+          <span className="text-[#E5E1DA]">/</span>
+          <div className="flex items-center gap-1.5 shrink-0">
+            <span className="text-[10px] font-mono font-bold text-[#3B5FE0] bg-[#3B5FE0]/10 px-2 py-0.5 rounded">
+              Stage 2
             </span>
-            <span className="text-[#E5E1DA] hidden sm:block">/</span>
-            <span className="text-sm text-[#1A1D29] font-medium truncate max-w-[140px] sm:max-w-[240px] md:max-w-[340px]">{repoName}</span>
+            <span className="text-sm text-[#1A1D29] font-medium truncate max-w-[140px] sm:max-w-[220px]">{repoName}</span>
           </div>
         </div>
 
@@ -1046,10 +1141,18 @@ export default function Home() {
         </div>
 
         {/* Right: Action Controls */}
-        <div className={`flex items-center gap-2.5 shrink-0 transition-opacity duration-250 ${isNavOpen ? 'opacity-30 pointer-events-none' : 'opacity-100'}`}>
+        <div className={`flex items-center gap-2 shrink-0 transition-opacity duration-250 ${isNavOpen ? 'opacity-30 pointer-events-none' : 'opacity-100'}`}>
+          <button
+            onClick={() => setWorkspaceMode('stage1')}
+            className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg border border-[#E85D2C]/40 bg-[#E85D2C]/10 hover:bg-[#E85D2C] text-[#E85D2C] hover:text-white text-xs font-mono font-semibold transition-all cursor-pointer shadow-2xs"
+            title="Switch to Stage 1 — Explore & Plan"
+          >
+            <Compass className="w-3.5 h-3.5" />
+            <span className="hidden sm:inline">Stage 1</span>
+          </button>
           <button
             onClick={handleReset}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-[#E85D2C]/50 bg-[#E85D2C]/10 hover:bg-[#E85D2C] text-[#E85D2C] hover:text-white text-xs font-mono font-semibold transition-all duration-150 cursor-pointer shadow-xs active:scale-95"
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-[#E5E1DA] hover:border-[#1A1D29] bg-white text-[#6B7280] hover:text-[#1A1D29] text-xs font-mono font-semibold transition-all duration-150 cursor-pointer shadow-xs active:scale-95"
           >
             <ArrowLeft className="w-3.5 h-3.5 stroke-[2.2]" />
             <span className="hidden sm:inline">Load another</span>
